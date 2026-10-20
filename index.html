@@ -53,7 +53,7 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 <script>
 /* ===== Pixel-Helfer: alles wird in niedriger Auflösung gezeichnet und per CSS vergrößert ===== */
 const cv=document.getElementById("bg"),M=cv.getContext("2d");
-const OUT="#1a1f16",HAZE="#e3f0b0";
+const OUT="#1a1f16",HAZE="#dcefc8";
 const hexRGB=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16));
 const mixHex=(a,b,k)=>{const A=hexRGB(a),B=hexRGB(b);return"#"+A.map((v,i)=>Math.round(v+(B[i]-v)*k).toString(16).padStart(2,"0")).join("")};
 const rng=s=>()=>(s=(s*16807)%2147483647)/2147483647;
@@ -79,7 +79,7 @@ const band=(pal,f,x,y)=>{const v=Math.max(0,Math.min(1,f))*(pal.length-1),i=Math
 function blob(c,ds,pal,seed){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
   ds.forEach(([x,y,rx,ry])=>{x0=Math.min(x0,x-rx);x1=Math.max(x1,x+rx);y0=Math.min(y0,y-ry);y1=Math.max(y1,y+ry)});
   for(let y=Math.floor(y0);y<=Math.ceil(y1);y++)for(let x=Math.floor(x0);x<=Math.ceil(x1);x++){
-    let hit=null;for(const d of ds){const nx=(x-d[0])/(d[2]+.4),ny=(y-d[1])/(d[3]+.4);if(nx*nx+ny*ny<=1)hit=[nx,ny]}
+    let hit=null;for(const d of ds){const nx=(x-d[0])/(d[2]+.4),ny=(y-d[1])/(d[3]+.4);if(Math.pow(Math.abs(nx),3)+Math.pow(Math.abs(ny),3)<=1)hit=[nx,ny]}
     if(!hit)continue;
     const l=-(hit[0]*.5+hit[1]*.85)+((x+y)&1?.06:-.06)+(hs(x+seed,y)<.12?.22:0);
     px(c,x,y,l>.5?pal[3]:l>.12?pal[2]:l>-.35?pal[1]:pal[0])}}
@@ -102,9 +102,9 @@ function layout(){const vw=innerWidth,vh=innerHeight;
 function drawForest(){
   layout();W=Math.ceil(innerWidth/S);H=Math.ceil(innerHeight/S);
   cv.width=W;cv.height=H;cv.style.width=W*S+"px";cv.style.height=H*S+"px";
-  const R=rng(11),vy=Math.round(H*.2);
+  const R=rng(11),vy=Math.round(H*.26),vw=innerWidth,vh=innerHeight,fwPx=vw<=760?vw*.94:Math.min(vw*.64,vh*.8*16/9),FL=(vw-fwPx)/2/S,FR=W-FL,sideMode=FL>=28;
   const Y=t=>vy+(H-vy)*t,HW=t=>W*(.01+.2*t),CX=t=>W/2+Math.sin(t*3.2+.8)*W*.025*(1-t*.5);
-  const SKY=["#58a043","#7bbb55","#a2d070","#cde59a","#eaf4b8"],GRD=["#c9e08a","#a6d06d","#82bb58","#62a447","#4a8d3c","#387632","#2b6029"];
+  const SKY=["#3d96e0","#5fb0ec","#8ac8f2","#b5dff6","#dff0fa"],GRD=["#c9e08a","#a6d06d","#82bb58","#62a447","#4a8d3c","#387632","#2b6029"];
   const SAND=["#ecdcae","#dcc58b","#cdae6f","#bd9559","#a97f45"];
 
   // Blätterdach/Himmel + Waldboden (gestuft, gerastert)
@@ -112,8 +112,11 @@ function drawForest(){
   // ferne Baumreihe am Horizont
   [["#a9d57a",.7],["#8cc866",1]].forEach(([col,s],j)=>{for(let x=-4;x<W+6;x+=2+Math.floor(R()*4)){
     disc(M,x,vy-1-j*2+Math.round(R()*2),3+R()*5*s,2+R()*3*s,col)}});
-  // helle Lichtung am Ende des Weges
-  disc(M,W/2,vy,W*.1,H*.07,"#f4f9c9",true);disc(M,W/2,vy,W*.06,H*.045,"#f7fbd2");disc(M,W/2,vy,W*.03,H*.025,"#fffde8");
+  // Pixel-Wolken
+  const cloud=(x,y,s)=>{const P=[[0,0,1],[1.1,.2,.8],[-1.1,.25,.75],[.5,-.5,.7]];
+    P.forEach(([a,b,q])=>disc(M,x+a*s,y+b*s*.6+Math.max(1,s*.28),q*s,q*s*.55,"#bcd9f0"));
+    P.forEach(([a,b,q])=>disc(M,x+a*s,y+b*s*.6,q*s,q*s*.55,"#ffffff"))};
+  [[.12,.1,7],[.34,.2,5],[.62,.08,8],[.86,.2,6],[.5,.3,4]].forEach(([a,b,sz])=>cloud(W*a,vy*b+3,Math.max(3,sz*W/360)));
 
   // ===== Sandweg =====
   const L=[],Rg=[];
@@ -131,7 +134,7 @@ function drawForest(){
     const x=Math.round(CX(t)+(R()*2-1)*HW(t)*.85),n=2+Math.floor(R()*4);
     for(let k=0;k<n;k++){const xx=x+Math.floor(R()*3*(.4+t*2)),yy=y+(R()<.3?1:0);if(xx>L[y]&&xx<Rg[y])px(M,xx,yy,R()<.5?"#4c9a3c":"#7fc455")}}
   // Steine als graue Punkte, teils bemoost
-  const stones=[];for(let i=0;i<300;i++){const t=Math.pow(R(),.75);stones.push({t,x:CX(t)+(R()*2-1)*HW(t)*.88,r:R(),m:R()<.4})}
+  const stones=[];for(let i=0,n=Math.round(110*Math.min(1,W/360)+25);i<n;i++){const t=Math.pow(R(),.75);stones.push({t,x:CX(t)+(R()*2-1)*HW(t)*.88,r:R(),m:R()<.4})}
   stones.sort((a,b)=>a.t-b.t);
   stones.forEach(s=>{
     const x=Math.round(s.x),y=Math.round(Y(s.t)),rx=1+Math.floor(s.t*2.4+s.r*.9),ry=Math.max(1,Math.round(rx*.6)),k=(1-s.t)*.5;
@@ -158,13 +161,21 @@ function drawForest(){
 
   // ===== Bäume von fern nach nah =====
   const trees=[];
-  [-1,1].forEach(s=>{for(let k=0;k<20;k++){const t=Math.max(.04,Math.pow((k+.3+R()*.6)/20,1.8));
-    const u=R();trees.push({t,x:CX(t)+s*(HW(t)+W*(.03+R()*.12)*(.4+t)),type:u<.25?"pine":u<.6?"acacia":"round",v:R()})}});
+  [-1,1].forEach(s=>{const n=sideMode?9:20;for(let k=0;k<n;k++){
+    const t=Math.max(.06,Math.pow((k+.3+R()*.6)/n,sideMode?1.5:1.8)),u=R(),type=u<.25?"pine":u<.6?"acacia":"round";
+    if(sideMode){ // Bäume liegen in den Streifen links/rechts vom Spielfenster
+      if(s>0&&t>.6)continue;                       // rechts unten steht der Wegweiser
+      const r=Math.min(W*.085*(.04+t)+2,FL*.22),e=r*2.1,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9;
+      let x=(lo+hi)/2;for(let i=0;i<14;i++){x=hi>lo?lo+R()*(hi-lo):(lo+hi)/2;
+        if(!trees.some(o=>Math.abs(o.x-x)<(o.r||8)+r&&Math.abs(o.t-t)<.3))break}
+      trees.push({t,x,r,type,v:R()});
+    }else trees.push({t,x:CX(t)+s*(HW(t)+W*(.03+R()*.12)*(.4+t)),type,v:R()});
+  }});
   trees.sort((a,b)=>a.t-b.t);
   trees.forEach(T=>{
     const t=T.t,sc=.04+t,by=Math.round(Y(t)),k=Math.max(0,.78*(1-t)),f=c=>mixHex(c,HAZE,k),oc=mixHex(OUT,HAZE,k*.85),x=Math.round(T.x),seed=Math.floor(T.v*100),tp=TRUNK.map(f);
     if(T.type==="pine"){
-      const w0=W*.13*sc+4,th=Math.round(H*.22*sc)+2,tw=Math.max(2,Math.round(W*.018*sc+1)),tiers=4,h=H*.2*sc+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
+      const w0=T.r?T.r*2.2:W*.13*sc+4,th=Math.round(H*.22*sc)+2,tw=Math.max(2,Math.round(W*.018*sc+1)),tiers=4,h=H*.2*sc+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
       sprite(x-w0/2-3,by-th-h*tiers*.62-h-3,w0+6,th+h*tiers*.62+h+8,c=>{
         trunk(c,x,by,th,tw,tp,seed,0);
         for(let i=0;i<tiers;i++){const ty=by-th*.7-i*h*.62,w=w0*(1-i*.2);
@@ -172,30 +183,40 @@ function drawForest(){
             for(let xx=x-half;xx<=x+half;xx++){const rel=half?(xx-x)/half:0;let col=rel<-.4?pal[2]:rel<.15?pal[1]:pal[0];
               if(r<2)col=pal[3];else if(((xx+y)&1)&&Math.abs(rel+.4)<.12)col=pal[1];px(c,xx,y,col)}}}},oc);
     }else{
-      const r=W*.085*sc+2,th=Math.round(H*(T.type==="acacia"?.62:.7)*sc),tw=Math.max(2,Math.round(W*.022*sc+1)),pal=GREEN[T.v<.5?0:1].map(f),flat=T.type==="acacia",ky=flat?.6:.88;
+      const r=T.r||W*.085*sc+2,th=Math.round(H*(T.type==="acacia"?.5:.56)*sc),tw=Math.max(2,Math.round(W*.03*sc+2)),pal=GREEN[T.v<.5?0:1].map(f),flat=T.type==="acacia",ky=flat?.6:.88;
       sprite(x-r*2.7,by-th-r*1.4,r*5.4,th+r*1.4+5,c=>{
-        const top=trunk(c,x,by,th,tw,tp,seed,tw*.6),cy=by-th,cxp=x+top;
+        const top=trunk(c,x,by,th,tw,tp,seed,tw*.12),cy=by-th,cxp=x+top;
         const pf=flat?[[0,0,1],[-1.1,.25,.8],[1.1,.2,.85],[-.5,-.4,.7],[.55,-.35,.7]]:[[0,0,1],[-.75,.4,.8],[.75,.4,.8],[-.45,-.55,.75],[.5,-.5,.7],[0,.65,.65]];
         const ds=pf.map(([a,b,q])=>[cxp+a*r,cy+b*r*ky,q*r,q*r*ky]);
         if(flat)ds.unshift([cxp+r*1.9,cy+r*.95,r*.55,r*.4]);   // kleiner Seitenbusch wie beim Vorbild
         blob(c,ds,pal,seed)},oc);
     }});
 
-  // Büsche in den unteren Ecken
-  [[.0,H+2],[W,H+2]].forEach(([bx,by],i)=>{const r=W*.07;
-    sprite(bx-r*2,by-r*1.6,r*4,r*1.9,c=>blob(c,[[bx,by,r,r*.8],[bx-r*.9,by+r*.2,r*.8,r*.6],[bx+r*.9,by+r*.2,r*.8,r*.6],[bx,by-r*.55,r*.8,r*.6]],GREEN[i],i*5),OUT)});
 }
 
 /* ===== Wegweiser als Pixel-Sprite ===== */
 function drawSign(){
   const cvs=document.getElementById("signcv");cvs.width=52;cvs.height=58;const c=cvs.getContext("2d",{willReadFrequently:true});
-  // Pfosten
-  for(let y=21;y<=50;y++)for(let x=22;x<=27;x++){let col=x<24?"#b57b40":x<26?"#8f5d2e":"#5e3818";const n=hs(x,y);
-    if(n<.08)col="#d6a068";else if(n>.94)col="#3f2512";px(c,x,y,col)}
-  // Brett (Pfeilspitze links)
+  const MOSS=["#2f5f2a","#4c8a3a","#7dba52"];
+  // Pfosten (verwittert)
+  for(let y=21;y<=50;y++)for(let x=22;x<=27;x++){let col=x<24?"#a98150":x<26?"#86603a":"#58391c";const n=hs(x,y);
+    if(n<.08)col="#cfa874";else if(n>.9)col="#3a2410";px(c,x,y,col)}
+  // Brett (grauer, abgenutzt)
   for(let r=0;r<22;r++){const x0=1+Math.round(10*Math.abs(r-10.5)/10.5);
-    for(let x=x0;x<=50;x++){let col=r<2?"#e4b06a":r>=19?"#8a5a2b":r>=17?"#a06c36":"#c18949";
-      if(r>=2&&r<17&&hs(x,r)<.07)col="#a87439";if(x===x0&&r>1&&r<20)col="#e4b06a";if(x===50)col="#8a5a2b";px(c,x,r+1,col)}}
+    for(let x=x0;x<=50;x++){let col=r<2?"#cfa468":r>=19?"#7d5c34":r>=17?"#94703f":"#b08752";
+      if(r>=2&&r<17&&hs(x,r)<.1)col="#8f6b3c";if(x===x0&&r>1&&r<20)col="#cfa468";if(x===50)col="#7d5c34";px(c,x,r+1,col)}}
+  // abgesplitterte Kanten
+  [[14,1],[27,1],[40,1],[33,22],[20,22],[50,12],[50,16]].forEach(([x,y])=>c.clearRect(x,y,1,1));
+  c.clearRect(8,1,2,1);c.clearRect(44,22,2,1);
+  // Risse im Holz
+  const crack=(x,y,n,dir)=>{for(let i=0;i<n;i++){px(c,x,y+i,"#3a220e");if(i%3===2)x+=dir}};
+  crack(12,4,8,1);crack(46,7,9,-1);crack(26,19,4,1);crack(38,19,4,-1);crack(24,30,10,1);
+  
+  // Moos auf dem Brett (hängt von der Oberkante, sammelt sich unten rechts)
+  for(let x=12;x<=26;x++){const h=1+Math.floor(hs(x,2)*3);for(let k=0;k<h;k++)px(c,x,2+k,MOSS[(k+x)%3===0?2:k?1:0])}
+  for(let x=33;x<=43;x++){const h=Math.floor(hs(x,5)*3);for(let k=0;k<h;k++)px(c,x,2+k,MOSS[(k+x)%3===0?2:k?1:0])}
+  for(let x=44;x<=49;x++){const h=1+Math.floor(hs(x,8)*2);for(let k=0;k<h;k++)px(c,x,22-k,MOSS[(k+x)%3===0?2:k?1:0])}
+  for(let y=24;y<=34;y++)for(let x=22;x<=27;x++)if(hs(x,y)<.28-(y-24)*.02)px(c,x,y,MOSS[(x+y)%3===0?2:1]);
   [[47,5],[47,18]].forEach(([x,y])=>{rect(c,x,y,2,2,"#4a4f58");px(c,x,y,"#a0a6ae")});
   // Moos & Steine am Fuß
   disc(c,25,52,10,3,"#2f6a2f");disc(c,24,51,9,2,"#4c9a3c");
