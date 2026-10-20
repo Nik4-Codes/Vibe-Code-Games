@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Grand Line Rogue</title>
+<style>
+  body{font-family:sans-serif;background:#0b2a4a;color:#fff;text-align:center}
+  .card{display:inline-block;background:#174a7a;border-radius:10px;padding:10px;margin:6px;min-width:140px}
+  button{background:#f5b700;border:none;padding:8px 14px;margin:4px;border-radius:6px;cursor:pointer;font-weight:bold}
+  .hp{background:#333;height:8px;border-radius:4px}.hp div{background:#4caf50;height:8px;border-radius:4px}
+  #log{height:110px;overflow:auto;background:#06192d;margin:10px auto;width:420px;text-align:left;padding:6px;font-size:14px}
+</style>
+</head>
+<body>
+<h1>🏴‍☠️ Grand Line Rogue</h1>
+<div id="info"></div><div id="game"></div><div id="log"></div>
+<script>
+const STARTERS = [
+  {name:"Kapitän Rion", hp:60, atk:12, skill:"Gummifaust", power:20},
+  {name:"Schwertkämpferin Mara", hp:50, atk:15, skill:"Dreiklingen-Hieb", power:24},
+  {name:"Kanonier Teko", hp:45, atk:11, skill:"Feuerkanone", power:28},
+];
+const RECRUITS = [
+  {name:"Köchin Lisa", hp:40, atk:10, skill:"Tritt-Combo", power:18},
+  {name:"Navigatorin Yuna", hp:35, atk:9, skill:"Blitzstab", power:22},
+  {name:"Fischmensch Gorr", hp:70, atk:13, skill:"Wasserschlag", power:20},
+];
+const ENEMIES = ["Marine-Rekrut","Kopfgeldjäger","Seekönig","Rivalen-Pirat","Marine-Leutnant"];
+const BOSSES  = ["Admiral Frostfaust","Piratenkaiser Donnerbart","Vizeadmiral Stahlauge"];
+
+let crew, enemy, island, bounty;
+const $ = id => document.getElementById(id);
+const log = t => { $("log").innerHTML = t + "<br>" + $("log").innerHTML; };
+const clone = o => ({...o, maxHp:o.hp});
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+
+function start(){
+  island = 1; bounty = 0; $("log").innerHTML = "";
+  $("game").innerHTML = "<h2>Wähle deinen Kapitän</h2>" + STARTERS.map((s,i)=>
+    `<div class="card"><b>${s.name}</b><br>HP ${s.hp} · ATK ${s.atk}<br><i>${s.skill}</i><br>
+     <button onclick="pick(${i})">Wählen</button></div>`).join("");
+  updateInfo();
+}
+function pick(i){ crew = [clone(STARTERS[i])]; nextIsland(); }
+
+function nextIsland(){
+  const boss = island % 5 === 0, s = 1 + island*0.15;
+  enemy = boss
+    ? {name:"👑 "+rnd(BOSSES), hp:Math.round(120*s), atk:Math.round(14*s), boss:true}
+    : {name:rnd(ENEMIES), hp:Math.round(40*s), atk:Math.round(8*s)};
+  enemy.maxHp = enemy.hp;
+  log(`⛵ Insel ${island}: ${enemy.name} erscheint!`);
+  render();
+}
+
+function bar(c){ return `<div class="hp"><div style="width:${Math.max(0,c.hp/c.maxHp*100)}%"></div></div>`; }
+
+function render(){
+  updateInfo();
+  const alive = crew.filter(c=>c.hp>0);
+  $("game").innerHTML =
+    `<div class="card" style="background:#7a1717"><b>${enemy.name}</b><br>${enemy.hp}/${enemy.maxHp}${bar(enemy)}</div><br>` +
+    crew.map((c,i)=>`<div class="card"><b>${c.name}</b><br>${Math.max(0,c.hp)}/${c.maxHp}${bar(c)}
+      ${c.hp>0?`<button onclick="attack(${i},false)">Angriff</button>
+      <button onclick="attack(${i},true)" ${c.cd?"disabled":""}>${c.skill}</button>`:"💀"}</div>`).join("");
+  if(!alive.length) gameOver();
+}
+
+function attack(i, special){
+  const c = crew[i];
+  let dmg = special ? c.power + Math.floor(Math.random()*8) : c.atk + Math.floor(Math.random()*5);
+  if(special) c.cd = 2;
+  enemy.hp -= dmg;
+  log(`${c.name} ${special?"nutzt "+c.skill:"greift an"}: ${dmg} Schaden`);
+  crew.forEach(m=>{ if(m.cd) m.cd--; });
+  if(enemy.hp <= 0) return win();
+  const target = rnd(crew.filter(m=>m.hp>0));
+  const edmg = enemy.atk + Math.floor(Math.random()*5);
+  target.hp -= edmg;
+  log(`${enemy.name} trifft ${target.name}: ${edmg} Schaden`);
+  render();
+}
+
+function win(){
+  bounty += enemy.boss ? 50000000 : 5000000;
+  log(`🏆 Sieg! Kopfgeld: ${bounty.toLocaleString("de")} Berry`);
+  island++;
+  const options = [
+    {txt:"🍖 Crew vollständig heilen", fn:()=>crew.forEach(c=>c.hp=c.maxHp)},
+    {txt:"💪 +4 ATK für alle", fn:()=>crew.forEach(c=>{c.atk+=4;c.power+=4})},
+    {txt:"❤️ +15 Max-HP für alle", fn:()=>crew.forEach(c=>{c.maxHp+=15;c.hp+=15})},
+  ];
+  const free = RECRUITS.filter(r=>!crew.some(c=>c.name===r.name));
+  if(free.length && crew.length<4){ const r = rnd(free);
+    options.push({txt:`🤝 ${r.name} rekrutieren`, fn:()=>crew.push(clone(r))}); }
+  window._opts = options.sort(()=>Math.random()-.5).slice(0,3);
+  $("game").innerHTML = "<h2>Wähle eine Belohnung</h2>" +
+    _opts.map((o,i)=>`<button onclick="_opts[${i}].fn();nextIsland()">${o.txt}</button>`).join("<br>");
+  updateInfo();
+}
+
+function gameOver(){
+  const best = Math.max(bounty, +localStorage.best||0); localStorage.best = best;
+  $("game").innerHTML = `<h2>☠️ Deine Crew wurde besiegt auf Insel ${island}</h2>
+    <p>Kopfgeld: ${bounty.toLocaleString("de")} · Rekord: ${best.toLocaleString("de")}</p>
+    <button onclick="start()">Neuer Run</button>`;
+}
+function updateInfo(){
+  $("info").innerHTML = `Insel ${island} · Kopfgeld ${bounty.toLocaleString("de")} Berry · Rekord ${(+localStorage.best||0).toLocaleString("de")}`;
+}
+start();
+</script>
+</body>
+</html>
