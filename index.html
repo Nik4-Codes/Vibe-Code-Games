@@ -4,39 +4,59 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OP-Rogue</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pirata+One&display=swap" rel="stylesheet">
+<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pirata+One&display=swap)" rel="stylesheet">
 <style>
-:root{--bg:#0b1d33;--panel:#12304f;--ink:#f4ecd8;--dim:#9fb4c8;--gold:#f2b632;--red:#d9472b;--ok:#5fd18a;--line:#050d18;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1d33}}
-:root[data-theme="dark"]{--bg:#0b1d33}
+:root{--panel:#12304f;--ink:#f4ecd8;--dim:#9fb4c8;--gold:#f2b632;--red:#d9472b;--ok:#5fd18a;--line:#050d18;
+  --px:"Press Start 2P",ui-monospace,Menlo,monospace}
 *{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;min-height:100vh;background:linear-gradient(#0b1d33,#0e3a5c 70%,#145a7a);color:var(--ink);font-family:"Press Start 2P",ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;display:flex;justify-content:center;padding:16px}
-main{width:100%;max-width:640px;padding-top:24px}
-h1{font-family:"Pirata One","Press Start 2P",serif;font-weight:400;font-size:64px;letter-spacing:3px;color:var(--gold);text-shadow:4px 4px 0 var(--line);margin:0 0 8px;text-align:center;line-height:1.1}
+body{margin:0;min-height:100vh;background:#0b1d33;color:var(--ink);font-family:var(--px);font-size:12px;line-height:1.7;
+  display:flex;justify-content:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;image-rendering:pixelated}
+main{position:relative;z-index:1;width:100%;max-width:640px;padding-top:24px}
+h1{font-family:"Pirata One",var(--px);font-weight:400;font-size:64px;letter-spacing:3px;color:var(--gold);
+  text-shadow:4px 4px 0 var(--line);margin:0 0 8px;text-align:center;line-height:1.1}
+h2{font-size:13px;color:var(--gold);margin:0 0 14px}
 .sub{color:var(--dim);text-align:center;font-size:10px;margin-bottom:24px}
-.box{background:var(--panel);border:4px solid var(--ink);box-shadow:0 0 0 4px var(--line),6px 6px 0 4px var(--line);padding:20px;margin-bottom:20px}
+.box{background:rgba(18,48,79,.93);border:4px solid var(--ink);box-shadow:0 0 0 4px var(--line),6px 6px 0 4px var(--line);padding:20px;margin-bottom:20px}
 .screen{display:none}.screen.on{display:block}
 .typed{min-height:3.4em;font-size:13px}
-input{width:100%;font:inherit;font-size:13px;padding:12px;background:var(--line);color:var(--ink);border:3px solid var(--dim);outline:none;margin:12px 0}
+/* Pixelschrift ausdrücklich für Eingabe + Platzhalter + Buttons */
+input{width:100%;font-family:var(--px);font-size:13px;padding:12px;background:var(--line);color:var(--ink);border:3px solid var(--dim);outline:none;margin:12px 0}
+input::placeholder{font-family:var(--px);color:#5b6b7a}
 input:focus{border-color:var(--gold)}
-button{font:inherit;font-size:12px;color:var(--line);background:var(--gold);border:0;padding:12px 16px;cursor:pointer;box-shadow:0 4px 0 #9a6f0a}
+input[type=range]{padding:0;margin:0;accent-color:var(--gold)}
+button{font-family:var(--px);font-size:12px;color:var(--line);background:var(--gold);border:0;padding:12px 16px;cursor:pointer;box-shadow:0 4px 0 #9a6f0a}
 button:active{transform:translateY(3px);box-shadow:0 1px 0 #9a6f0a}
 button:disabled{background:#5b6b7a;box-shadow:none;cursor:not-allowed}
 button.ghost{background:transparent;color:var(--dim);box-shadow:none;border:2px solid var(--dim)}
+button.danger{background:var(--red);color:#fff;box-shadow:0 4px 0 #7a2414}
 .msg{min-height:2.6em;font-size:10px;margin-top:4px}.err{color:var(--red)}.ok{color:var(--ok)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:16px 0}
 .card{background:var(--line);border:3px solid var(--dim);padding:14px;cursor:pointer;text-align:left;color:var(--ink);box-shadow:none;font-size:10px;line-height:1.8}
 .card.sel{border-color:var(--gold);background:#1a2f10}
+.card.lock{opacity:.45;cursor:default}
+.card.enemy{border-color:var(--red);cursor:default}
 .card h3{font-size:11px;margin:0 0 8px;color:var(--gold);line-height:1.5}
 .tag{display:inline-block;background:var(--red);color:#fff;padding:2px 6px;margin-bottom:8px;font-size:9px}
 .move{color:var(--ok)}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.center{text-align:center}
 .crew{color:var(--gold)}
+.berry{color:var(--gold);font-size:14px;margin:10px 0}
+.menu button{display:block;width:100%;margin:12px 0}
+.av-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0;font-size:10px}
+.av-row button{padding:6px 10px}
+.sw{display:inline-block;width:14px;height:14px;border:2px solid var(--ink);vertical-align:middle}
+.hp{height:10px;background:var(--line);border:2px solid var(--dim);margin:6px 0}.hp div{height:100%;background:var(--ok)}
+.card button{font-size:9px;padding:8px;margin-top:6px;width:100%}
+#log{background:var(--line);padding:8px;height:120px;overflow:auto;font-size:9px;margin:12px 0}
+#hud{position:fixed;top:8px;left:8px;z-index:2;display:none;align-items:center;gap:8px;background:var(--panel);
+  border:3px solid var(--ink);padding:4px 10px 4px 4px;font-size:9px;line-height:1.6}
 </style>
 </head>
 <body>
+<canvas id="bg"></canvas>
+<div id="hud"></div>
 <main>
 <h1>OP-Rogue</h1>
 <div class="sub">Ein One-Piece-Roguelike</div>
@@ -46,132 +66,328 @@ button.ghost{background:transparent;color:var(--dim);box-shadow:none;border:2px 
   <div class="row"><button id="btn-start" style="display:none">Weiter ▶</button></div>
 </section>
 
-<section id="s-name" class="screen box">
+<!-- ==== ANMELDUNG: Name + Avatar ==== -->
+<section id="s-login" class="screen box">
   <div>Wie lautet dein Name, Pirat?</div>
-  <input id="name" maxlength="16" placeholder="Dein Piratenname" autocomplete="off" spellcheck="false">
+  <input id="name" maxlength="16" placeholder="Piratenname" autocomplete="off" spellcheck="false">
   <div class="sub" style="text-align:left;margin:0">3–16 Zeichen: Buchstaben, Zahlen, _ und -</div>
+  <h2 style="margin-top:16px">Dein Avatar</h2>
+  <div class="center" id="av-preview"></div>
+  <div id="av-rows"></div>
   <div class="msg" id="name-msg"></div>
-  <div class="row"><button id="btn-name">Bestätigen</button></div>
+  <div class="row"><button onclick="saveProfile()">Anheuern ⚓</button></div>
 </section>
 
+<!-- ==== HAUPTMENÜ ==== -->
+<section id="s-menu" class="screen box center">
+  <div id="menu-av"></div>
+  <div class="crew" id="menu-name"></div>
+  <div class="berry" id="menu-berry"></div>
+  <div style="font-size:9px;color:var(--dim)" id="menu-best"></div>
+  <div class="menu">
+    <button onclick="openTeam()">⚔ Spiel starten</button>
+    <button onclick="openCollection()">📖 Sammlung</button>
+    <button onclick="openSettings()">⚙ Einstellungen</button>
+  </div>
+</section>
+
+<section id="s-settings" class="screen box">
+  <h2>Einstellungen</h2>
+  <div class="av-row"><span>Meer-Animation</span><button id="btn-anim" onclick="toggleAnim()"></button></div>
+  <div class="av-row"><span>Wellen-Tempo</span>
+    <input type="range" id="speed" min="0.2" max="3" step="0.1" style="width:140px"
+      oninput="save.settings.speed=+this.value;persist()"></div>
+  <div class="menu">
+    <button onclick="openLogin()">Name & Avatar ändern</button>
+    <button class="danger" onclick="resetSave()">Spielstand löschen</button>
+    <button class="ghost" onclick="openMenu()">◀ Zurück</button>
+  </div>
+</section>
+
+<section id="s-collection" class="screen box">
+  <h2 id="col-title"></h2>
+  <div class="grid" id="col-crew"></div>
+  <h2 id="col-boss-title"></h2>
+  <div class="grid" id="col-boss"></div>
+  <button class="ghost" onclick="openMenu()">◀ Zurück</button>
+</section>
+
+<!-- ==== TEAMWAHL (zeigt alle freigeschalteten Piraten) ==== -->
 <section id="s-team" class="screen box">
   <div class="msg ok" style="font-size:11px" id="crew-title"></div>
   <div>Stelle dein Team für diese Runde zusammen:</div>
   <div class="grid" id="starters"></div>
   <div class="msg" id="team-msg"></div>
   <div class="row">
-    <button id="btn-go" disabled>Segel setzen ⚓</button>
-    <button id="btn-logout" class="ghost">Anderer Name</button>
+    <button id="btn-go" disabled onclick="startRun()">Segel setzen ⚓</button>
+    <button class="ghost" onclick="openMenu()">◀ Menü</button>
   </div>
 </section>
 
-<section id="s-run" class="screen box">
-  <div class="crew" id="run-title"></div>
-  <p id="run-text"></p>
-  <div class="row"><button id="btn-back">◀ Zurück zum Team</button></div>
+<section id="s-battle" class="screen box">
+  <div class="grid" id="enemy"></div>
+  <div class="grid" id="party"></div>
+  <div id="log"></div>
+  <button class="ghost" onclick="endRun(true)">Run aufgeben</button>
+</section>
+
+<section id="s-reward" class="screen box">
+  <h2 id="reward-title"></h2>
+  <div class="berry" id="reward-loot"></div>
+  <div>Wähle eine Belohnung:</div>
+  <div class="menu" id="reward-opts"></div>
+</section>
+
+<section id="s-end" class="screen box center">
+  <h2 id="end-title"></h2>
+  <div id="end-text"></div>
+  <div class="berry" id="end-berry"></div>
+  <div class="msg ok" id="end-new"></div>
+  <div class="menu">
+    <button onclick="openTeam()">Neuer Run</button>
+    <button class="ghost" onclick="openMenu()">Hauptmenü</button>
+  </div>
 </section>
 </main>
 
 <script>
-const STARTERS=[
- {id:"ruffy",name:"Strohhut Ruffy",tag:"Teufelsfruchtnutzer",move:"Gum-Gum-Pistole"},
- {id:"zorro",name:"Roronoa Zorro",tag:"Schwertkämpfer",move:"Oni Giri"},
- {id:"sanji",name:"Schwarzfuß Sanji",tag:"Kämpfer",move:"Diable Jambe"}
+// ==== DATEN ====
+// starter:true = von Anfang an verfügbar. Alle anderen werden durch Rekrutieren freigeschaltet.
+const PIRATES=[
+ {id:"ruffy",name:"Strohhut Ruffy",tag:"Teufelsfruchtnutzer",move:"Gum-Gum-Pistole",hp:60,atk:12,pow:22,starter:true},
+ {id:"zorro",name:"Roronoa Zorro",tag:"Schwertkämpfer",move:"Oni Giri",hp:55,atk:15,pow:24,starter:true},
+ {id:"sanji",name:"Schwarzfuß Sanji",tag:"Kämpfer",move:"Diable Jambe",hp:50,atk:13,pow:25,starter:true},
+ {id:"nami",name:"Diebeskatze Nami",tag:"Navigatorin",move:"Thunderbolt Tempo",hp:40,atk:9,pow:27},
+ {id:"lysop",name:"Lysop",tag:"Scharfschütze",move:"Feuerstern",hp:40,atk:10,pow:25},
+ {id:"chopper",name:"Tony Chopper",tag:"Arzt",move:"Monster Point",hp:55,atk:11,pow:23},
+ {id:"franky",name:"Franky",tag:"Cyborg",move:"Radical Beam",hp:70,atk:12,pow:26}
 ];
-const MAX_TEAM=3;
+const ENEMIES=["Marine-Soldat","Kopfgeldjäger","Seekönig","Rivalen-Pirat","Marine-Kapitän"];
+const BOSSES=["Buggy der Clown","Arlong","Crocodile"];
+const MAX_TEAM=3, MAX_CREW=4;
+
 const $=id=>document.getElementById(id);
-let db=null,user=null,uid=null,myName=null,team=new Set();
+const fmt=n=>n.toLocaleString("de");
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
+  $("hud").style.display=(id==="s-battle"||id==="s-reward")?"flex":"none"}
 
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id))}
-function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
-function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-function lsDel(k){try{localStorage.removeItem(k)}catch(e){}}
+// ==== SPEICHERSTAND (inkl. Meta-Progression) ====
+const DEFAULT={name:null,avatar:{skin:1,hair:1,hairColor:0,hat:1,outfit:0},berry:0,best:0,
+  unlocked:PIRATES.filter(p=>p.starter).map(p=>p.id),bosses:[],settings:{anim:true,speed:1}};
+let save;
+try{save=Object.assign(structuredClone(DEFAULT),JSON.parse(localStorage.getItem("op_save"))||{})}
+catch(e){save=structuredClone(DEFAULT)}
+if(!save.name&&localStorage.getItem("op_name"))save.name=localStorage.getItem("op_name"); // alter Name übernehmen
+function persist(){try{localStorage.setItem("op_save",JSON.stringify(save))}catch(e){}}
 
-// Willkommensnachricht mit Tipp-Effekt
-function typeText(el,text,done){
-  let i=0;el.textContent="";
-  const t=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(t);done&&done()}},45);
+// ==== WILLKOMMEN ====
+function typeText(el,text,done){let i=0;el.textContent="";
+  const t=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(t);done&&done()}},45)}
+$("btn-start").onclick=()=>save.name?openMenu():openLogin();
+
+// ==== AVATAR ====
+const AV={skin:["#ffdbac","#f1c27d","#e0ac69","#c68642","#8d5524"],hair:["Kurz","Stachelig","Lang","Glatze"],
+  hairColor:["#1b1b1b","#6b3e1e","#e6c35c","#d9541e","#3a7bd5","#2e9e5b","#ffffff"],
+  hat:["Keine","Strohhut","Dreispitz","Bandana"],outfit:["#c0392b","#2c3e50","#27ae60","#8e44ad","#f39c12","#ecf0f1"]};
+const LABELS={skin:"Haut",hair:"Frisur",hairColor:"Haarfarbe",hat:"Hut",outfit:"Kleidung"};
+let draft;
+function avatarSVG(d,size=100){
+  const hc=AV.hairColor[d.hairColor];
+  const hairs=[`<path d="M28 46 Q50 14 72 46 Q50 32 28 46Z" fill="${hc}"/>`,
+    `<polygon points="27,47 30,24 39,35 45,17 53,33 61,19 65,35 73,47 50,35" fill="${hc}"/>`,
+    `<path d="M26 52 Q50 8 74 52 L76 78 L66 78 L66 47 Q50 33 34 47 L34 78 L24 78Z" fill="${hc}"/>`,``];
+  const hats=[``,
+    `<ellipse cx="50" cy="35" rx="35" ry="7" fill="#e8c547" stroke="#a8862a"/><path d="M33 35 Q50 8 67 35Z" fill="#e8c547" stroke="#a8862a"/><rect x="34" y="29" width="32" height="5" fill="#c0392b"/>`,
+    `<path d="M18 38 Q50 6 82 38 Q50 27 18 38Z" fill="#222"/><circle cx="50" cy="26" r="4" fill="#fff"/>`,
+    `<path d="M27 42 Q50 16 73 42Z" fill="#c0392b"/><path d="M71 40 L84 46 L80 36Z" fill="#c0392b"/>`];
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" fill="#050d18" stroke="#f2b632" stroke-width="4"/>
+    <path d="M20 98 Q20 72 50 72 Q80 72 80 98Z" fill="${AV.outfit[d.outfit]}"/>
+    <circle cx="50" cy="50" r="22" fill="${AV.skin[d.skin]}"/>${hairs[d.hair]}
+    <rect x="40" y="49" width="5" height="5" fill="#222"/><rect x="55" y="49" width="5" height="5" fill="#222"/>
+    <path d="M43 60 Q50 66 57 60" stroke="#222" stroke-width="2" fill="none"/>${hats[d.hat]}</svg>`;
 }
-
-async function init(){
-  try{db=await claude.use("db")}catch(e){db=null}
-  try{user=await claude.use("user");uid=user?await user.id():null}catch(e){user=null}
-  typeText($("welcome"),"Willkommen auf der Grandline!",()=>{$("btn-start").style.display="inline-block"});
+function optLabel(k){const v=AV[k][draft[k]];return v.startsWith("#")?`<span class="sw" style="background:${v}"></span>`:v}
+function renderEditor(){
+  $("av-preview").innerHTML=avatarSVG(draft,130);
+  $("av-rows").innerHTML=Object.keys(LABELS).map(k=>`<div class="av-row">
+    <button onclick="cyc('${k}',-1)">◀</button><span>${LABELS[k]}: ${optLabel(k)}</span>
+    <button onclick="cyc('${k}',1)">▶</button></div>`).join("");
 }
+function cyc(k,d){draft[k]=(draft[k]+d+AV[k].length)%AV[k].length;renderEditor()}
 
-$("btn-start").onclick=()=>{
-  const saved=lsGet("op_name");
-  if(saved){myName=saved;enterTeam()}else{show("s-name");$("name").focus()}
-};
-
-function valid(n){return /^[A-Za-z0-9_-]{3,16}$/.test(n)}
-
-async function claimName(){
+// ==== ANMELDUNG ====
+function openLogin(){draft={...save.avatar};$("name").value=save.name||"";$("name-msg").textContent="";renderEditor();show("s-login");$("name").focus()}
+function saveProfile(){
   const raw=$("name").value.trim(),msg=$("name-msg");
-  msg.className="msg";
-  if(!valid(raw)){msg.classList.add("err");msg.textContent="Ungültiger Name. Nutze 3–16 Zeichen: Buchstaben, Zahlen, _ oder -.";return}
-  $("btn-name").disabled=true;msg.textContent="Prüfe Verfügbarkeit …";
-  const key=raw.toLowerCase();
-  try{
-    if(!db)throw {code:"nodb"};
-    const ref=db.doc("usernames/"+key);
-    const snap=await ref.get();
-    if(snap.exists&&snap.data().uid!==uid){
-      msg.className="msg err";msg.textContent="Dieser Name ist leider schon vergeben. Bitte wähle einen anderen!";
-      $("btn-name").disabled=false;$("name").select();return;
-    }
-    await ref.set({name:raw,uid:uid||null,created:Date.now()});
-  }catch(e){
-    msg.className="msg err";
-    msg.textContent=e&&e.code==="nodb"
-      ?"Die Datenbank ist hier nicht verfügbar (bitte angemeldet öffnen)."
-      :"Speichern nicht möglich. Dir fehlt evtl. die Schreibberechtigung auf dieser Seite.";
-    $("btn-name").disabled=false;return;
-  }
-  myName=raw;lsSet("op_name",raw);
-  msg.className="msg ok";msg.textContent="Name gespeichert!";
-  $("btn-name").disabled=false;
-  setTimeout(enterTeam,600);
+  if(!/^[A-Za-z0-9_-]{3,16}$/.test(raw)){msg.className="msg err";msg.textContent="Ungültiger Name. Nutze 3–16 Zeichen: Buchstaben, Zahlen, _ oder -.";return}
+  save.name=raw;save.avatar={...draft};persist();openMenu();
 }
-$("btn-name").onclick=claimName;
-$("name").addEventListener("keydown",e=>{if(e.key==="Enter")claimName()});
+$("name").addEventListener("keydown",e=>{if(e.key==="Enter")saveProfile()});
 
-function enterTeam(){
-  team=new Set();
-  $("crew-title").textContent="Die „"+myName+"“-Piratenbande ist gegründet!";
-  renderStarters();show("s-team");
+// ==== MENÜ / EINSTELLUNGEN / SAMMLUNG ====
+function openMenu(){
+  $("menu-av").innerHTML=avatarSVG(save.avatar,110);
+  $("menu-name").textContent="Kapitän "+save.name;
+  $("menu-berry").textContent="💰 "+fmt(save.berry)+" Berry";
+  $("menu-best").textContent="Höchstes Kopfgeld: "+fmt(save.best);
+  show("s-menu");
+}
+function openSettings(){$("btn-anim").textContent=save.settings.anim?"AN":"AUS";$("speed").value=save.settings.speed;show("s-settings")}
+function toggleAnim(){save.settings.anim=!save.settings.anim;persist();if(save.settings.anim)requestAnimationFrame(loop);openSettings()}
+function resetSave(){if(confirm("Wirklich alles löschen?")){localStorage.removeItem("op_save");localStorage.removeItem("op_name");location.reload()}}
+function pirateCard(p,extra=""){return `<span class="tag">${p.tag}</span><h3>${p.name}</h3>
+  <div>HP ${p.hp} · ATK ${p.atk}</div><div>Fähigkeit:</div><div class="move">${p.move}</div>${extra}`}
+function openCollection(){
+  $("col-title").textContent=`Piraten (${save.unlocked.length}/${PIRATES.length})`;
+  $("col-crew").innerHTML=PIRATES.map(p=>save.unlocked.includes(p.id)
+    ?`<div class="card">${pirateCard(p)}</div>`
+    :`<div class="card lock"><h3>???</h3>Noch nicht rekrutiert</div>`).join("");
+  $("col-boss-title").textContent=`Besiegte Bosse (${save.bosses.length}/${BOSSES.length})`;
+  $("col-boss").innerHTML=BOSSES.map(b=>save.bosses.includes(b)
+    ?`<div class="card enemy"><h3>👑 ${b}</h3></div>`:`<div class="card lock"><h3>👑 ???</h3></div>`).join("");
+  show("s-collection");
 }
 
-function renderStarters(){
+// ==== TEAMWAHL (Meta-Progression: alle freigeschalteten Piraten wählbar) ====
+let team=new Set();
+function openTeam(){team=new Set();$("crew-title").textContent="Die „"+save.name+"“-Piratenbande sticht in See!";renderTeam();show("s-team")}
+function renderTeam(){
   const g=$("starters");g.innerHTML="";
-  STARTERS.forEach(s=>{
+  PIRATES.forEach(p=>{
     const b=document.createElement("button");
-    b.className="card"+(team.has(s.id)?" sel":"");
-    b.innerHTML='<span class="tag"></span><h3></h3><div>Fähigkeit:</div><div class="move"></div>';
-    b.querySelector(".tag").textContent=s.tag;
-    b.querySelector("h3").textContent=s.name;
-    b.querySelector(".move").textContent=s.move;
-    b.onclick=()=>{
-      if(team.has(s.id))team.delete(s.id);
-      else if(team.size<MAX_TEAM)team.add(s.id);
-      renderStarters();
-    };
+    if(!save.unlocked.includes(p.id)){
+      b.className="card lock";b.disabled=true;
+      b.innerHTML="<h3>???</h3>Rekrutiere diesen Piraten in einem Run, um ihn freizuschalten.";
+    }else{
+      b.className="card"+(team.has(p.id)?" sel":"");
+      b.innerHTML=pirateCard(p);
+      b.onclick=()=>{if(team.has(p.id))team.delete(p.id);else if(team.size<MAX_TEAM)team.add(p.id);renderTeam()};
+    }
     g.appendChild(b);
   });
   $("team-msg").textContent="Team: "+team.size+" / "+MAX_TEAM+" gewählt";
   $("btn-go").disabled=team.size===0;
 }
 
-$("btn-go").onclick=()=>{
-  const names=STARTERS.filter(s=>team.has(s.id)).map(s=>s.name).join(", ");
-  $("run-title").textContent="Reise der „"+myName+"“-Bande";
-  $("run-text").textContent="Crew an Bord: "+names+". Das erste Abenteuer wartet – hier folgen als Nächstes Kämpfe, Biome und Belohnungen!";
-  show("s-run");
-};
-$("btn-back").onclick=()=>show("s-team");
-$("btn-logout").onclick=()=>{lsDel("op_name");$("name").value="";$("name-msg").textContent="";show("s-name")};
+// ==== RUN / KAMPF ====
+let run=null;
+const mk=p=>({...p,maxHp:p.hp,cd:0});
+function startRun(){run={crew:PIRATES.filter(p=>team.has(p.id)).map(mk),island:1,berry:0,bounty:0,log:[],newly:[]};nextIsland()}
+function updateHud(){$("hud").innerHTML=avatarSVG(save.avatar,40)+
+  `<div><b>${esc(save.name)}</b><br>🏝 Insel ${run.island} · 💰 +${fmt(run.berry)}<br>☠ ${fmt(run.bounty)}</div>`}
+function nextIsland(){
+  const boss=run.island%5===0,s=(1+run.island*.15)*(0.6+0.4*run.crew.length);
+  run.enemy=boss?{name:rnd(BOSSES),hp:Math.round(110*s),atk:Math.round(10+run.island*1.2),boss:true}
+               :{name:rnd(ENEMIES),hp:Math.round(35*s),atk:Math.round(6+run.island)};
+  run.enemy.maxHp=run.enemy.hp;
+  run.log=["⛵ Insel "+run.island+": "+(boss?"👑 ":"")+run.enemy.name+" erscheint!"];
+  renderBattle();show("s-battle");
+}
+const bar=c=>`<div class="hp"><div style="width:${Math.max(0,c.hp/c.maxHp*100)}%"></div></div>`;
+function renderBattle(){
+  updateHud();const e=run.enemy;
+  $("enemy").innerHTML=`<div class="card enemy"><h3>${e.boss?"👑 ":""}${e.name}</h3>${Math.max(0,e.hp)}/${e.maxHp}${bar(e)}</div>`;
+  $("party").innerHTML=run.crew.map((c,i)=>`<div class="card" style="cursor:default"><h3>${c.name}</h3>
+    ${Math.max(0,c.hp)}/${c.maxHp}${bar(c)}${c.hp>0?`<button onclick="attack(${i},false)">Angriff</button>
+    <button onclick="attack(${i},true)" ${c.cd?"disabled":""}>${c.move}${c.cd?" ("+c.cd+")":""}</button>`:"💀 K.O."}</div>`).join("");
+  $("log").innerHTML=run.log.join("<br>");
+  if(!run.crew.some(c=>c.hp>0))setTimeout(()=>endRun(false),600);
+}
+function attack(i,special){
+  const c=run.crew[i],e=run.enemy;
+  const dmg=special?c.pow+Math.floor(Math.random()*8):c.atk+Math.floor(Math.random()*5);
+  if(special)c.cd=3;
+  e.hp-=dmg;run.log.unshift(`${c.name} ${special?"nutzt "+c.move:"greift an"}: ${dmg} Schaden`);
+  run.crew.forEach(m=>{if(m.cd)m.cd--});
+  if(e.hp<=0)return win();
+  const t=rnd(run.crew.filter(m=>m.hp>0)),ed=e.atk+Math.floor(Math.random()*5);
+  t.hp-=ed;run.log.unshift(`${e.name} trifft ${t.name}: ${ed} Schaden`);
+  renderBattle();
+}
+function win(){
+  const e=run.enemy,loot=e.boss?1000+run.island*50:100+run.island*20+Math.floor(Math.random()*50);
+  run.berry+=loot;run.bounty+=e.boss?50000000:5000000;
+  if(e.boss&&!save.bosses.includes(e.name)){save.bosses.push(e.name);persist()}
+  run.island++;
+  const opts=[
+    {txt:"🍖 Crew heilen",fn:()=>run.crew.forEach(c=>c.hp=c.maxHp)},
+    {txt:"💪 +4 ATK für alle",fn:()=>run.crew.forEach(c=>{c.atk+=4;c.pow+=4})},
+    {txt:"❤ +15 Max-HP für alle",fn:()=>run.crew.forEach(c=>{c.maxHp+=15;c.hp+=15})}];
+  const free=PIRATES.filter(p=>!run.crew.some(c=>c.id===p.id));
+  if(free.length&&run.crew.length<MAX_CREW){
+    const notOwned=free.filter(p=>!save.unlocked.includes(p.id));   // neue Piraten bevorzugen
+    const r=rnd(notOwned.length?notOwned:free);
+    opts.push({txt:`🤝 ${r.name} rekrutieren${save.unlocked.includes(r.id)?"":" (NEU!)"}`,recruit:r});
+  }
+  run.opts=opts.sort(()=>Math.random()-.5).slice(0,3);
+  $("reward-title").textContent="Sieg gegen "+e.name+"!";
+  $("reward-loot").textContent="💰 +"+fmt(loot)+" Berry";
+  $("reward-opts").innerHTML=run.opts.map((o,i)=>`<button onclick="pickReward(${i})">${o.txt}</button>`).join("");
+  updateHud();show("s-reward");
+}
+function pickReward(i){
+  const o=run.opts[i];
+  if(o.recruit){
+    run.crew.push(mk(o.recruit));
+    // META-PROGRESSION: sofort dauerhaft freischalten
+    if(!save.unlocked.includes(o.recruit.id)){save.unlocked.push(o.recruit.id);run.newly.push(o.recruit.name);persist()}
+  }else o.fn();
+  nextIsland();
+}
+function endRun(gaveUp){
+  if(!run)return;
+  save.berry+=run.berry;save.best=Math.max(save.best,run.bounty);persist();
+  $("end-title").textContent=gaveUp?"Run aufgegeben":"☠ Deine Crew wurde besiegt";
+  $("end-text").textContent="Insel "+run.island+" erreicht · Kopfgeld "+fmt(run.bounty);
+  $("end-berry").textContent="💰 +"+fmt(run.berry)+" Berry gutgeschrieben";
+  $("end-new").textContent=run.newly.length?"Neu in deiner Sammlung: "+run.newly.join(", "):"";
+  run=null;show("s-end");
+}
 
-init();
+// ==== HINTERGRUND: animiertes Meer + Seekarte (Pixel-Look) ====
+const P=3, cv=$("bg"), cx=cv.getContext("2d");
+let seed=1234;const R=()=>(seed=seed*16807%2147483647)/2147483647;
+const ISLANDS=[[.1,.2,.05],[.28,.72,.07],[.47,.22,.045],[.7,.58,.08],[.9,.2,.05],[.12,.88,.035],[.6,.9,.04],[.86,.85,.045]]
+  .map(([x,y,s])=>({x,y,s,o:Array.from({length:14},()=>.75+R()*.45),n:Array.from({length:10},()=>.45+R()*.3)}));
+function resize(){cv.width=Math.ceil(innerWidth/P);cv.height=Math.ceil(innerHeight/P);draw(performance.now()/1000)}
+addEventListener("resize",resize);
+function blob(x,y,r,pts){
+  const p=pts.map((f,i)=>{const a=i/pts.length*Math.PI*2;return[x+Math.cos(a)*r*f,y+Math.sin(a)*r*f*.8]});
+  const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+  cx.beginPath();let m=mid(p[p.length-1],p[0]);cx.moveTo(m[0],m[1]);
+  p.forEach((pt,i)=>{const nx=mid(pt,p[(i+1)%p.length]);cx.quadraticCurveTo(pt[0],pt[1],nx[0],nx[1])});cx.closePath();
+}
+function draw(t){
+  const W=cv.width,H=cv.height,m=Math.min(W,H),sp=save.settings.speed;
+  const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#1f6f9a");g.addColorStop(1,"#0b2f4d");
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  cx.fillStyle="rgba(255,240,200,.08)";                       // Kartengitter
+  for(let x=0;x<W;x+=30)cx.fillRect(x,0,1,H);for(let y=0;y<H;y+=30)cx.fillRect(0,y,W,1);
+  cx.fillStyle="rgba(255,255,255,.28)";                       // Wellen
+  for(let y=6,r=0;y<H;y+=12,r++){const off=(t*7*sp+(r%2)*12)%24;
+    for(let x=-24;x<W+24;x+=24){const wy=Math.round(y+Math.sin(t*1.5*sp+x*.05+r)*1.5);cx.fillRect(Math.round(x+off),wy,5,1);cx.fillRect(Math.round(x+off)+1,wy-1,3,1)}}
+  cx.setLineDash([3,4]);cx.strokeStyle="rgba(110,60,20,.8)";cx.lineWidth=1;cx.beginPath();   // Routen
+  ISLANDS.forEach((is,i)=>{const x=is.x*W,y=is.y*H;if(!i)cx.moveTo(x,y);else{const p=ISLANDS[i-1];cx.quadraticCurveTo((p.x*W+x)/2,(p.y*H+y)/2-20,x,y)}});
+  cx.stroke();cx.setLineDash([]);
+  ISLANDS.forEach((is,i)=>{const x=is.x*W,y=is.y*H,r=is.s*m*1.6;
+    cx.fillStyle=`rgba(140,220,225,${.25+.12*Math.sin(t*2*sp+i)})`;blob(x,y,r*1.35,is.o);cx.fill();
+    cx.fillStyle="#e8d29a";cx.strokeStyle="#6b4a2b";cx.lineWidth=1;blob(x,y,r,is.o);cx.fill();cx.stroke();
+    cx.fillStyle="#5f9b4a";blob(x,y-r*.05,r*.85,is.n);cx.fill();
+    if(i===3){cx.fillStyle="#b3201a";for(let k=-3;k<=3;k++){cx.fillRect(x+k,y+k,2,2);cx.fillRect(x+k,y-k,2,2)}}});
+  const kx=W-28,ky=H-30;cx.fillStyle="#8b2e1a";cx.beginPath();cx.moveTo(kx,ky-14);cx.lineTo(kx+4,ky);cx.lineTo(kx-4,ky);cx.fill();
+  cx.fillStyle="#e8d29a";cx.beginPath();cx.moveTo(kx,ky+14);cx.lineTo(kx+4,ky);cx.lineTo(kx-4,ky);cx.fill();
+  cx.font="8px 'Press Start 2P'";cx.textAlign="center";cx.fillText("N",kx,ky-17);
+  const v=cx.createRadialGradient(W/2,H/2,m*.35,W/2,H/2,Math.max(W,H)*.75);   // vergilbter Kartenrand
+  v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(90,55,15,.6)");cx.fillStyle=v;cx.fillRect(0,0,W,H);
+}
+function loop(ts){draw(ts/1000);if(save.settings.anim)requestAnimationFrame(loop)}
+
+// ==== START ====
+resize();requestAnimationFrame(loop);
+typeText($("welcome"),"Willkommen auf der Grandline!",()=>{$("btn-start").style.display="inline-block"});
 </script>
 </body>
 </html>
