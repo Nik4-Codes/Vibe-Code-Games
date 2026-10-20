@@ -66,16 +66,24 @@ button.danger{background:var(--red);color:#fff;box-shadow:0 4px 0 #7a2414}
   <div class="row"><button id="btn-start" style="display:none">Weiter ▶</button></div>
 </section>
 
-<!-- ==== ANMELDUNG: Name + Avatar ==== -->
-<section id="s-login" class="screen box">
+<!-- ==== SCHRITT 1: NAME ==== -->
+<section id="s-name" class="screen box">
   <div>Wie lautet dein Name, Pirat?</div>
   <input id="name" maxlength="16" placeholder="Piratenname" autocomplete="off" spellcheck="false">
   <div class="sub" style="text-align:left;margin:0">3–16 Zeichen: Buchstaben, Zahlen, _ und -</div>
-  <h2 style="margin-top:16px">Dein Avatar</h2>
+  <div class="msg" id="name-msg"></div>
+  <div class="row"><button onclick="confirmName()">Weiter ▶</button></div>
+</section>
+
+<!-- ==== SCHRITT 2: AVATAR ==== -->
+<section id="s-avatar" class="screen box">
+  <h2 id="av-title"></h2>
   <div class="center" id="av-preview"></div>
   <div id="av-rows"></div>
-  <div class="msg" id="name-msg"></div>
-  <div class="row"><button onclick="saveProfile()">Anheuern ⚓</button></div>
+  <div class="row">
+    <button onclick="saveProfile()">Anheuern ⚓</button>
+    <button class="ghost" onclick="show('s-name')">◀ Name ändern</button>
+  </div>
 </section>
 
 <!-- ==== HAUPTMENÜ ==== -->
@@ -187,45 +195,85 @@ function typeText(el,text,done){let i=0;el.textContent="";
   const t=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(t);done&&done()}},45)}
 $("btn-start").onclick=()=>save.name?openMenu():openLogin();
 
-// ==== AVATAR ====
-const AV={skin:["#ffdbac","#f1c27d","#e0ac69","#c68642","#8d5524"],hair:["Kurz","Stachelig","Lang","Glatze"],
+// ==== AVATAR (Pixel-Look, 16x24 Raster wie bei Terraria) ====
+const AV={skin:["#ffdbac","#f1c27d","#e0ac69","#c68642","#8d5524"],
+  hair:["Kurz","Stachelig","Lang","Glatze"],
   hairColor:["#1b1b1b","#6b3e1e","#e6c35c","#d9541e","#3a7bd5","#2e9e5b","#ffffff"],
-  hat:["Keine","Strohhut","Dreispitz","Bandana"],outfit:["#c0392b","#2c3e50","#27ae60","#8e44ad","#f39c12","#ecf0f1"]};
+  hat:["Keiner","Strohhut","Kopftuch","Weißer Hut","Piratenhut","Orangener Hut"],
+  outfit:["#c0392b","#2c3e50","#27ae60","#8e44ad","#f39c12","#ecf0f1"]};
 const LABELS={skin:"Haut",hair:"Frisur",hairColor:"Haarfarbe",hat:"Hut",outfit:"Kleidung"};
-let draft;
+let draft,tmpName;
+
+// Jede Ebene: y = Startzeile, r = Pixelzeilen (16 Zeichen, "." = durchsichtig)
+const BASE={y:6,r:[
+ ".....SSSSSS.....","....SSSSSSSS....","....SSSSSSSS....","....SWESSWES....",
+ "....SSSSSSSS....","....SSSmmSSS....",".....SSSSSS.....","......SSSS......",
+ "...OOOOOOOOOO...","..SOOOOOOOOOOS..","..SOOOOOOOOOOS..","..SOOOOOOOOOOS..",
+ "..S.OOOOOOOO.S..","....PPPPPPPP....","....PPP..PPP....","....PPP..PPP....",
+ "....BBB..BBB....","...BBBB..BBBB..."]};
+const HAIRS=[
+ {y:5,r:[".....HHHHHH.....","....HHHHHHHH....","....HHHHHHHH....","....H......H...."]},           // Kurz
+ {y:3,r:["......H..H......",".....HH.HHH.....","....HHHHHHHH....","...HHHHHHHHHH...",
+         "...HHHHHHHHHH...","...H........H..."]},                                                 // Stachelig
+ {y:5,r:[".....HHHHHH.....","....HHHHHHHH....","...HHHHHHHHHH...","...H........H...",
+         "...H........H...","...H........H...","...H........H...","...H........H...",
+         "...H........H...","...H........H...","...H........H..."]},                              // Lang
+ {y:0,r:[]}                                                                                         // Glatze
+];
+const HATS=[
+ {y:0,r:[]},                                                                                        // Keiner
+ {y:3,r:[".....YYYYYY.....","....YYYYYYYY....","....RRRRRRRR....",".yYYYYYYYYYYYYy.",
+         "..yyyyyyyyyyyy.."]},                                                                      // Strohhut
+ {y:5,r:[".....KKKKKK.....","....KKKKKKKK....","....KkKKKkKK.KK.","............KkK."]},           // Kopftuch
+ {y:2,r:[".....FFFFFF.....","....FFDFFFDF....","...FFFFFDFFFF...","...FDFFFFFFDF...",
+         "...ffffffffff...","...f........f...","...f........f...","...f........f..."]},          // Weißer Hut
+ {y:1,r:["......NNNN......","....NNNNNNNN....","...NNNNXXNNNN...","..NNNNNXXNNNNN..",
+         ".NNNNNNNNNNNNNN.","GGGGGGGGGGGGGGGG",".G............G."]},                              // Piratenhut
+ {y:2,r:["......AAAA......",".....AAAAAA.....","....ACAAAACA....","....aaaaaaaa....",
+         "AAAAAAAAAAAAAAAA","A.aaaaaaaaaaaa.A","....R......R...."]}                                // Orangener Hut
+];
+
 function avatarSVG(d,size=100){
-  const hc=AV.hairColor[d.hairColor];
-  const hairs=[`<path d="M28 46 Q50 14 72 46 Q50 32 28 46Z" fill="${hc}"/>`,
-    `<polygon points="27,47 30,24 39,35 45,17 53,33 61,19 65,35 73,47 50,35" fill="${hc}"/>`,
-    `<path d="M26 52 Q50 8 74 52 L76 78 L66 78 L66 47 Q50 33 34 47 L34 78 L24 78Z" fill="${hc}"/>`,``];
-  const hats=[``,
-    `<ellipse cx="50" cy="35" rx="35" ry="7" fill="#e8c547" stroke="#a8862a"/><path d="M33 35 Q50 8 67 35Z" fill="#e8c547" stroke="#a8862a"/><rect x="34" y="29" width="32" height="5" fill="#c0392b"/>`,
-    `<path d="M18 38 Q50 6 82 38 Q50 27 18 38Z" fill="#222"/><circle cx="50" cy="26" r="4" fill="#fff"/>`,
-    `<path d="M27 42 Q50 16 73 42Z" fill="#c0392b"/><path d="M71 40 L84 46 L80 36Z" fill="#c0392b"/>`];
-  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
-    <rect x="2" y="2" width="96" height="96" fill="#050d18" stroke="#f2b632" stroke-width="4"/>
-    <path d="M20 98 Q20 72 50 72 Q80 72 80 98Z" fill="${AV.outfit[d.outfit]}"/>
-    <circle cx="50" cy="50" r="22" fill="${AV.skin[d.skin]}"/>${hairs[d.hair]}
-    <rect x="40" y="49" width="5" height="5" fill="#222"/><rect x="55" y="49" width="5" height="5" fill="#222"/>
-    <path d="M43 60 Q50 66 57 60" stroke="#222" stroke-width="2" fill="none"/>${hats[d.hat]}</svg>`;
+  const pal={S:AV.skin[d.skin],E:"#1b1b1b",W:"#ffffff",m:"#7a3b2e",O:AV.outfit[d.outfit],
+    P:"#2b3a55",B:"#3b2416",H:AV.hairColor[d.hairColor],
+    Y:"#e8c547",y:"#b8942a",R:"#c0392b",           // Strohhut
+    K:"#2d6b3a",k:"#1e4a28",                       // Kopftuch
+    F:"#f4f4f4",f:"#c9c9c9",D:"#5a3b2a",           // Weißer Hut mit Flecken
+    N:"#1b1b1b",G:"#f2b632",X:"#eeeeee",           // Piratenhut mit Totenkopf
+    A:"#e8742a",a:"#b5521a",C:"#2a6fd1"};          // Orangener Hut mit Gesichtern
+  const grid=Array.from({length:24},()=>Array(16).fill(null));
+  [BASE,HAIRS[d.hair]||HAIRS[0],HATS[d.hat]||HATS[0]].forEach(l=>l.r.forEach((row,i)=>{
+    for(let x=0;x<16;x++){const c=row[x];if(c&&c!==".")grid[l.y+i][x]=pal[c]}}));
+  let px="";
+  grid.forEach((row,y)=>row.forEach((c,x)=>{if(c)px+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${c}"/>`}));
+  return `<svg width="${size}" height="${size}" viewBox="-5 -1 26 26" shape-rendering="crispEdges">
+    <rect x="-5" y="-1" width="26" height="26" fill="#050d18" stroke="#f2b632" stroke-width="1"/>${px}</svg>`;
 }
 function optLabel(k){const v=AV[k][draft[k]];return v.startsWith("#")?`<span class="sw" style="background:${v}"></span>`:v}
 function renderEditor(){
-  $("av-preview").innerHTML=avatarSVG(draft,130);
+  $("av-preview").innerHTML=avatarSVG(draft,150);
   $("av-rows").innerHTML=Object.keys(LABELS).map(k=>`<div class="av-row">
     <button onclick="cyc('${k}',-1)">◀</button><span>${LABELS[k]}: ${optLabel(k)}</span>
     <button onclick="cyc('${k}',1)">▶</button></div>`).join("");
 }
 function cyc(k,d){draft[k]=(draft[k]+d+AV[k].length)%AV[k].length;renderEditor()}
 
-// ==== ANMELDUNG ====
-function openLogin(){draft={...save.avatar};$("name").value=save.name||"";$("name-msg").textContent="";renderEditor();show("s-login");$("name").focus()}
-function saveProfile(){
-  const raw=$("name").value.trim(),msg=$("name-msg");
-  if(!/^[A-Za-z0-9_-]{3,16}$/.test(raw)){msg.className="msg err";msg.textContent="Ungültiger Name. Nutze 3–16 Zeichen: Buchstaben, Zahlen, _ oder -.";return}
-  save.name=raw;save.avatar={...draft};persist();openMenu();
+// ==== ANMELDUNG: erst Name, dann Avatar ====
+function openLogin(){
+  draft={...save.avatar};
+  $("name").value=save.name||"";$("name-msg").textContent="";
+  show("s-name");$("name").focus();
 }
-$("name").addEventListener("keydown",e=>{if(e.key==="Enter")saveProfile()});
+function confirmName(){
+  const raw=$("name").value.trim(),msg=$("name-msg");
+  if(!/^[A-Za-z0-9_-]{3,16}$/.test(raw)){msg.className="msg err";
+    msg.textContent="Ungültiger Name. Nutze 3–16 Zeichen: Buchstaben, Zahlen, _ oder -.";return}
+  tmpName=raw;
+  $("av-title").textContent="Erstelle den Avatar von "+raw;
+  renderEditor();show("s-avatar");
+}
+function saveProfile(){save.name=tmpName;save.avatar={...draft};persist();openMenu()}
+$("name").addEventListener("keydown",e=>{if(e.key==="Enter")confirmName()});
 
 // ==== MENÜ / EINSTELLUNGEN / SAMMLUNG ====
 function openMenu(){
