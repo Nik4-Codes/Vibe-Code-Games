@@ -484,40 +484,7 @@ cx.fillStyle="#4a2c12";
     cx.fillRect(x,Math.round(yTop-h*.9),Math.round(W/70),Math.round(h*.9));
   }
 }
-
-// Mast mit voll sichtbarem Segel und Strohhut-Totenkopf
-function mast(W,H,t){
-  const mx=Math.round(W*.5), top=Math.round(H*.04);
-  const poleW=Math.round(W*.024);
-
-  // Mast zuerst, damit das Segel davor liegt
-  cx.fillStyle="#8a5c31";cx.fillRect(mx-poleW/2,top,poleW,Math.round(H*.6));
-  cx.fillStyle="#6b4423";cx.fillRect(mx-poleW,top,poleW*2,Math.round(H*.03)); // Kappe
-
-  // Segel als volle, leicht gewölbte Fläche (nicht mehr durchsichtig)
-  const sy=Math.round(H*.12), sh=Math.round(H*.34), half=Math.round(W*.15);
-  const belly=Math.round(W*.02)+Math.sin(t*.9)*2;   // sanfte Wölbung
-  cx.beginPath();
-  cx.moveTo(mx-half,sy);                            // oben links
-  cx.quadraticCurveTo(mx+belly,sy+sh*.5,mx-half,sy+sh); // linke Kante
-  cx.lineTo(mx+half,sy+sh);                         // unten rechts
-  cx.quadraticCurveTo(mx+belly,sy+sh*.5,mx+half,sy);    // rechte Kante
-  cx.closePath();
-  cx.fillStyle="#f4ecd8";cx.fill();
-  cx.strokeStyle="rgba(90,60,20,.45)";cx.lineWidth=1;cx.stroke();
-
-  // Segelnähte
-  cx.strokeStyle="rgba(120,90,50,.35)";cx.lineWidth=1;
-  for(let i=1;i<4;i++){
-    const ny=sy+sh*i/4;
-    cx.beginPath();
-    cx.moveTo(mx-half,ny);
-    cx.quadraticCurveTo(mx+belly,ny+sh*.05,mx+half,ny);
-    cx.stroke();
   }
-
-function draw(t){
-  const W=cv.width,H=cv.height,sp=save.settings.speed;
 
   // --- Himmel (obere Hälfte) ---
   const sky=cx.createLinearGradient(0,0,0,H*.55);
@@ -532,10 +499,34 @@ function draw(t){
   cx.fillStyle=glow;cx.beginPath();cx.arc(sx,sy,H*.16,0,Math.PI*2);cx.fill();
   cx.fillStyle="#fff8d6";cx.beginPath();cx.arc(sx,sy,H*.035,0,Math.PI*2);cx.fill();
 
-  // --- Meer (untere Hälfte) ---
-  const sea=cx.createLinearGradient(0,H*.5,0,H);
-  sea.addColorStop(0,"#2fa8c9");sea.addColorStop(1,"#0b4a6b");
-  cx.fillStyle=sea;cx.fillRect(0,H*.5,W,H);
+// --- Deck aus Holzbohlen (untere Hälfte) ---
+  const deck=cx.createLinearGradient(0,H*.5,0,H);
+  deck.addColorStop(0,"#a8763f");deck.addColorStop(1,"#7a5228");
+  cx.fillStyle=deck;cx.fillRect(0,H*.5,W,H*.5);
+  // Planken: lange Bahnen mit versetzten Fugen
+  const plankH=Math.max(6,Math.round(H*.035));
+  for(let y=H*.5,row=0;y<H;y+=plankH,row++){
+    cx.fillStyle=row%2?"rgba(255,220,160,.06)":"rgba(0,0,0,.06)";
+    cx.fillRect(0,Math.round(y),W,plankH);
+    cx.fillStyle="rgba(60,30,5,.5)";
+    cx.fillRect(0,Math.round(y),W,1);
+    for(let x=((row%2)?Math.round(W*.12):0);x<W;x+=Math.round(W*.24)){
+      cx.fillRect(x,Math.round(y),1,plankH);
+    }
+    // Holzmaserung: kurze Striche
+    cx.fillStyle="rgba(90,50,15,.28)";
+    for(let x=Math.round(W*.04);x<W;x+=Math.round(W*.11)){
+      const gy=Math.round(y+plankH*.5), len=Math.round(W*.035);
+      cx.fillRect(x,gy,len,1);
+    }
+  }
+  // Fugen-Nägel
+  cx.fillStyle="rgba(40,20,0,.55)";
+  for(let y=H*.5;y<H;y+=plankH){
+    for(let x=Math.round(W*.06);x<W;x+=Math.round(W*.12)){
+      cx.fillRect(x,Math.round(y+plankH*.25),2,2);
+    }
+  }
 
   // Wellenlinien im Wasser
   cx.strokeStyle="rgba(255,255,255,.28)";cx.lineWidth=1.5;
