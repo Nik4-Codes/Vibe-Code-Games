@@ -516,43 +516,6 @@ function mast(W,H,t){
     cx.stroke();
   }
 
-  // ==== Totenkopf mit Strohhut auf dem Segel ====
-  const kx=mx, ky=sy+sh*.5, ks=Math.min(W,H)*.055;
-  // Strohhut: breite Krempe + Kuppel
-  cx.fillStyle="#e8c547";
-  cx.beginPath();cx.ellipse(kx,ky-ks*.62,ks*1.15,ks*.34,0,0,Math.PI*2);cx.fill(); // Krempe
-  cx.beginPath();
-  cx.moveTo(kx-ks*.72,ky-ks*.62);
-  cx.quadraticCurveTo(kx,ky-ks*1.5,kx+ks*.72,ky-ks*.62);
-  cx.closePath();cx.fill();                                                       // Kuppel
-  cx.fillStyle="#c0392b";cx.fillRect(kx-ks*.72,ky-ks*.72,ks*1.44,ks*.16);          // rotes Band
-  // Schädel
-  cx.fillStyle="#ffffff";
-  cx.beginPath();cx.ellipse(kx,ky+ks*.05,ks*.72,ks*.62,0,0,Math.PI*2);cx.fill();   // Kopf
-  cx.fillRect(kx-ks*.4,ky+ks*.5,ks*.8,ks*.34);                                     // Kiefer
-  // Augen und Nase
-  cx.fillStyle="#1b1b1b";
-  cx.beginPath();cx.ellipse(kx-ks*.28,ky,ks*.17,ks*.2,0,0,Math.PI*2);cx.fill();
-  cx.beginPath();cx.ellipse(kx+ks*.28,ky,ks*.17,ks*.2,0,0,Math.PI*2);cx.fill();
-  cx.beginPath();cx.moveTo(kx,ky+ks*.24);cx.lineTo(kx-ks*.1,ky+ks*.44);
-  cx.lineTo(kx+ks*.1,ky+ks*.44);cx.closePath();cx.fill();                          // Nase
-  // Zähne
-  cx.fillStyle="#1b1b1b";
-  for(let i=-1;i<=1;i++)cx.fillRect(kx+i*ks*.26-ks*.03,ky+ks*.5,ks*.06,ks*.32);
-
-  // Rahen
-  cx.fillStyle="#6b4423";
-  cx.fillRect(mx-half,Math.round(sy),half*2,Math.round(H*.008));
-  cx.fillRect(mx-half*.7,Math.round(sy+sh*.66),half*1.4,Math.round(H*.008));
-
-  // Wimpel
-  const fw=Math.sin(t*3)*4;
-  cx.fillStyle="#d9472b";
-  cx.beginPath();cx.moveTo(mx,sy-Math.round(H*.02));
-  cx.lineTo(mx+Math.round(W*.05)+fw,sy-Math.round(H*.012));
-  cx.lineTo(mx,sy-Math.round(H*.004));cx.closePath();cx.fill();
-}
-
 function draw(t){
   const W=cv.width,H=cv.height,sp=save.settings.speed;
 
