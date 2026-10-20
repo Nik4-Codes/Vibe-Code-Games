@@ -34,11 +34,13 @@ button.danger{background:linear-gradient(#f0694e,#c0381f);color:#fff;box-shadow:
 .msg{min-height:1.6em;font-size:15px}.err{color:#ff8a72}.ok{color:var(--ok)}
 .set{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0}
 input[type=range]{accent-color:var(--gold);width:160px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:12px 0}
 .card{background:var(--line);border:3px solid var(--dim);border-radius:4px;padding:10px;font-size:15px;line-height:1.35}
 .card h3{font-weight:600;font-size:18px;margin:0 0 4px;color:var(--gold)}
 .card.lock{opacity:.5}.move{color:var(--ok)}
 .dim{color:var(--dim);font-size:15px}
+.sprite{display:block;width:112px;height:152px;margin:0 auto 8px;image-rendering:pixelated;background:rgba(255,255,255,.07);border-radius:4px}
+.card.char{text-align:center}
 </style>
 </head>
 <body>
@@ -267,7 +269,7 @@ function go(t){
   if(t==="menu")return openMenu();
   if(t==="load"){$("load-text").textContent=save.run?"Gespeicherter Run gefunden.":"Noch kein Spielstand vorhanden.";}
   if(t==="settings")$("vol").value=save.vol;
-  if(t==="collection")renderCollection();
+  if(t==="collection"){renderCollection();startIdle()}
   show("s-"+t);
 }
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
@@ -275,13 +277,119 @@ $("vol").oninput=e=>{save.vol=+e.target.value;persist()};
 $("btn-rename").onclick=openName;
 $("btn-reset").onclick=()=>{if(confirm("Wirklich alles löschen?")){try{localStorage.removeItem("oprg_save")}catch(e){}location.reload()}};
 
+/* ===== Pixel-Charaktere: runder Pixel-Stil mit Kontur, Licht (oben/links) und Schatten (unten/rechts) ===== */
+const SW=28,SH=38,OUTC="#1a0f08",CHARS={};
+const px=(g,x,y,c)=>{x+=2;y+=2;if(x>=0&&y>=0&&x<SW&&y<SH)g[y*SW+x]=c};
+const rc=(g,x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)px(g,x+i,y+j,c)};
+// abgerundetes Rechteck; s=[Basis,Licht,Schatten]
+function rr(g,x,y,w,h,s){
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){
+    if(w>2&&h>2&&(i==0||i==w-1)&&(j==0||j==h-1))continue;
+    px(g,x+i,y+j,(j==h-1||i==w-1)?s[2]:(j==0||i==0)?s[1]:s[0]);
+  }
+}
+function ln(g,x0,y0,x1,y1,c){
+  const dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;let e=dx+dy;
+  for(;;){px(g,x0,y0,c);if(x0==x1&&y0==y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx}if(e2<=dx){e+=dx;y0+=sy}}
+}
+// pose: d = Körper/Kopf nach unten (Atmen), al/ar = linker/rechter Arm nach unten
+function drawChar(cv,id,pose){
+  pose=pose||{};const g=new Array(SW*SH).fill(null);
+  CHARS[id](g,{d:pose.d||0,al:pose.al||0,ar:pose.ar||0});
+  cv.width=SW;cv.height=SH;const c=cv.getContext("2d");
+  const at=(x,y)=>x<0||y<0||x>=SW||y>=SH?null:g[y*SW+x];
+  for(let y=0;y<SH;y++)for(let x=0;x<SW;x++){
+    const v=at(x,y);
+    if(v){c.fillStyle=v;c.fillRect(x,y,1,1)}
+    else if(at(x-1,y)||at(x+1,y)||at(x,y-1)||at(x,y+1)){c.fillStyle=OUTC;c.fillRect(x,y,1,1)}
+  }
+}
+
+CHARS.ruffy=(g,p)=>{const d=p.d,
+  skin=["#f2c08f","#ffd9b0","#c98f63"],hair=["#2b2b36","#4b4b5c","#15151c"],
+  straw=["#efcb55","#ffe68e","#c19a2b"],red=["#dd3a2c","#ff6c58","#a42318"],
+  blue=["#3b64c4","#5f8be6","#26418a"],sand=["#8b5a2b","#b07a45","#5d3a18"];
+  rr(g,8,28,3,4,skin);rr(g,13,28,3,4,skin);rr(g,7,32,5,2,sand);rr(g,12,32,5,2,sand);
+  rr(g,7,24,10,4,blue);
+  rr(g,4,16+d+p.al,3,7,skin);rr(g,17,16+d+p.ar,3,7,skin);
+  rr(g,7,16+d,3,8,red);rr(g,14,16+d,3,8,red);
+  rc(g,10,16+d,4,7,skin[0]);rc(g,10,16+d,1,7,skin[1]);rc(g,13,16+d,1,7,skin[2]);
+  [[10,18],[13,18],[11,19],[12,19],[10,20],[13,20]].forEach(([x,y])=>px(g,x,y+d,"#a8483a")); // X-Narbe
+  rc(g,7,23+d,10,1,"#f0c548"); // gelbe Schärpe
+  rr(g,6,5+d,12,11,skin);rc(g,5,10+d,1,2,skin[2]);rc(g,18,10+d,1,2,skin[2]);
+  rc(g,6,6+d,1,4,hair[0]);rc(g,17,6+d,1,4,hair[0]);rc(g,7,6+d,10,2,hair[0]);
+  [9,12,15].forEach(x=>px(g,x,8+d,hair[0]));
+  rc(g,9,10+d,1,2,"#14141a");rc(g,14,10+d,1,2,"#14141a");px(g,14,12+d,"#a8483a");px(g,11,12+d,skin[2]);
+  rc(g,9,13+d,6,1,"#5a1a14");rc(g,10,13+d,4,1,"#ffffff");px(g,8,12+d,"#5a1a14");px(g,15,12+d,"#5a1a14"); // breites Grinsen
+  rr(g,8,0+d,10,4,straw);rc(g,8,3+d,10,1,red[0]);px(g,8,3+d,red[2]);rr(g,3,4+d,18,2,straw); // Strohhut
+};
+
+CHARS.zorro=(g,p)=>{const d=p.d,
+  skin=["#dfa56f","#f2c28f","#b57a4a"],hair=["#3fa34e","#6ccf78","#25692f"],
+  shirt=["#f1f1ec","#ffffff","#c4c4be"],hara=["#3b9a44","#63c96a","#246b2b"],
+  pants=["#2a2a32","#464652","#16161c"],boot=["#1d1d22","#3a3a42","#0e0e12"],gold="#f0c040";
+  rr(g,8,28,3,4,pants);rr(g,13,28,3,4,pants);rr(g,7,32,5,2,boot);rr(g,12,32,5,2,boot);
+  rr(g,7,24,10,4,pants);
+  rr(g,4,16+d+p.al,3,4,shirt);rr(g,4,20+d+p.al,3,3,skin);
+  rr(g,17,16+d+p.ar,3,4,shirt);rr(g,17,20+d+p.ar,3,3,skin);
+  rr(g,7,16+d,10,6,shirt);rc(g,11,16+d,2,3,skin[0]);rc(g,12,19+d,1,2,shirt[2]);
+  rr(g,7,22+d,10,2,hara); // grüner Haramaki
+  rc(g,6,22,2,2,"#e8e8e0");rc(g,5,24,4,1,gold); // Schwertgriff + Parierstange
+  ln(g,6,25,3,31,"#f4f4ee");ln(g,7,25,4,31,"#2a2a30");ln(g,8,25,5,31,"#2e7a38"); // drei Schwerter
+  rr(g,6,5+d,12,11,skin);rc(g,5,10+d,1,2,skin[2]);rc(g,18,10+d,1,2,skin[2]);
+  [12,13,14].forEach(y=>px(g,5,y+d,gold)); // drei Ohrringe
+  rr(g,6,3+d,12,5,hair);[8,11,14].forEach(x=>px(g,x,2+d,hair[0]));rc(g,6,8+d,1,2,hair[0]);rc(g,17,8+d,1,2,hair[0]);
+  rc(g,9,10+d,1,2,"#14141a");rc(g,8,9+d,3,1,hair[2]); // offenes Auge + Braue
+  rc(g,14,9+d,1,4,"#b83232");rc(g,15,11+d,2,1,"#14141a"); // Narbe über geschlossenem Auge
+  rc(g,10,13+d,4,1,"#5a2a1a");
+};
+
+CHARS.sanji=(g,p)=>{const d=p.d,
+  skin=["#f5d0ad","#ffe6cb","#d3a37f"],hair=["#f3d34b","#fff08a","#c79f1c"],
+  suit=["#25252d","#43434f","#121217"],shirt=["#f1f1ec","#ffffff","#c4c4be"],
+  pants=["#30303b","#4a4a58","#1b1b22"],shoe=["#17171c","#34343c","#0a0a0d"];
+  rr(g,8,28,3,4,pants);rr(g,13,28,3,4,pants);rr(g,7,32,5,2,shoe);rr(g,12,32,5,2,shoe);
+  rr(g,7,24,10,4,pants);
+  rr(g,4,16+d+p.al,3,6,suit);rr(g,4,22+d+p.al,3,2,skin);
+  rr(g,17,16+d+p.ar,3,6,suit);rr(g,17,22+d+p.ar,3,2,skin);
+  rr(g,7,16+d,10,8,suit);rc(g,10,16+d,4,5,shirt[0]);rc(g,10,16+d,1,5,shirt[1]);rc(g,13,16+d,1,5,shirt[2]);
+  rc(g,11,17+d,2,5,"#1c2440");rc(g,11,17+d,2,1,"#3a4a7a"); // Krawatte
+  rc(g,9,16+d,1,6,suit[1]);rc(g,14,16+d,1,6,suit[1]); // Revers
+  rr(g,6,5+d,12,11,skin);rc(g,5,10+d,1,2,skin[2]);rc(g,18,10+d,1,2,skin[2]);
+  rr(g,6,3+d,12,5,hair);rc(g,10,8+d,8,3,hair[0]);rc(g,10,8+d,8,1,hair[1]);rc(g,10,10+d,8,1,hair[2]); // Haar verdeckt rechtes Auge
+  rc(g,8,10+d,1,2,"#14141a");rc(g,7,9+d,3,1,hair[2]);px(g,7,10+d,hair[2]); // Auge + Ringelbraue
+  rc(g,8,13+d,3,1,"#6a3a2a");rc(g,11,13+d,4,1,"#f4f4f0");px(g,15,13+d,"#f08a30");px(g,16,11+d,"#c9c9d0"); // Zigarette + Rauch
+  rc(g,10,15+d,3,1,hair[2]); // Kinnbart
+};
+
+const CHAR_INFO=[
+ {id:"ruffy",name:"Strohhut Ruffy",tag:"Teufelsfruchtnutzer",move:"Gum-Gum-Pistole"},
+ {id:"zorro",name:"Roronoa Zorro",tag:"Schwertkämpfer",move:"Oni Giri"},
+ {id:"sanji",name:"Schwarzfuß Sanji",tag:"Kämpfer",move:"Diable Jambe"}
+];
+
+// Leerlauf-Animation (Atmen + gegengleiche Arme), läuft nur, solange die Sammlung offen ist
+let idleOn=false;
+function startIdle(){if(!idleOn){idleOn=true;requestAnimationFrame(idle)}}
+function idle(ts){
+  if(!$("s-collection").classList.contains("on")){idleOn=false;return}
+  const d=Math.sin(ts/1000*3)>0?1:0;
+  document.querySelectorAll("canvas.sprite").forEach(cv=>{
+    const k=cv.dataset.id+d;if(cv._k===k)return;cv._k=k;
+    drawChar(cv,cv.dataset.id,{d:d,al:d,ar:1-d});
+  });
+  requestAnimationFrame(idle);
+}
+
 function renderCollection(){
   const g=$("col-grid");g.innerHTML="";
-  PIRATES.forEach(p=>{
+  CHAR_INFO.forEach(p=>{
     const d=document.createElement("div");
-    if(save.unlocked.includes(p.id)){d.className="card";d.innerHTML='<h3></h3><div class="dim"></div><div class="move"></div>';
-      d.querySelector("h3").textContent=p.name;d.querySelector(".dim").textContent=p.tag;d.querySelector(".move").textContent=p.move}
-    else{d.className="card lock";d.innerHTML="<h3>???</h3>Noch nicht rekrutiert"}
+    if(save.unlocked.includes(p.id)){
+      d.className="card char";
+      d.innerHTML='<canvas class="sprite" data-id="'+p.id+'"></canvas><h3></h3><div class="dim"></div><div class="move"></div>';
+      d.querySelector("h3").textContent=p.name;d.querySelector(".dim").textContent=p.tag;d.querySelector(".move").textContent=p.move;
+    }else{d.className="card lock";d.innerHTML="<h3>???</h3>Noch nicht rekrutiert"}
     g.appendChild(d);
   });
   for(let i=0;i<3;i++){const d=document.createElement("div");d.className="card lock";d.innerHTML="<h3>???</h3>Noch nicht rekrutiert";g.appendChild(d)}
