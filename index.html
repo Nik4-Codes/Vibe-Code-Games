@@ -4,549 +4,288 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>OP-Rogue</title>
-<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pirata+One&display=swap)" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Pirata+One&display=swap" rel="stylesheet">
 <style>
-:root{--panel:#12304f;--ink:#f4ecd8;--dim:#9fb4c8;--gold:#f2b632;--red:#d9472b;--ok:#5fd18a;--line:#050d18;
-  --px:"Press Start 2P",ui-monospace,Menlo,monospace}
+:root{color-scheme:dark;--panel:rgba(32,18,8,.9);--ink:#f7ecd2;--dim:#c9b48a;--gold:#f2b632;--red:#d9472b;--ok:#7be0a0;--line:#1a0f08;
+--font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--font-title:"Pirata One",Georgia,serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:#0b1d33;color:var(--ink);font-family:var(--px);font-size:12px;line-height:1.7;
-  display:flex;justify-content:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
-#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;image-rendering:auto}
-main{position:relative;z-index:1;width:100%;max-width:640px;padding-top:24px}
-h1{font-family:"Pirata One",var(--px);font-weight:400;font-size:64px;letter-spacing:3px;color:var(--gold);
-  text-shadow:4px 4px 0 var(--line);margin:0 0 8px;text-align:center;line-height:1.1}
-h2{font-size:13px;color:var(--gold);margin:0 0 14px}
-.sub{color:var(--dim);text-align:center;font-size:10px;margin-bottom:24px}
-.box{background:rgba(18,48,79,.93);border:4px solid var(--ink);box-shadow:0 0 0 4px var(--line),6px 6px 0 4px var(--line);padding:20px;margin-bottom:20px}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:#0b4a73;color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.5}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+main{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 16px}
+.wrap{width:100%;max-width:520px}
+h1{font-family:var(--font-title);font-weight:400;font-size:clamp(56px,14vw,96px);letter-spacing:3px;color:var(--gold);text-align:center;margin:0 0 4px;line-height:1;
+ text-shadow:0 4px 0 var(--line),3px 0 0 var(--line),-3px 0 0 var(--line),0 -3px 0 var(--line),0 8px 18px rgba(0,0,0,.5)}
+.sub{text-align:center;color:#fff;font-size:17px;margin-bottom:18px;text-shadow:0 2px 0 var(--line),0 0 10px rgba(0,0,0,.6)}
+.box{background:var(--panel);border:4px solid var(--gold);border-radius:6px;box-shadow:0 0 0 4px var(--line),0 10px 28px rgba(0,0,0,.5);padding:22px}
 .screen{display:none}.screen.on{display:block}
-.typed{min-height:3.4em;font-size:13px}
-/* Pixelschrift ausdrücklich für Eingabe + Platzhalter + Buttons */
-input{width:100%;font-family:var(--px);font-size:13px;padding:12px;background:var(--line);color:var(--ink);border:3px solid var(--dim);outline:none;margin:12px 0}
-input::placeholder{font-family:var(--px);color:#5b6b7a}
-input:focus{border-color:var(--gold)}
-input[type=range]{padding:0;margin:0;accent-color:var(--gold)}
-button{font-family:var(--px);font-size:12px;color:var(--line);background:var(--gold);border:0;padding:12px 16px;cursor:pointer;box-shadow:0 4px 0 #9a6f0a}
-button:active{transform:translateY(3px);box-shadow:0 1px 0 #9a6f0a}
-button:disabled{background:#5b6b7a;box-shadow:none;cursor:not-allowed}
-button.ghost{background:transparent;color:var(--dim);box-shadow:none;border:2px solid var(--dim)}
-button.danger{background:var(--red);color:#fff;box-shadow:0 4px 0 #7a2414}
-.msg{min-height:2.6em;font-size:10px;margin-top:4px}.err{color:var(--red)}.ok{color:var(--ok)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:16px 0}
-.card{background:var(--line);border:3px solid var(--dim);padding:14px;cursor:pointer;text-align:left;color:var(--ink);box-shadow:none;font-size:10px;line-height:1.8}
-.card.sel{border-color:var(--gold);background:#1a2f10}
-.card.lock{opacity:.45;cursor:default}
-.card.enemy{border-color:var(--red);cursor:default}
-.card h3{font-size:11px;margin:0 0 8px;color:var(--gold);line-height:1.5}
-.tag{display:inline-block;background:var(--red);color:#fff;padding:2px 6px;margin-bottom:8px;font-size:9px}
-.move{color:var(--ok)}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.center{text-align:center}
-.crew{color:var(--gold)}
-.berry{color:var(--gold);font-size:14px;margin:10px 0}
+h2{font-weight:600;font-size:26px;margin:0 0 12px;color:var(--gold)}
+.big{font-size:24px;font-weight:600;text-align:center;margin:6px 0 16px}
+input[type=text]{width:100%;font-family:var(--font);font-size:18px;padding:10px 12px;background:var(--line);color:var(--ink);border:3px solid var(--dim);border-radius:4px;outline:none;margin:10px 0}
+input[type=text]:focus{border-color:var(--gold)}
+button{font-family:var(--font);font-size:18px;font-weight:600;color:var(--line);background:linear-gradient(#ffd45e,#e0a21d);border:3px solid var(--line);border-radius:4px;padding:8px 18px;cursor:pointer;box-shadow:0 4px 0 #7a5208}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #7a5208}
+button:disabled{background:#6b6258;box-shadow:none;cursor:not-allowed;color:#2a241d}
+button.ghost{background:transparent;color:var(--dim);border-color:var(--dim);box-shadow:none}
+button.danger{background:linear-gradient(#f0694e,#c0381f);color:#fff;box-shadow:0 4px 0 #6d1d0d}
 .menu button{display:block;width:100%;margin:12px 0}
-.av-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0;font-size:10px}
-.av-row button{padding:6px 10px}
-.sw{display:inline-block;width:14px;height:14px;border:2px solid var(--ink);vertical-align:middle}
-.hp{height:10px;background:var(--line);border:2px solid var(--dim);margin:6px 0}.hp div{height:100%;background:var(--ok)}
-.card button{font-size:9px;padding:8px;margin-top:6px;width:100%}
-#log{background:var(--line);padding:8px;height:120px;overflow:auto;font-size:9px;margin:12px 0}
-#hud{position:fixed;top:8px;left:8px;z-index:2;display:none;align-items:center;gap:8px;background:var(--panel);
-  border:3px solid var(--ink);padding:4px 10px 4px 4px;font-size:9px;line-height:1.6}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}
+.msg{min-height:1.6em;font-size:15px}.err{color:#ff8a72}.ok{color:var(--ok)}
+.set{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0}
+input[type=range]{accent-color:var(--gold);width:160px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:12px 0}
+.card{background:var(--line);border:3px solid var(--dim);border-radius:4px;padding:10px;font-size:15px;line-height:1.35}
+.card h3{font-weight:600;font-size:18px;margin:0 0 4px;color:var(--gold)}
+.card.lock{opacity:.5}.move{color:var(--ok)}
+.dim{color:var(--dim);font-size:15px}
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas>
-<div id="hud"></div>
-<main>
+<main><div class="wrap">
 <h1>OP-Rogue</h1>
-<div class="sub">Ein One-Piece-Roguelike</div>
+<div class="sub">Ein Piraten-Roguelike</div>
 
 <section id="s-welcome" class="screen on box">
-  <div class="typed" id="welcome"></div>
-  <div class="row"><button id="btn-start" style="display:none">Weiter ▶</button></div>
+  <div class="big">Willkommen auf der Grandline!</div>
+  <div class="row"><button id="btn-start">Weiter ▶</button></div>
 </section>
 
-<!-- ==== SCHRITT 1: NAME ==== -->
 <section id="s-name" class="screen box">
   <div>Wie lautet dein Name, Pirat?</div>
-  <input id="name" maxlength="16" placeholder="Piratenname" autocomplete="off" spellcheck="false">
-  <div class="sub" style="text-align:left;margin:0">3–16 Zeichen: Buchstaben, Zahlen, _ und -</div>
+  <input type="text" id="name" maxlength="16" placeholder="Dein Piratenname" autocomplete="off" spellcheck="false">
+  <div class="dim">3–16 Zeichen: Buchstaben, Zahlen, _ und -</div>
   <div class="msg" id="name-msg"></div>
-  <div class="row"><button onclick="confirmName()">Weiter ▶</button></div>
+  <div class="row"><button id="btn-name">Bestätigen</button></div>
 </section>
 
-<!-- ==== SCHRITT 2: AVATAR ==== -->
-<section id="s-avatar" class="screen box">
-  <h2 id="av-title"></h2>
-  <div class="center" id="av-preview"></div>
-  <div id="av-rows"></div>
-  <div class="row">
-    <button onclick="saveProfile()">Anheuern ⚓</button>
-    <button class="ghost" onclick="show('s-name')">◀ Name ändern</button>
-  </div>
-</section>
-
-<!-- ==== HAUPTMENÜ ==== -->
-<section id="s-menu" class="screen box center">
-  <div id="menu-av"></div>
-  <div class="crew" id="menu-name"></div>
-  <div class="berry" id="menu-berry"></div>
-  <div style="font-size:9px;color:var(--dim)" id="menu-best"></div>
+<section id="s-menu" class="screen box">
+  <div class="big" id="menu-title"></div>
   <div class="menu">
-    <button onclick="openTeam()">⚔ Spiel starten</button>
-    <button onclick="openCollection()">📖 Sammlung</button>
-    <button onclick="openSettings()">⚙ Einstellungen</button>
+    <button data-go="new">⚔ Neues Spiel</button>
+    <button data-go="load">📜 Spiel laden</button>
+    <button data-go="settings">⚙ Einstellungen</button>
+    <button data-go="collection">📖 Sammlung</button>
   </div>
+</section>
+
+<section id="s-new" class="screen box">
+  <h2>Neues Spiel</h2>
+  <p>Hier entsteht die Teamwahl und der Start deines ersten Runs.</p>
+  <button class="ghost" data-go="menu">◀ Zurück</button>
+</section>
+
+<section id="s-load" class="screen box">
+  <h2>Spiel laden</h2>
+  <p id="load-text"></p>
+  <button class="ghost" data-go="menu">◀ Zurück</button>
 </section>
 
 <section id="s-settings" class="screen box">
   <h2>Einstellungen</h2>
-  <div class="av-row"><span>Meer-Animation</span><button id="btn-anim" onclick="toggleAnim()"></button></div>
-  <div class="av-row"><span>Wellen-Tempo</span>
-    <input type="range" id="speed" min="0.2" max="3" step="0.1" style="width:140px"
-      oninput="save.settings.speed=+this.value;persist()"></div>
+  <div class="set"><span>Lautstärke</span><input type="range" id="vol" min="0" max="10" step="1"></div>
   <div class="menu">
-    <button onclick="openLogin()">Name & Avatar ändern</button>
-    <button class="danger" onclick="resetSave()">Spielstand löschen</button>
-    <button class="ghost" onclick="openMenu()">◀ Zurück</button>
+    <button id="btn-rename">Namen ändern</button>
+    <button id="btn-reset" class="danger">Spielstand löschen</button>
+    <button class="ghost" data-go="menu">◀ Zurück</button>
   </div>
 </section>
 
 <section id="s-collection" class="screen box">
-  <h2 id="col-title"></h2>
-  <div class="grid" id="col-crew"></div>
-  <h2 id="col-boss-title"></h2>
-  <div class="grid" id="col-boss"></div>
-  <button class="ghost" onclick="openMenu()">◀ Zurück</button>
+  <h2>Sammlung</h2>
+  <div class="grid" id="col-grid"></div>
+  <button class="ghost" data-go="menu">◀ Zurück</button>
 </section>
-
-<!-- ==== TEAMWAHL (zeigt alle freigeschalteten Piraten) ==== -->
-<section id="s-team" class="screen box">
-  <div class="msg ok" style="font-size:11px" id="crew-title"></div>
-  <div>Stelle dein Team für diese Runde zusammen:</div>
-  <div class="grid" id="starters"></div>
-  <div class="msg" id="team-msg"></div>
-  <div class="row">
-    <button id="btn-go" disabled onclick="startRun()">Segel setzen ⚓</button>
-    <button class="ghost" onclick="openMenu()">◀ Menü</button>
-  </div>
-</section>
-
-<section id="s-battle" class="screen box">
-  <div class="grid" id="enemy"></div>
-  <div class="grid" id="party"></div>
-  <div id="log"></div>
-  <button class="ghost" onclick="endRun(true)">Run aufgeben</button>
-</section>
-
-<section id="s-reward" class="screen box">
-  <h2 id="reward-title"></h2>
-  <div class="berry" id="reward-loot"></div>
-  <div>Wähle eine Belohnung:</div>
-  <div class="menu" id="reward-opts"></div>
-</section>
-
-<section id="s-end" class="screen box center">
-  <h2 id="end-title"></h2>
-  <div id="end-text"></div>
-  <div class="berry" id="end-berry"></div>
-  <div class="msg ok" id="end-new"></div>
-  <div class="menu">
-    <button onclick="openTeam()">Neuer Run</button>
-    <button class="ghost" onclick="openMenu()">Hauptmenü</button>
-  </div>
-</section>
-</main>
+</div></main>
 
 <script>
-// ==== DATEN ====
-// starter:true = von Anfang an verfügbar. Alle anderen werden durch Rekrutieren freigeschaltet.
+/* ===== Hintergrund: statisches Bild (Anime-/Comic-Look, kein Animationsloop) ===== */
+const cv=document.getElementById("bg"),cx=cv.getContext("2d");
+const OUT="#1a0f08";
+function rng(seed){return()=>(seed=(seed*16807)%2147483647)/2147483647}
+
+function cloud(x,y,s){
+  const pf=[[0,0,1],[.95,.12,.8],[1.8,.05,.62],[-.9,.15,.72],[-1.6,.2,.55],[.35,-.5,.7],[1.2,-.38,.5]];
+  cx.fillStyle=OUT;
+  pf.forEach(([dx,dy,r])=>{cx.beginPath();cx.arc(x+dx*s,y+dy*s,r*s+3,0,7);cx.fill()});
+  cx.fillStyle="#fff";
+  pf.forEach(([dx,dy,r])=>{cx.beginPath();cx.arc(x+dx*s,y+dy*s,r*s,0,7);cx.fill()});
+  cx.fillStyle="#bfe3f7"; // Cel-Schatten unten
+  pf.forEach(([dx,dy,r])=>{cx.beginPath();cx.arc(x+dx*s,y+dy*s+r*s*.45,r*s*.62,0,Math.PI);cx.fill()});
+}
+
+function drawScene(){
+  const dpr=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
+  cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
+  const hz=H*.40,m=Math.min(W,H);
+
+  // Himmel
+  let g=cx.createLinearGradient(0,0,0,hz);
+  g.addColorStop(0,"#1f7fd0");g.addColorStop(.6,"#5fc4ee");g.addColorStop(1,"#d3f3ff");
+  cx.fillStyle=g;cx.fillRect(0,0,W,hz+2);
+  // Sonne mit Schein
+  const sx=W*.74,sy=hz*.5;
+  g=cx.createRadialGradient(sx,sy,2,sx,sy,m*.3);
+  g.addColorStop(0,"rgba(255,248,200,.9)");g.addColorStop(1,"rgba(255,248,200,0)");
+  cx.fillStyle=g;cx.beginPath();cx.arc(sx,sy,m*.3,0,7);cx.fill();
+  cx.fillStyle=OUT;cx.beginPath();cx.arc(sx,sy,m*.058,0,7);cx.fill();
+  cx.fillStyle="#fff6c8";cx.beginPath();cx.arc(sx,sy,m*.052,0,7);cx.fill();
+  // Wolken
+  cloud(W*.16,hz*.34,m*.05);cloud(W*.52,hz*.2,m*.038);cloud(W*.9,hz*.62,m*.034);cloud(W*.34,hz*.74,m*.026);
+
+  // Meer
+  g=cx.createLinearGradient(0,hz,0,H);
+  g.addColorStop(0,"#36b6dc");g.addColorStop(.35,"#1c8cc2");g.addColorStop(1,"#0a4f82");
+  cx.fillStyle=g;cx.fillRect(0,hz,W,H-hz);
+  cx.fillStyle="rgba(255,255,255,.55)";cx.fillRect(0,hz,W,2); // Horizontlinie
+  // Wellenstriche (perspektivisch größer nach vorn)
+  const r=rng(42);cx.lineCap="round";
+  for(let k=1;k<=26;k++){
+    const t=Math.pow(k/26,1.9),y=hz+(H-hz)*t*.82+4,len=6+t*70,lw=1+t*4;
+    for(let i=0;i<Math.ceil(W/(40+t*160));i++){
+      const x=r()*W;
+      cx.strokeStyle=`rgba(255,255,255,${.25+t*.35})`;cx.lineWidth=lw;
+      cx.beginPath();cx.moveTo(x,y);cx.quadraticCurveTo(x+len/2,y-len*.2,x+len,y);cx.stroke();
+    }
+  }
+
+  // ===== Holzdeck: Blick über den spitzen Bug =====
+  const tipX=W/2,tipY=H*.52,tw=W*.012,span=W*.64,N=8;
+  const yAt=t=>tipY+(H-tipY)*t, hwAt=t=>tw+(span-tw)*t;
+  const xp=(i,t)=>tipX+(i/N)*hwAt(t);
+  // Plankenflächen
+  const tones=["#cf9a58","#c18a49","#d6a362"];
+  for(let i=-N;i<N;i++){
+    g=cx.createLinearGradient(0,tipY,0,H);
+    g.addColorStop(0,tones[(i+N)%3]);g.addColorStop(1,"#8c5a2a");
+    cx.fillStyle=g;cx.beginPath();
+    cx.moveTo(xp(i,0),tipY);cx.lineTo(xp(i+1,0),tipY);cx.lineTo(xp(i+1,1),H);cx.lineTo(xp(i,1),H);cx.closePath();cx.fill();
+  }
+  // Längsfugen + versetzte Querfugen
+  cx.strokeStyle="rgba(40,20,6,.75)";
+  for(let i=-N;i<=N;i++){cx.lineWidth=2;cx.beginPath();cx.moveTo(xp(i,0),tipY);cx.lineTo(xp(i,1),H);cx.stroke()}
+  for(let k=1;k<=16;k++){
+    const t=Math.pow(k/16,1.7),y=yAt(t);cx.lineWidth=1+t*2.5;
+    for(let i=-N;i<N;i++){
+      if((k+i+N)%2)continue;
+      cx.beginPath();cx.moveTo(xp(i,t),y);cx.lineTo(xp(i+1,t),y);cx.stroke();
+    }
+  }
+  // Holzmaserung & Nägel
+  const r2=rng(7);cx.fillStyle="rgba(60,30,8,.45)";
+  for(let n=0;n<160;n++){const t=Math.pow(r2(),1.3),y=yAt(t),i=Math.floor(r2()*2*N)-N,
+    x=xp(i,t)+(xp(i+1,t)-xp(i,t))*(.2+r2()*.4);cx.fillRect(x,y,(xp(i+1,t)-xp(i,t))*.25,1+t*1.5)}
+  // Deck-Umriss
+  cx.strokeStyle=OUT;cx.lineWidth=4;cx.lineJoin="round";
+  cx.beginPath();cx.moveTo(tipX-tw,tipY);cx.lineTo(tipX+tw,tipY);cx.lineTo(tipX+span,H);cx.lineTo(tipX-span,H);cx.closePath();cx.stroke();
+
+  // Reling links und rechts
+  const railH=t=>H*.018+t*H*.11, capH=t=>2+t*H*.025;
+  [-1,1].forEach(s=>{
+    const ex=t=>tipX+s*hwAt(t), steps=40;
+    // Innenwand
+    g=cx.createLinearGradient(0,tipY,0,H);g.addColorStop(0,"#8a5a2b");g.addColorStop(1,"#5b3416");
+    cx.fillStyle=g;cx.beginPath();cx.moveTo(ex(0),yAt(0));
+    for(let j=0;j<=steps;j++){const t=j/steps;cx.lineTo(ex(t),yAt(t))}
+    for(let j=steps;j>=0;j--){const t=j/steps;cx.lineTo(ex(t),yAt(t)-railH(t))}
+    cx.closePath();cx.fill();cx.strokeStyle=OUT;cx.lineWidth=3;cx.stroke();
+    // Handlauf
+    cx.fillStyle="#c8914c";cx.beginPath();cx.moveTo(ex(0),yAt(0)-railH(0));
+    for(let j=0;j<=steps;j++){const t=j/steps;cx.lineTo(ex(t),yAt(t)-railH(t))}
+    for(let j=steps;j>=0;j--){const t=j/steps;cx.lineTo(ex(t),yAt(t)-railH(t)-capH(t))}
+    cx.closePath();cx.fill();cx.stroke();
+    // Pfosten + Tau
+    const ts=[.1,.22,.37,.55,.78],pts=[];
+    ts.forEach(t=>{
+      const x=ex(t),y=yAt(t)-railH(t),ph=H*.035+t*H*.17,pw=3+t*12;
+      cx.fillStyle="#6e4421";cx.fillRect(x-pw/2,y-ph,pw,ph);cx.strokeStyle=OUT;cx.lineWidth=2;cx.strokeRect(x-pw/2,y-ph,pw,ph);
+      cx.fillStyle="#e3b46c";cx.beginPath();cx.arc(x,y-ph,pw*.65,0,7);cx.fill();cx.stroke();
+      pts.push([x,y-ph*.82]);
+    });
+    pts.unshift([ex(0),yAt(0)-H*.03]);
+    cx.strokeStyle="#e8cf98";cx.lineWidth=3;cx.beginPath();cx.moveTo(...pts[0]);
+    for(let j=1;j<pts.length;j++){const [a,b]=pts[j-1],[c,d]=pts[j];cx.quadraticCurveTo((a+c)/2,Math.max(b,d)+8+j*2,c,d)}
+    cx.stroke();
+  });
+
+  // Bugspriet: ragt vorn über den Bug aufs Meer hinaus
+  const bx=tipX,by=tipY-H*.012,ey=hz-H*.07;
+  cx.fillStyle="#7a4b23";cx.beginPath();cx.moveTo(bx-tw*1.8,by);cx.lineTo(bx+tw*1.8,by);cx.lineTo(bx+2,ey);cx.lineTo(bx-2,ey);cx.closePath();cx.fill();
+  cx.strokeStyle=OUT;cx.lineWidth=2.5;cx.stroke();
+  cx.fillStyle="#e3b46c";cx.beginPath();cx.arc(bx,by,tw*2.2,0,7);cx.fill();cx.stroke(); // Bugkappe
+  // Vorstag-Taue
+  cx.strokeStyle="rgba(232,207,152,.9)";cx.lineWidth=2;
+  [[-1],[1]].forEach(([s])=>{cx.beginPath();cx.moveTo(bx,ey);cx.lineTo(tipX+s*hwAt(.1),yAt(.1)-railH(.1)-H*.06);cx.stroke()});
+
+  // Vignette
+  g=cx.createRadialGradient(W/2,H*.55,m*.45,W/2,H*.55,Math.max(W,H)*.85);
+  g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(8,20,40,.5)");
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+}
+addEventListener("resize",drawScene);drawScene();
+
+/* ===== Daten & Speicherstand ===== */
 const PIRATES=[
- {id:"ruffy",name:"Strohhut Ruffy",tag:"Teufelsfruchtnutzer",move:"Gum-Gum-Pistole",hp:60,atk:12,pow:22,starter:true},
- {id:"zorro",name:"Roronoa Zorro",tag:"Schwertkämpfer",move:"Oni Giri",hp:55,atk:15,pow:24,starter:true},
- {id:"sanji",name:"Schwarzfuß Sanji",tag:"Kämpfer",move:"Diable Jambe",hp:50,atk:13,pow:25,starter:true},
- {id:"nami",name:"Diebeskatze Nami",tag:"Navigatorin",move:"Thunderbolt Tempo",hp:40,atk:9,pow:27},
- {id:"lysop",name:"Lysop",tag:"Scharfschütze",move:"Feuerstern",hp:40,atk:10,pow:25},
- {id:"chopper",name:"Tony Chopper",tag:"Arzt",move:"Monster Point",hp:55,atk:11,pow:23},
- {id:"franky",name:"Franky",tag:"Cyborg",move:"Radical Beam",hp:70,atk:12,pow:26}
+ {id:"ruffy",name:"Strohhut Ruffy",tag:"Teufelsfruchtnutzer",move:"Gum-Gum-Pistole"},
+ {id:"zorro",name:"Roronoa Zorro",tag:"Schwertkämpfer",move:"Oni Giri"},
+ {id:"sanji",name:"Schwarzfuß Sanji",tag:"Kämpfer",move:"Diable Jambe"}
 ];
-const ENEMIES=["Marine-Soldat","Kopfgeldjäger","Seekönig","Rivalen-Pirat","Marine-Kapitän"];
-const BOSSES=["Buggy der Clown","Arlong","Crocodile"];
-const MAX_TEAM=3, MAX_CREW=4;
-
 const $=id=>document.getElementById(id);
-const fmt=n=>n.toLocaleString("de");
-const rnd=a=>a[Math.floor(Math.random()*a.length)];
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
-  $("hud").style.display=(id==="s-battle"||id==="s-reward")?"flex":"none"}
+let save={name:null,run:null,unlocked:PIRATES.map(p=>p.id),vol:5},db=null,uid=null;
+try{Object.assign(save,JSON.parse(localStorage.getItem("oprg_save")||"{}"))}catch(e){}
+const persist=()=>{try{localStorage.setItem("oprg_save",JSON.stringify(save))}catch(e){}};
 
-// ==== SPEICHERSTAND (inkl. Meta-Progression) ====
-const DEFAULT={name:null,avatar:{skin:1,hair:1,hairColor:0,hat:1,outfit:0},berry:0,best:0,
-  unlocked:PIRATES.filter(p=>p.starter).map(p=>p.id),bosses:[],settings:{anim:true,speed:1}};
-let save;
-try{save=Object.assign(structuredClone(DEFAULT),JSON.parse(localStorage.getItem("op_save"))||{})}
-catch(e){save=structuredClone(DEFAULT)}
-if(!save.name&&localStorage.getItem("op_name"))save.name=localStorage.getItem("op_name"); // alter Name übernehmen
-function persist(){try{localStorage.setItem("op_save",JSON.stringify(save))}catch(e){}}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id))}
+function openMenu(){$("menu-title").textContent="Leg los, "+save.name;show("s-menu")}
+function openName(){$("name").value=save.name||"";$("name-msg").textContent="";show("s-name");$("name").focus()}
 
-// ==== WILLKOMMEN ====
-function typeText(el,text,done){let i=0;el.textContent="";
-  const t=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(t);done&&done()}},45)}
-$("btn-start").onclick=()=>save.name?openMenu():openLogin();
-
-// ==== AVATAR (32x48 Raster, geglättet) ====
-const AV={skin:["#ffdbac","#f1c27d","#e0ac69","#c68642","#8d5524"],
-  hair:["Kurz","Stachelig","Lang","Glatze"],
-  hairColor:["#1b1b1b","#6b3e1e","#e6c35c","#d9541e","#3a7bd5","#2e9e5b","#ffffff"],
-  hat:["Keiner","Strohhut","Kopftuch","Weißer Hut","Piratenhut","Orangener Hut"],
-  outfit:["#c0392b","#2c3e50","#27ae60","#8e44ad","#f39c12","#ecf0f1"]};
-const LABELS={skin:"Haut",hair:"Frisur",hairColor:"Haarfarbe",hat:"Hut",outfit:"Kleidung"};
-let draft,tmpName;
-
-// Jede Ebene: y = Startzeile, r = Pixelzeilen (32 Zeichen, "." = durchsichtig)
-const BASE={y:12,r:[
- "..........SSSSSSSSSSSS..........",".........SSSSSSSSSSSSSS.........",
- ".........SSSSSSSSSSSSSS.........",".........SSSSSSSSSSSSSS.........",
- ".........SSSWEESSSSWEESSS.......",".........SSSWEESSSSWEESSS.......",
- ".........SSSSSSSSSSSSSS.........",".........SSSSSmmmmSSSSS.........",
- ".........SSSSSSSSSSSSSS.........","..........SSSSSSSSSSSS..........",
- "...........SSSSSSSSSS...........","............SSSSSSSS............",
- "......OOOOOOOOOOOOOOOOOOOO......",".....SOOOOOOOOOOOOOOOOOOOS......",
- ".....SOOOOOOOOOOOOOOOOOOOS......",".....SOOOOOOOOOOOOOOOOOOOS......",
- ".....SOOOOOOOOOOOOOOOOOOOS......",".....SOOOOOOOOOOOOOOOOOOOS......",
- ".....S.OOOOOOOOOOOOOOOO.S.......",".....S.OOOOOOOOOOOOOOOO.S.......",
- ".......PPPPPPPPPPPPPPPP.........",".......PPPPPPPPPPPPPPPP.........",
- ".......PPPP......PPPP...........",".......PPPP......PPPP...........",
- ".......PPPP......PPPP...........",".......PPPP......PPPP...........",
- ".......BBBB......BBBB...........",".......BBBB......BBBB...........",
- "......BBBBBB....BBBBBB..........","......BBBBBB....BBBBBB.........."]};
-const HAIRS=[
- {y:10,r:["..........HHHHHHHHHHHH..........",".........HHHHHHHHHHHHHH.........",
-          ".........HHHHHHHHHHHHHH.........",".........H............H.........",
-          ".........H............H........."]},
- {y:6,r:["............H.....H.............","...........HH....HHH............",
-         "..........HHH...HHHHH...........",".........HHHHHHHHHHHHHH.........",
-         "........HHHHHHHHHHHHHHHH........","........HHHHHHHHHHHHHHHH........",
-         "........HH..............H.......","........H................H......"]},
- {y:10,r:["..........HHHHHHHHHHHH..........",".........HHHHHHHHHHHHHH.........",
-          "........HHHHHHHHHHHHHHHH........","........HH............HH........",
-          "........HH............HH........","........HH............HH........",
-          "........HH............HH........","........HH............HH........",
-          "........HH............HH........","........HH............HH........",
-          "........HH............HH........","........HH............HH........"]},
- {y:0,r:[]}
-];
-const HATS=[
- {y:0,r:[]},
- {y:6,r:["..........YYYYYYYYYY............",".........YYYYYYYYYYYY...........",
-         ".........RRRRRRRRRRRR...........",".yYYYYYYYYYYYYYYYYYYYYYYYYYy....",
-         "..yyyyyyyyyyyyyyyyyyyyyyyyyy....","...yyyyyyyyyyyyyyyyyyyyyyyy....."]},
- {y:10,r:["..........KKKKKKKKKKKK..........",".........KKKKKKKKKKKKKK.........",
-          ".........KKkKKKKKKkKKKK..KK.....","..................KKKKKKkKKK....",
-          "....................KKKKKKKK...."]},
- {y:4,r:["..........FFFFFFFFFFFF..........",".........FFDFFFFFFDFFF..........",
-         "........FFFFFDFFFFFDFFFF........","........FDFFFFFFFFFFFDFF........",
-         "........ffffffffffffffff........","........f..............f........",
-         "........f..............f........","........f..............f........",
-         "........f..............f........"]},
- {y:2,r:["...........NNNNNNNN............","..........NNNNNNNNNN...........",
-          "........NNNNNNXXNNNNNN.........", ".......NNNNNNNXXNNNNNNN........",
-          "......NNNNNNNNNNNNNNNNNN.......",".....NNNNNNNNNNNNNNNNNNNN......",
-          "GGGGGGGGGGGGGGGGGGGGGGGGGGGG....",".G........................G....."]},
- {y:4,r:["..........AAAAAAAAAA............",".........AAAAAAAAAAAA...........",
-          "........ACAAAAAAAAAACA..........","........aaaaaaaaaaaaaaaa........",
-          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","A.aaaaaaaaaaaaaaaaaaaaaaaaaaaa.A",
-          "........R............R.........."]}
-];
-
-function avatarSVG(d,size=100){
-  const pal={S:AV.skin[d.skin],E:"#1b1b1b",W:"#ffffff",m:"#7a3b2e",O:AV.outfit[d.outfit],
-    P:"#2b3a55",B:"#3b2416",H:AV.hairColor[d.hairColor],
-    Y:"#e8c547",y:"#b8942a",R:"#c0392b",
-    K:"#2d6b3a",k:"#1e4a28",
-    F:"#f4f4f4",f:"#c9c9c9",D:"#5a3b2a",
-    N:"#1b1b1b",G:"#f2b632",X:"#eeeeee",
-    A:"#e8742a",a:"#b5521a",C:"#2a6fd1"};
-  const W=32,H=48;
-  const grid=Array.from({length:H},()=>Array(W).fill(null));
-  [BASE,HAIRS[d.hair]||HAIRS[0],HATS[d.hat]||HATS[0]].forEach(l=>l.r.forEach((row,i)=>{
-    for(let x=0;x<W;x++){const c=row[x];if(c&&c!==".")grid[l.y+i][x]=pal[c]}}));
-  let px="";
-  grid.forEach((row,y)=>row.forEach((c,x)=>{
-    if(c)px+=`<rect x="${x}" y="${y}" width="1.04" height="1.04" fill="${c}"/>`}));
-  return `<svg width="${size}" height="${size}" viewBox="-1 -1 34 50"
-    shape-rendering="geometricPrecision">
-    <rect x="-1" y="-1" width="34" height="50" fill="#050d18" stroke="#f2b632" stroke-width="1"/>${px}</svg>`;
+/* ===== Anmeldung ===== */
+$("btn-start").onclick=()=>save.name?openMenu():openName();
+async function claim(){
+  const raw=$("name").value.trim(),msg=$("name-msg");msg.className="msg";
+  if(!/^[A-Za-z0-9_-]{3,16}$/.test(raw)){msg.classList.add("err");msg.textContent="Ungültiger Name. Nutze 3–16 Zeichen: Buchstaben, Zahlen, _ oder -.";return}
+  $("btn-name").disabled=true;msg.textContent="Prüfe Verfügbarkeit …";
+  try{
+    // Die Datenbank gibt es nur auf der veröffentlichten Claude-Seite.
+    // Als eigene Datei läuft die Anmeldung rein lokal (ohne Verfügbarkeitsprüfung).
+    if(!db&&typeof claude!=="undefined")db=await claude.use("db");
+    try{if(typeof claude!=="undefined"){const u=await claude.use("user");uid=u?await u.id():null}}catch(e){}
+    if(db){
+      const ref=db.doc("usernames/"+raw.toLowerCase()),snap=await ref.get();
+      if(snap.exists&&snap.data().uid!==uid){msg.className="msg err";msg.textContent="Dieser Name ist leider schon vergeben. Bitte wähle einen anderen!";$("btn-name").disabled=false;$("name").select();return}
+      await ref.set({name:raw,uid:uid||null,created:Date.now()});
+    }
+  }catch(e){msg.className="msg err";msg.textContent="Speichern in der Datenbank nicht möglich (fehlende Schreibrechte?).";$("btn-name").disabled=false;return}
+  save.name=raw;persist();$("btn-name").disabled=false;openMenu();
 }
-function optLabel(k){const v=AV[k][draft[k]];return v.startsWith("#")?`<span class="sw" style="background:${v}"></span>`:v}
-function renderEditor(){
-  $("av-preview").innerHTML=avatarSVG(draft,150);
-  $("av-rows").innerHTML=Object.keys(LABELS).map(k=>`<div class="av-row">
-    <button onclick="cyc('${k}',-1)">◀</button><span>${LABELS[k]}: ${optLabel(k)}</span>
-    <button onclick="cyc('${k}',1)">▶</button></div>`).join("");
-}
-function cyc(k,d){draft[k]=(draft[k]+d+AV[k].length)%AV[k].length;renderEditor()}
+$("btn-name").onclick=claim;
+$("name").addEventListener("keydown",e=>{if(e.key==="Enter")claim()});
 
-// ==== ANMELDUNG: erst Name, dann Avatar ====
-function openLogin(){
-  draft={...save.avatar};
-  $("name").value=save.name||"";$("name-msg").textContent="";
-  show("s-name");$("name").focus();
+/* ===== Navigation ===== */
+function go(t){
+  if(t==="menu")return openMenu();
+  if(t==="load"){$("load-text").textContent=save.run?"Gespeicherter Run gefunden.":"Noch kein Spielstand vorhanden.";}
+  if(t==="settings")$("vol").value=save.vol;
+  if(t==="collection")renderCollection();
+  show("s-"+t);
 }
-function confirmName(){
-  const raw=$("name").value.trim(),msg=$("name-msg");
-  if(!/^[A-Za-z0-9_-]{3,16}$/.test(raw)){msg.className="msg err";
-    msg.textContent="Ungültiger Name. Nutze 3–16 Zeichen: Buchstaben, Zahlen, _ oder -.";return}
-  tmpName=raw;
-  $("av-title").textContent="Erstelle den Avatar von "+raw;
-  renderEditor();show("s-avatar");
-}
-function saveProfile(){save.name=tmpName;save.avatar={...draft};persist();openMenu()}
-$("name").addEventListener("keydown",e=>{if(e.key==="Enter")confirmName()});
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+$("vol").oninput=e=>{save.vol=+e.target.value;persist()};
+$("btn-rename").onclick=openName;
+$("btn-reset").onclick=()=>{if(confirm("Wirklich alles löschen?")){try{localStorage.removeItem("oprg_save")}catch(e){}location.reload()}};
 
-// ==== MENÜ / EINSTELLUNGEN / SAMMLUNG ====
-function openMenu(){
-  $("menu-av").innerHTML=avatarSVG(save.avatar,110);
-  $("menu-name").textContent="Kapitän "+save.name;
-  $("menu-berry").textContent="💰 "+fmt(save.berry)+" Berry";
-  $("menu-best").textContent="Höchstes Kopfgeld: "+fmt(save.best);
-  show("s-menu");
-}
-function openSettings(){$("btn-anim").textContent=save.settings.anim?"AN":"AUS";$("speed").value=save.settings.speed;show("s-settings")}
-function toggleAnim(){save.settings.anim=!save.settings.anim;persist();if(save.settings.anim)requestAnimationFrame(loop);openSettings()}
-function resetSave(){if(confirm("Wirklich alles löschen?")){localStorage.removeItem("op_save");localStorage.removeItem("op_name");location.reload()}}
-function pirateCard(p,extra=""){return `<span class="tag">${p.tag}</span><h3>${p.name}</h3>
-  <div>HP ${p.hp} · ATK ${p.atk}</div><div>Fähigkeit:</div><div class="move">${p.move}</div>${extra}`}
-function openCollection(){
-  $("col-title").textContent=`Piraten (${save.unlocked.length}/${PIRATES.length})`;
-  $("col-crew").innerHTML=PIRATES.map(p=>save.unlocked.includes(p.id)
-    ?`<div class="card">${pirateCard(p)}</div>`
-    :`<div class="card lock"><h3>???</h3>Noch nicht rekrutiert</div>`).join("");
-  $("col-boss-title").textContent=`Besiegte Bosse (${save.bosses.length}/${BOSSES.length})`;
-  $("col-boss").innerHTML=BOSSES.map(b=>save.bosses.includes(b)
-    ?`<div class="card enemy"><h3>👑 ${b}</h3></div>`:`<div class="card lock"><h3>👑 ???</h3></div>`).join("");
-  show("s-collection");
-}
-
-// ==== TEAMWAHL (Meta-Progression: alle freigeschalteten Piraten wählbar) ====
-let team=new Set();
-function openTeam(){team=new Set();$("crew-title").textContent="Die „"+save.name+"“-Piratenbande sticht in See!";renderTeam();show("s-team")}
-function renderTeam(){
-  const g=$("starters");g.innerHTML="";
+function renderCollection(){
+  const g=$("col-grid");g.innerHTML="";
   PIRATES.forEach(p=>{
-    const b=document.createElement("button");
-    if(!save.unlocked.includes(p.id)){
-      b.className="card lock";b.disabled=true;
-      b.innerHTML="<h3>???</h3>Rekrutiere diesen Piraten in einem Run, um ihn freizuschalten.";
-    }else{
-      b.className="card"+(team.has(p.id)?" sel":"");
-      b.innerHTML=pirateCard(p);
-      b.onclick=()=>{if(team.has(p.id))team.delete(p.id);else if(team.size<MAX_TEAM)team.add(p.id);renderTeam()};
-    }
-    g.appendChild(b);
+    const d=document.createElement("div");
+    if(save.unlocked.includes(p.id)){d.className="card";d.innerHTML='<h3></h3><div class="dim"></div><div class="move"></div>';
+      d.querySelector("h3").textContent=p.name;d.querySelector(".dim").textContent=p.tag;d.querySelector(".move").textContent=p.move}
+    else{d.className="card lock";d.innerHTML="<h3>???</h3>Noch nicht rekrutiert"}
+    g.appendChild(d);
   });
-  $("team-msg").textContent="Team: "+team.size+" / "+MAX_TEAM+" gewählt";
-  $("btn-go").disabled=team.size===0;
+  for(let i=0;i<3;i++){const d=document.createElement("div");d.className="card lock";d.innerHTML="<h3>???</h3>Noch nicht rekrutiert";g.appendChild(d)}
 }
-
-// ==== RUN / KAMPF ====
-let run=null;
-const mk=p=>({...p,maxHp:p.hp,cd:0});
-function startRun(){run={crew:PIRATES.filter(p=>team.has(p.id)).map(mk),island:1,berry:0,bounty:0,log:[],newly:[]};nextIsland()}
-function updateHud(){$("hud").innerHTML=avatarSVG(save.avatar,40)+
-  `<div><b>${esc(save.name)}</b><br>🏝 Insel ${run.island} · 💰 +${fmt(run.berry)}<br>☠ ${fmt(run.bounty)}</div>`}
-function nextIsland(){
-  const boss=run.island%5===0,s=(1+run.island*.15)*(0.6+0.4*run.crew.length);
-  run.enemy=boss?{name:rnd(BOSSES),hp:Math.round(110*s),atk:Math.round(10+run.island*1.2),boss:true}
-               :{name:rnd(ENEMIES),hp:Math.round(35*s),atk:Math.round(6+run.island)};
-  run.enemy.maxHp=run.enemy.hp;
-  run.log=["⛵ Insel "+run.island+": "+(boss?"👑 ":"")+run.enemy.name+" erscheint!"];
-  renderBattle();show("s-battle");
-}
-const bar=c=>`<div class="hp"><div style="width:${Math.max(0,c.hp/c.maxHp*100)}%"></div></div>`;
-function renderBattle(){
-  updateHud();const e=run.enemy;
-  $("enemy").innerHTML=`<div class="card enemy"><h3>${e.boss?"👑 ":""}${e.name}</h3>${Math.max(0,e.hp)}/${e.maxHp}${bar(e)}</div>`;
-  $("party").innerHTML=run.crew.map((c,i)=>`<div class="card" style="cursor:default"><h3>${c.name}</h3>
-    ${Math.max(0,c.hp)}/${c.maxHp}${bar(c)}${c.hp>0?`<button onclick="attack(${i},false)">Angriff</button>
-    <button onclick="attack(${i},true)" ${c.cd?"disabled":""}>${c.move}${c.cd?" ("+c.cd+")":""}</button>`:"💀 K.O."}</div>`).join("");
-  $("log").innerHTML=run.log.join("<br>");
-  if(!run.crew.some(c=>c.hp>0))setTimeout(()=>endRun(false),600);
-}
-function attack(i,special){
-  const c=run.crew[i],e=run.enemy;
-  const dmg=special?c.pow+Math.floor(Math.random()*8):c.atk+Math.floor(Math.random()*5);
-  if(special)c.cd=3;
-  e.hp-=dmg;run.log.unshift(`${c.name} ${special?"nutzt "+c.move:"greift an"}: ${dmg} Schaden`);
-  run.crew.forEach(m=>{if(m.cd)m.cd--});
-  if(e.hp<=0)return win();
-  const t=rnd(run.crew.filter(m=>m.hp>0)),ed=e.atk+Math.floor(Math.random()*5);
-  t.hp-=ed;run.log.unshift(`${e.name} trifft ${t.name}: ${ed} Schaden`);
-  renderBattle();
-}
-function win(){
-  const e=run.enemy,loot=e.boss?1000+run.island*50:100+run.island*20+Math.floor(Math.random()*50);
-  run.berry+=loot;run.bounty+=e.boss?50000000:5000000;
-  if(e.boss&&!save.bosses.includes(e.name)){save.bosses.push(e.name);persist()}
-  run.island++;
-  const opts=[
-    {txt:"🍖 Crew heilen",fn:()=>run.crew.forEach(c=>c.hp=c.maxHp)},
-    {txt:"💪 +4 ATK für alle",fn:()=>run.crew.forEach(c=>{c.atk+=4;c.pow+=4})},
-    {txt:"❤ +15 Max-HP für alle",fn:()=>run.crew.forEach(c=>{c.maxHp+=15;c.hp+=15})}];
-  const free=PIRATES.filter(p=>!run.crew.some(c=>c.id===p.id));
-  if(free.length&&run.crew.length<MAX_CREW){
-    const notOwned=free.filter(p=>!save.unlocked.includes(p.id));   // neue Piraten bevorzugen
-    const r=rnd(notOwned.length?notOwned:free);
-    opts.push({txt:`🤝 ${r.name} rekrutieren${save.unlocked.includes(r.id)?"":" (NEU!)"}`,recruit:r});
-  }
-  run.opts=opts.sort(()=>Math.random()-.5).slice(0,3);
-  $("reward-title").textContent="Sieg gegen "+e.name+"!";
-  $("reward-loot").textContent="💰 +"+fmt(loot)+" Berry";
-  $("reward-opts").innerHTML=run.opts.map((o,i)=>`<button onclick="pickReward(${i})">${o.txt}</button>`).join("");
-  updateHud();show("s-reward");
-}
-function pickReward(i){
-  const o=run.opts[i];
-  if(o.recruit){
-    run.crew.push(mk(o.recruit));
-    // META-PROGRESSION: sofort dauerhaft freischalten
-    if(!save.unlocked.includes(o.recruit.id)){save.unlocked.push(o.recruit.id);run.newly.push(o.recruit.name);persist()}
-  }else o.fn();
-  nextIsland();
-}
-function endRun(gaveUp){
-  if(!run)return;
-  save.berry+=run.berry;save.best=Math.max(save.best,run.bounty);persist();
-  $("end-title").textContent=gaveUp?"Run aufgegeben":"☠ Deine Crew wurde besiegt";
-  $("end-text").textContent="Insel "+run.island+" erreicht · Kopfgeld "+fmt(run.bounty);
-  $("end-berry").textContent="💰 +"+fmt(run.berry)+" Berry gutgeschrieben";
-  $("end-new").textContent=run.newly.length?"Neu in deiner Sammlung: "+run.newly.join(", "):"";
-  run=null;show("s-end");
-}
-
-// ==== HINTERGRUND: Himmel, Meer, Deck, Schiff ====
-const P=3, cv=$("bg"), cx=cv.getContext("2d");
-function resize(){cv.width=Math.ceil(innerWidth/P);cv.height=Math.ceil(innerHeight/P);draw(performance.now()/1000)}
-addEventListener("resize",resize);
-
-// Wolke: weiche Pixelform aus überlappenden Kreisen
-function cloud(x,y,s,alpha){
-  cx.fillStyle=`rgba(255,255,255,${alpha})`;
-  const puffs=[[0,0,1.0],[.9,.1,.85],[1.9,-.1,.7],[-.9,.15,.75],[-1.7,.1,.6],[.4,-.5,.7],[1.4,-.4,.55]];
-  puffs.forEach(([dx,dy,r],i)=>{
-    const px=Math.round((x+dx*s)/1)*1, py=Math.round((y+dy*s)/1)*1;
-    cx.beginPath();cx.arc(px,py,r*s*1.35,0,Math.PI*2);cx.fill();
-  });
-  // flachere Unterseite, damit sie aufliegt
-  cx.beginPath();cx.ellipse(Math.round(x+s*.3),Math.round(y+s*.35),s*2.4,s*.75,0,0,Math.PI*2);
-  cx.fillStyle=`rgba(255,255,255,${alpha*.92})`;cx.fill();
-}
-
-function draw(t){
-  const W=cv.width,H=cv.height,sp=save.settings.speed;
-
-  // --- Himmel (obere Hälfte) ---
-  const sky=cx.createLinearGradient(0,0,0,H*.55);
-  sky.addColorStop(0,"#3fc9d9");sky.addColorStop(.6,"#63d6dc");
-  sky.addColorStop(1,"#a8ecd9");
-  cx.fillStyle=sky;cx.fillRect(0,0,W,H*.55);
-
-  // Sonne mit weichem Schein
-  const sx=W*.78,sy=H*.14;
-  const glow=cx.createRadialGradient(sx,sy,1,sx,sy,H*.16);
-  glow.addColorStop(0,"rgba(255,250,200,.85)");glow.addColorStop(1,"rgba(255,250,200,0)");
-  cx.fillStyle=glow;cx.beginPath();cx.arc(sx,sy,H*.16,0,Math.PI*2);cx.fill();
-  cx.fillStyle="#fff8d6";cx.beginPath();cx.arc(sx,sy,H*.035,0,Math.PI*2);cx.fill();
-
-  // --- Meer: schmaler Streifen am Horizont ---
-  const sea=cx.createLinearGradient(0,H*.42,0,H*.5);
-  sea.addColorStop(0,"#2fa8c9");sea.addColorStop(1,"#0b4a6b");
-  cx.fillStyle=sea;cx.fillRect(0,H*.42,W,H*.5-H*.42);
-
-  // Wellen: geschwungene Linien mit Schaumkämmen und Kräuselung
-  for(let b=0;b<3;b++){
-    const baseY=H*(.43+b*.025);
-    cx.beginPath();
-    for(let x=0;x<=W;x+=2){
-      const y=baseY+Math.sin(x*.035+t*1.4*sp+b)*1.6
-                   +Math.sin(x*.09-t*2.1*sp+b*2)*.9;
-      x===0?cx.moveTo(x,y):cx.lineTo(x,y);
-    }
-    cx.strokeStyle=b===0?"rgba(255,255,255,.42)":"rgba(255,255,255,.2)";
-    cx.lineWidth=b===0?2:1;cx.stroke();
-    // Schaumkämme auf der vordersten Welle
-    if(b===0){
-      cx.fillStyle="rgba(255,255,255,.5)";
-      for(let x=0;x<W;x+=Math.round(W*.07)){
-        const y=baseY+Math.sin(x*.035+t*1.4*sp)*1.6+Math.sin(x*.09-t*2.1*sp)*.9;
-        cx.beginPath();
-        cx.moveTo(x,y);cx.lineTo(x+4,y-2);cx.lineTo(x+8,y);cx.closePath();
-        cx.fill();
-      }
-    }
-  }
-  // Glanzlichter auf dem Wasser
-  cx.fillStyle="rgba(255,255,255,.14)";
-  for(let x=0;x<W;x+=Math.round(W*.045)){
-    const y=H*.455+Math.sin(x*.05+t*2*sp)*1.2;
-    cx.fillRect(x,y,Math.round(W*.02),1);
-  }
-
-  // --- Insel mit Schatztruhe ---
-  island(W*.19,H*.56,Math.min(W,H)*.035,t*sp);
-
-  // --- Wolken (ziehen langsam) ---
-  const drift=t*sp;
-  cloud(W*.15, H*.13, Math.min(W,H)*.028, .95);
-  cloud((W*.62+drift*6)%(W*1.3)-W*.15, H*.09, Math.min(W,H)*.022, .9);
-  cloud(W*.85, H*.29, Math.min(W,H)*.019, .8);
-  cloud((W*.30+drift*4)%(W*1.3)-W*.15, H*.34, Math.min(W,H)*.015, .7);
-  cloud(W*.52, H*.20, Math.min(W,H)*.012, .6);
-
-  // --- Deck aus Holzbohlen (untere Hälfte) ---
-  const deck=cx.createLinearGradient(0,H*.5,0,H);
-  deck.addColorStop(0,"#a8763f");deck.addColorStop(1,"#7a5228");
-  cx.fillStyle=deck;cx.fillRect(0,H*.5,W,H*.5);
-  // Planken: lange Bahnen mit versetzten Fugen
-  const plankH=Math.max(6,Math.round(H*.035));
-  for(let y=H*.5,row=0;y<H;y+=plankH,row++){
-    cx.fillStyle=row%2?"rgba(255,220,160,.06)":"rgba(0,0,0,.06)";
-    cx.fillRect(0,Math.round(y),W,plankH);
-    cx.fillStyle="rgba(60,30,5,.5)";
-    cx.fillRect(0,Math.round(y),W,1);
-    for(let x=((row%2)?Math.round(W*.12):0);x<W;x+=Math.round(W*.24)){
-      cx.fillRect(x,Math.round(y),1,plankH);
-    }
-    // Holzmaserung: kurze Striche
-    cx.fillStyle="rgba(90,50,15,.28)";
-    for(let x=Math.round(W*.04);x<W;x+=Math.round(W*.11)){
-      const gy=Math.round(y+plankH*.5), len=Math.round(W*.035);
-      cx.fillRect(x,gy,len,1);
-    }
-  }
-  // Fugen-Nägel
-  cx.fillStyle="rgba(40,20,0,.55)";
-  for(let y=H*.5;y<H;y+=plankH){
-    for(let x=Math.round(W*.06);x<W;x+=Math.round(W*.12)){
-      cx.fillRect(x,Math.round(y+plankH*.25),2,2);
-    }
-  }
-
-  // --- Vordergrund: Geländer und Mast ---
-  railing(W,H,t*sp);
-  mast(W,H,t*sp);
-
-  // --- Weicher Rand ---
-  const v=cx.createRadialGradient(W/2,H/2,Math.min(W,H)*.4,W/2,H/2,Math.max(W,H)*.8);
-  v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(10,30,50,.45)");
-  cx.fillStyle=v;cx.fillRect(0,0,W,H);
-}
-function loop(ts){draw(ts/1000);if(save.settings.anim)requestAnimationFrame(loop)}
-
-// ==== START ====
-resize();requestAnimationFrame(loop);
-typeText($("welcome"),"Willkommen auf der Grandline!",()=>{$("btn-start").style.display="inline-block"});
 </script>
 </body>
 </html>
