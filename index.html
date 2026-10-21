@@ -19,6 +19,9 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 #bg{position:fixed;left:0;top:0;image-rendering:pixelated}
 #frame{position:fixed;z-index:3;pointer-events:none;image-rendering:pixelated}
 #title{position:fixed;left:0;top:0;z-index:4;pointer-events:none;overflow:visible}
+#snd{position:fixed;z-index:6;left:calc(var(--u)*4);bottom:calc(var(--u)*4);padding:calc(var(--u)*1.5);cursor:pointer;
+ background:#1d1812;border:0;border-radius:0;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 var(--u) #5f5240}
+#snd canvas{display:block;width:calc(var(--u)*15);height:calc(var(--u)*13);image-rendering:pixelated}
 
 /* ===== Spielfenster (mittig, Pixel-Rahmen aus Stein) ===== */
 .game{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:var(--fw);aspect-ratio:var(--ar);
@@ -45,6 +48,8 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 </div>
 <canvas id="frame"></canvas>
 <svg id="title" aria-label="Medieval Rogue"></svg>
+<audio id="bgm" src="kiravale-medieval-music-593694.mp3" loop preload="auto"></audio>
+<button id="snd" aria-label="Musik an/aus"><canvas id="sndcv"></canvas></button>
 
 <div class="sign" id="sign">
   <canvas id="signcv"></canvas>
@@ -287,6 +292,23 @@ function drawSign(){
   [17,19,31,33].forEach((x,i)=>rect(c,x,34-(i%2),1,3+(i%2),i%2?"#4c9a3c":"#7fc455"));
   [[14,38],[34,38]].forEach(([x,y])=>{rect(c,x,y,3,2,"#7b818c");px(c,x,y,"#a8adb6")});
   outline(c,52,44,"#1a0f08")}
+
+/* ===== Hintergrundmusik: läuft in Dauerschleife, sobald der Browser Ton erlaubt ===== */
+const bgm=document.getElementById("bgm");bgm.volume=.5;
+let muted=false;try{muted=localStorage.getItem("mr_muted")==="1"}catch(e){}
+bgm.muted=muted;
+const EVT=["pointerdown","keydown","touchstart"];
+function startMusic(){bgm.play().then(()=>EVT.forEach(e=>removeEventListener(e,startMusic))).catch(()=>{})}
+EVT.forEach(e=>addEventListener(e,startMusic));startMusic();   // Autoplay klappt nur, wenn der Browser es erlaubt, sonst startet die Musik beim ersten Klick
+function drawSnd(){
+  const cv=document.getElementById("sndcv");cv.width=15;cv.height=13;const c=cv.getContext("2d",{willReadFrequently:true}),G="#f0c85a";
+  rect(c,2,5,3,4,G);rect(c,5,4,1,6,G);rect(c,6,3,1,8,G);
+  if(muted){[[9,4],[10,5],[11,6],[12,7],[13,8],[13,4],[12,5],[10,7],[9,8]].forEach(([x,y])=>px(c,x,y,"#e04b3a"))}
+  else{rect(c,8,5,1,4,G);rect(c,10,3,1,8,G)}
+  outline(c,15,13,"#14100b")}
+document.getElementById("snd").onclick=()=>{muted=!muted;bgm.muted=muted;try{localStorage.setItem("mr_muted",muted?"1":"0")}catch(e){}
+  drawSnd();if(bgm.paused)bgm.play().catch(()=>{})};
+drawSnd();
 
 addEventListener("resize",drawForest);drawForest();drawSign();
 if(document.fonts){document.fonts.load("40px 'Jacquard 24'").then(drawTitle).catch(()=>{});document.fonts.ready.then(drawTitle)}
