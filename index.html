@@ -6,8 +6,10 @@
 <title>Medieval Rogue</title>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Jacquard+24&family=MedievalSharp&display=swap" rel="stylesheet">
 <style>
+/* Ringbearer: Datei "ringbearer.medium.ttf" muss im selben Ordner wie diese HTML-Datei liegen */
+@font-face{font-family:"Ringbearer";src:local("Ringbearer"),local("Ringbearer Medium"),url("ringbearer.medium.ttf") format("truetype");font-display:swap}
 /* --u = Größe eines Pixels auf dem Bildschirm (wird per JS gesetzt), --us = Pixelgröße des Wegweisers */
-:root{color-scheme:dark;--u:4px;--us:4px;--ink:#f1e6cf;--font:"Pixelify Sans",ui-monospace,monospace;
+:root{color-scheme:dark;--u:4px;--us:4px;--ink:#f1e6cf;--font:"Pixelify Sans",ui-monospace,monospace;--font-rb:"Ringbearer","MedievalSharp",Georgia,serif;
  --fw:min(64vw,calc(80vh*16/9));--ar:16/9;
  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f1e6cf}}
@@ -34,17 +36,17 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 .gtitle{font-family:"Jacquard 24","MedievalSharp",serif;font-weight:400;font-size:calc(var(--u)*14);line-height:1;letter-spacing:calc(var(--u)*.3);margin:0;color:#f0c85a;
  text-shadow:calc(var(--u)*.6) 0 0 #14100b,calc(var(--u)*-.6) 0 0 #14100b,0 calc(var(--u)*.6) 0 #14100b,0 calc(var(--u)*-.6) 0 #14100b,calc(var(--u)*1.2) calc(var(--u)*1.2) 0 rgba(0,0,0,.6)}
 .gtitle.sm{font-size:calc(var(--u)*10)}
-.gsub{margin:0;max-width:calc(var(--u)*150);color:#d9c9a6;font-size:calc(var(--u)*4.4);font-weight:500;line-height:1.35}
+.gsub{margin:0;max-width:calc(var(--u)*150);color:#d9c9a6;font-family:var(--font-rb);font-size:calc(var(--u)*5);font-weight:400;letter-spacing:.02em;line-height:1.3}
 .nameform{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*3);width:100%}
-#name{width:min(calc(var(--u)*90),90%);font-family:var(--font);font-weight:500;font-size:max(16px,calc(var(--u)*5));text-align:center;padding:calc(var(--u)*2);
+#name{width:min(calc(var(--u)*90),90%);font-family:var(--font-rb);font-weight:400;font-size:max(17px,calc(var(--u)*5.6));text-align:center;padding:calc(var(--u)*2);
  background:#0f0c08;color:var(--ink);border:0;border-radius:0;outline:0;caret-color:#f0c85a;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 var(--u) #5f5240}
 #name:focus{box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 var(--u) #f0c85a}
 #name::placeholder{color:#7d705a}
-.gbtn{font-family:var(--font);font-weight:700;font-size:max(16px,calc(var(--u)*4.6));padding:calc(var(--u)*1.6) calc(var(--u)*5);background:#e8b84a;color:#2a1a0c;border:0;border-radius:0;cursor:pointer;
+.gbtn{font-family:var(--font-rb);font-weight:400;font-size:max(17px,calc(var(--u)*5.2));padding:calc(var(--u)*1.6) calc(var(--u)*5);background:#e8b84a;color:#2a1a0c;border:0;border-radius:0;cursor:pointer;
  box-shadow:inset 0 calc(var(--u)*-1.2) 0 #b8841f,0 0 0 var(--u) #14100b}
 .gbtn:active{transform:translateY(var(--u))}
 .gmsg{min-height:1.4em;margin:0;font-size:max(13px,calc(var(--u)*3.6));color:#ff8a72;font-weight:500}
-@media (max-width:760px){.view{padding:calc(var(--u)*5) calc(var(--u)*4) calc(var(--u)*9);gap:calc(var(--u)*2.5)}.gtitle{font-size:calc(var(--u)*10)}.gtitle.sm{font-size:calc(var(--u)*8)}.gsub{font-size:calc(var(--u)*4.2)}}
+@media (max-width:760px){.view{padding:calc(var(--u)*5) calc(var(--u)*4) calc(var(--u)*9);gap:calc(var(--u)*2.5)}.gtitle{font-size:calc(var(--u)*10)}.gtitle.sm{font-size:calc(var(--u)*8)}.gsub{font-size:calc(var(--u)*4.8)}}
 .glink{background:none;border:0;color:#b9ab8d;font-family:var(--font);font-size:max(14px,calc(var(--u)*3.6));cursor:pointer;text-decoration:underline}
 
 /* ===== Wegweiser (neben dem Fenster, rechts unten) ===== */
