@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mittelalter-Roguelike</title>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<title>Medieval Rogue</title>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Jacquard+24&family=MedievalSharp&display=swap" rel="stylesheet">
 <style>
 /* --u = Größe eines Pixels auf dem Bildschirm (wird per JS gesetzt), --us = Pixelgröße des Wegweisers */
 :root{color-scheme:dark;--u:4px;--us:4px;--ink:#f1e6cf;--font:"Pixelify Sans",ui-monospace,monospace;
@@ -17,21 +17,20 @@
 html,body{height:100%;margin:0;overflow:hidden}
 body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 #bg{position:fixed;left:0;top:0;image-rendering:pixelated}
+#frame{position:fixed;z-index:3;pointer-events:none;image-rendering:pixelated}
+#title{position:fixed;left:0;top:0;z-index:4;pointer-events:none;overflow:visible}
 
 /* ===== Spielfenster (mittig, Pixel-Rahmen aus Stein) ===== */
 .game{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:var(--fw);aspect-ratio:var(--ar);
  background:#1d1812;border-radius:0;
- box-shadow:inset 0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*3) #9a8a72,inset 0 0 0 calc(var(--u)*4) #5f5240,inset 0 0 0 calc(var(--u)*5) #14100b,
-  0 0 0 var(--u) #14100b,calc(var(--u)*2) calc(var(--u)*2) 0 var(--u) rgba(0,0,0,.35);
+ box-shadow:calc(var(--u)*2) calc(var(--u)*2) 0 var(--u) rgba(0,0,0,.35);
  display:grid;place-items:center;text-align:center}
 .game h1{font-weight:700;font-size:calc(var(--u)*8);margin:0 0 var(--u);color:#f0c85a;text-shadow:var(--u) var(--u) 0 #000;line-height:1.1}
 .game p{margin:0;color:#c4b394;font-size:calc(var(--u)*4);font-weight:500}
 
 /* ===== Wegweiser (neben dem Fenster, rechts unten) ===== */
-.side{position:fixed;right:0;bottom:0;width:calc((100vw - var(--fw))/2);display:flex;justify-content:center;align-items:flex-end;
- padding-bottom:4vh;pointer-events:none}
-@media (max-width:760px){.side{width:100vw;justify-content:flex-end;padding:0 4vw 3vh 0}}
-.sign{position:relative;width:calc(var(--us)*52);height:calc(var(--us)*58)}
+.sign{position:fixed;z-index:5;left:0;top:0;width:calc(var(--us)*52);height:calc(var(--us)*44);transform:rotate(-10deg);transform-origin:50% 100%;
+ filter:drop-shadow(var(--us) var(--us) 0 rgba(0,0,0,.3))}
 .sign canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
 .signtxt{position:absolute;left:calc(var(--us)*13);top:calc(var(--us)*2);width:calc(var(--us)*32);height:calc(var(--us)*20);
  display:flex;align-items:center;justify-content:center;text-align:center;
@@ -44,11 +43,13 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 <div class="game" id="game">
   <div><h1>Spielfenster</h1><p>Hier entsteht das Menü</p></div>
 </div>
+<canvas id="frame"></canvas>
+<svg id="title" aria-label="Medieval Rogue"></svg>
 
-<div class="side"><div class="sign">
+<div class="sign" id="sign">
   <canvas id="signcv"></canvas>
   <div class="signtxt">Auf in die<br>Schlacht</div>
-</div></div>
+</div>
 
 <script>
 /* ===== Pixel-Helfer: alles wird in niedriger Auflösung gezeichnet und per CSS vergrößert ===== */
@@ -96,8 +97,64 @@ let W=0,H=0,S=4;
 function layout(){const vw=innerWidth,vh=innerHeight;
   S=Math.max(2,Math.round(Math.min(vh/190,vw/150)));
   const rs=document.documentElement.style;rs.setProperty("--u",S+"px");
-  const fw=vw<=760?vw*.94:Math.min(vw*.64,vh*.8*16/9),margin=vw<=760?vw*.46:(vw-fw)/2-12;
-  rs.setProperty("--us",Math.max(1,Math.min(S,Math.floor(margin/54)))+"px")}
+  const mob=vw<=760,fw=mob?vw*.94:Math.min(vw*.64,vh*.8*16/9),fh=mob?fw*.75:fw*9/16;
+  const below=vh/2-fh/2,us=Math.max(1,Math.min(S,mob?Math.floor(vw*.46/52):Math.floor((vw-fw)/2/40),Math.floor(below/35)));
+  rs.setProperty("--us",us+"px");
+  // Wegweiser: schräg an die rechte untere Fensterecke gelehnt, das Brett ragt leicht ins Fenster
+  const fwR=Math.max(S*40,Math.round(fw/S)*S),fhR=Math.round(fh/S)*S,gl=Math.round((vw-fwR)/2),gt=Math.round((vh-fhR)/2),ex=gl+fwR,ey=gt+fhR,bx=Math.min(ex+8*us,vw-6-26*us),by=ey+2*us,Px=bx+5.56*us,Py=by+31.5*us,sg=document.getElementById("sign");
+  if(sg){sg.style.left=(Px-26*us)+"px";sg.style.top=(Py-44*us)+"px"}
+  const g=document.getElementById("game"),fc=document.getElementById("frame");
+  Object.assign(g.style,{left:gl+"px",top:gt+"px",width:fwR+"px",height:fhR+"px",transform:"none",aspectRatio:"auto"});
+  Object.assign(fc.style,{left:(gl-S)+"px",top:(gt-S)+"px",width:(fwR+2*S)+"px",height:(fhR+2*S)+"px"});
+  FRM={gl,gt,fwR,fhR};drawFrame(fwR/S+2,fhR/S+2);drawTitle()}
+
+/* ===== Titel: kleiner Bogen über dem Fenster, Anfang und Ende ragen in den Steinrahmen ===== */
+let FRM=null;
+function drawTitle(){
+  if(!FRM)return;const svg=document.getElementById("title"),NS="http://www.w3.org/2000/svg",u=S,TXT="Medieval Rogue";
+  svg.innerHTML="";svg.setAttribute("width",innerWidth);svg.setAttribute("height",innerHeight);
+  const mk=fs=>{const e=document.createElementNS(NS,"text");e.setAttribute("font-size",fs);e.setAttribute("letter-spacing",fs*.03);
+    e.setAttribute("font-family","'Jacquard 24','MedievalSharp',serif");return e};
+  const probe=mk(20*u);probe.textContent=TXT;svg.appendChild(probe);const L0=probe.getComputedTextLength()||120*u;svg.removeChild(probe);
+  // Schriftgröße so wählen, dass der Titel ca. 60 % der Fensterbreite einnimmt (Handy: 80 %)
+  const target=FRM.fwR*(innerWidth<=760?.8:.6),fs=Math.max(8*u,Math.min(32*u,20*u*target/L0)),Lw=L0*fs/(20*u);
+  const sag=Lw*.085;let c=Lw;for(let i=0;i<4;i++)c=Lw/(1+8/3*Math.pow(sag/c,2));
+  const rad=(c*c/4+sag*sag)/(2*sag),mx=FRM.gl+FRM.fwR/2,ye=FRM.gt+3*u;
+  const path=document.createElementNS(NS,"path");path.setAttribute("id","tarc");path.setAttribute("fill","none");
+  path.setAttribute("d","M"+(mx-c/2)+" "+ye+" A"+rad+" "+rad+" 0 0 1 "+(mx+c/2)+" "+ye);svg.appendChild(path);
+  [[u,"rgba(0,0,0,.5)","rgba(0,0,0,.5)"],[0,"#f0c85a","#14100b"]].forEach(([off,fill,stroke])=>{
+    const t=mk(fs);t.setAttribute("fill",fill);t.setAttribute("stroke",stroke);t.setAttribute("stroke-width",u*1.6);
+    t.setAttribute("stroke-linejoin","miter");t.style.paintOrder="stroke";if(off)t.setAttribute("transform","translate("+off+","+off+")");
+    const tp=document.createElementNS(NS,"textPath");tp.setAttribute("href","#tarc");tp.setAttribute("startOffset","50%");
+    tp.setAttribute("text-anchor","middle");tp.textContent=TXT;t.appendChild(tp);svg.appendChild(t)})}
+
+/* ===== Spielfenster-Rahmen: Steine einer Burgmauer mit Rissen und Moos ===== */
+function drawFrame(w,h){
+  const fc=document.getElementById("frame");fc.width=w;fc.height=h;const c=fc.getContext("2d"),R=rng(5);
+  const id=new Int16Array(w*h).fill(-1),at=(x,y)=>x<0||y<0||x>=w||y>=h?-1:id[y*w+x];
+  let nid=0;
+  // eine Steinreihe: Blöcke 6–11 px lang, dazwischen 1 px Fuge
+  const run=(fx,len,vert)=>{let p=len[0];
+    while(p<=len[1]){const L=Math.max(1,Math.min(len[1]-p+1,6+Math.floor(R()*6))),b=nid++;
+      for(let a=0;a<L;a++)for(let t=fx[0];t<=fx[1];t++)id[(vert?p+a:t)*w+(vert?t:p+a)]=b;
+      p+=L;if(p<=len[1]){for(let t=fx[0];t<=fx[1];t++)id[(vert?p:t)*w+(vert?t:p)]=-2;p++}}};
+  run([1,4],[1,w-2],false);run([h-5,h-2],[1,w-2],false);run([1,4],[5,h-6],true);run([w-5,w-2],[5,h-6],true);
+  const T=[["#6e6558","#8c806d","#ab9d86"],["#756a5b","#948874","#b3a58e"],["#665e52","#857966","#a49680"]];
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=id[y*w+x];
+    if(v===-2)px(c,x,y,"#2f2820");
+    else if(v>=0){const lo=at(x,y+1)!==v||at(x+1,y)!==v,hi=at(x,y-1)!==v||at(x-1,y)!==v;let k=lo?0:hi?2:1;const n=hs(x,y);
+      if(n<.07)k=Math.max(0,k-1);else if(n>.95)k=Math.min(2,k+1);px(c,x,y,T[v%3][k])}
+    else if(Math.min(x,y,w-1-x,h-1-y)===0||(x>=5&&x<=w-6&&y>=5&&y<=h-6&&(x===5||x===w-6||y===5||y===h-6)))px(c,x,y,"#14100b")}
+  // Risse quer durch die Steinreihe
+  for(let k=0;k<10;k++){const side=Math.floor(R()*4);
+    if(side<2){let x=8+Math.floor(R()*(w-16));const y0=side?h-5:1;for(let j=0;j<4;j++){if(at(x,y0+j)>=0)px(c,x,y0+j,"#241d16");x+=Math.floor(R()*3)-1}}
+    else{let y=8+Math.floor(R()*(h-16));const x0=side===3?w-5:1;for(let j=0;j<4;j++){if(at(x0+j,y)>=0)px(c,x0+j,y,"#241d16");y+=Math.floor(R()*3)-1}}}
+  // Moos
+  const MO=["#2f5f2a","#4c8a3a","#7dba52"];
+  for(let k=0;k<18;k++){const side=Math.floor(R()*4),n=3+Math.floor(R()*6),pos=6+Math.floor(R()*((side<2?w:h)-14));
+    for(let a=0;a<n;a++){const hg=1+(hs(a,k)<.5?1:0);
+      for(let t=0;t<hg;t++){const x=side<2?pos+a:(side===2?1+t:w-5+t),y=side<2?(side?h-5+t:1+t):pos+a;
+        if(at(x,y)!==-1)px(c,x,y,t?MO[0]:MO[(a+k)%3===0?2:1])}}}}
 
 function drawForest(){
   layout();W=Math.ceil(innerWidth/S);H=Math.ceil(innerHeight/S);
@@ -161,21 +218,27 @@ function drawForest(){
 
   // ===== Bäume von fern nach nah =====
   const trees=[];
-  [-1,1].forEach(s=>{const n=sideMode?9:20;for(let k=0;k<n;k++){
-    const t=Math.max(.06,Math.pow((k+.3+R()*.6)/n,sideMode?1.5:1.8)),u=R(),type=u<.25?"pine":u<.6?"acacia":"round";
-    if(sideMode){ // Bäume liegen in den Streifen links/rechts vom Spielfenster
-      if(s>0&&t>.6)continue;                       // rechts unten steht der Wegweiser
-      const r=Math.min(W*.085*(.04+t)+2,FL*.22),e=r*2.1,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9;
-      let x=(lo+hi)/2;for(let i=0;i<14;i++){x=hi>lo?lo+R()*(hi-lo):(lo+hi)/2;
-        if(!trees.some(o=>Math.abs(o.x-x)<(o.r||8)+r&&Math.abs(o.t-t)<.3))break}
+  [-1,1].forEach(s=>{const n=sideMode?8:20;for(let k=0;k<n;k++){
+    const t=Math.max(.06,Math.pow((k+.3+R()*.6)/n,sideMode?1:1.8)),u=R(),type=u<.25?"pine":u<.6?"acacia":"round";
+    if(sideMode){ // locker verteilt links und rechts vom Spielfenster, auch nebeneinander
+      const cap=FL*.17,r=cap*(.4+.6*t)*(.85+R()*.3),e=r*2.3,cornerY=(vh/2+fwPx*9/32)/S,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9;
+      let x=(lo+hi)/2;
+      for(let i=0;i<20;i++){x=hi>lo?lo+R()*(hi-lo):(lo+hi)/2;
+        const blocked=s>0&&Y(t)>cornerY-14&&x<FR+40;           // nicht hinter den Wegweiser stellen
+        if(!blocked&&!trees.some(o=>Math.abs(o.x-x)<(o.r+r)*.9&&Math.abs(o.t-t)<.14))break}
       trees.push({t,x,r,type,v:R()});
     }else trees.push({t,x:CX(t)+s*(HW(t)+W*(.03+R()*.12)*(.4+t)),type,v:R()});
   }});
+  if(sideMode)[[-1,.55],[1,.42]].forEach(([s,t])=>{   // zwei zusätzliche Bäume
+    const cap=FL*.17,r=cap*(.4+.6*t)*(.85+R()*.3),e=r*2.3,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9,type=R()<.5?"acacia":"round";
+    let x=(lo+hi)/2;for(let i=0;i<30;i++){x=hi>lo?lo+R()*(hi-lo):(lo+hi)/2;
+      if(!trees.some(o=>Math.abs(o.x-x)<(o.r+r)*.9&&Math.abs(o.t-t)<.14))break}
+    trees.push({t,x,r,type,v:R()})});
   trees.sort((a,b)=>a.t-b.t);
   trees.forEach(T=>{
-    const t=T.t,sc=.04+t,by=Math.round(Y(t)),k=Math.max(0,.78*(1-t)),f=c=>mixHex(c,HAZE,k),oc=mixHex(OUT,HAZE,k*.85),x=Math.round(T.x),seed=Math.floor(T.v*100),tp=TRUNK.map(f);
+    const t=T.t,sc=.04+t,by=Math.round(Y(t)),k=Math.max(0,(T.r?.4:.78)*(1-t)),f=c=>mixHex(c,HAZE,k),oc=mixHex(OUT,HAZE,k*.85),x=Math.round(T.x),seed=Math.floor(T.v*100),tp=TRUNK.map(f);
     if(T.type==="pine"){
-      const w0=T.r?T.r*2.2:W*.13*sc+4,th=Math.round(H*.22*sc)+2,tw=Math.max(2,Math.round(W*.018*sc+1)),tiers=4,h=H*.2*sc+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
+      const w0=T.r?T.r*2.4:W*.13*sc+4,th=T.r?Math.round(T.r*1.1)+2:Math.round(H*.22*sc)+2,tw=Math.max(2,T.r?Math.round(T.r*.3):Math.round(W*.018*sc+1)),tiers=4,h=T.r?T.r*1.1+3:H*.2*sc+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
       sprite(x-w0/2-3,by-th-h*tiers*.62-h-3,w0+6,th+h*tiers*.62+h+8,c=>{
         trunk(c,x,by,th,tw,tp,seed,0);
         for(let i=0;i<tiers;i++){const ty=by-th*.7-i*h*.62,w=w0*(1-i*.2);
@@ -183,10 +246,10 @@ function drawForest(){
             for(let xx=x-half;xx<=x+half;xx++){const rel=half?(xx-x)/half:0;let col=rel<-.4?pal[2]:rel<.15?pal[1]:pal[0];
               if(r<2)col=pal[3];else if(((xx+y)&1)&&Math.abs(rel+.4)<.12)col=pal[1];px(c,xx,y,col)}}}},oc);
     }else{
-      const r=T.r||W*.085*sc+2,th=Math.round(H*(T.type==="acacia"?.5:.56)*sc),tw=Math.max(2,Math.round(W*.03*sc+2)),pal=GREEN[T.v<.5?0:1].map(f),flat=T.type==="acacia",ky=flat?.6:.88;
+      const r=T.r||W*.085*sc+2,th=T.r?Math.round(r*(T.type==="acacia"?2.4:2)):Math.round(H*(T.type==="acacia"?.5:.56)*sc),tw=T.r?Math.max(2,Math.round(r*.4)):Math.max(2,Math.round(W*.03*sc+2)),pal=GREEN[T.v<.5?0:1].map(f),flat=T.type==="acacia",ky=flat?.6:.88;
       sprite(x-r*2.7,by-th-r*1.4,r*5.4,th+r*1.4+5,c=>{
         const top=trunk(c,x,by,th,tw,tp,seed,tw*.12),cy=by-th,cxp=x+top;
-        const pf=flat?[[0,0,1],[-1.1,.25,.8],[1.1,.2,.85],[-.5,-.4,.7],[.55,-.35,.7]]:[[0,0,1],[-.75,.4,.8],[.75,.4,.8],[-.45,-.55,.75],[.5,-.5,.7],[0,.65,.65]];
+        const pf=flat?[[0,0,1],[-1.1,.25,.8],[1.1,.2,.85],[-.5,-.4,.7],[.55,-.35,.7],[-1.6,.5,.55],[1.6,.45,.55],[0,.5,.8]]:[[0,0,1],[-.75,.4,.8],[.75,.4,.8],[-.45,-.55,.75],[.5,-.5,.7],[0,.65,.65],[-1.2,.5,.6],[1.2,.5,.6],[-.2,-.9,.55]];
         const ds=pf.map(([a,b,q])=>[cxp+a*r,cy+b*r*ky,q*r,q*r*ky]);
         if(flat)ds.unshift([cxp+r*1.9,cy+r*.95,r*.55,r*.4]);   // kleiner Seitenbusch wie beim Vorbild
         blob(c,ds,pal,seed)},oc);
@@ -196,10 +259,10 @@ function drawForest(){
 
 /* ===== Wegweiser als Pixel-Sprite ===== */
 function drawSign(){
-  const cvs=document.getElementById("signcv");cvs.width=52;cvs.height=58;const c=cvs.getContext("2d",{willReadFrequently:true});
+  const cvs=document.getElementById("signcv");cvs.width=52;cvs.height=44;const c=cvs.getContext("2d",{willReadFrequently:true});
   const MOSS=["#2f5f2a","#4c8a3a","#7dba52"];
   // Pfosten (verwittert)
-  for(let y=21;y<=50;y++)for(let x=22;x<=27;x++){let col=x<24?"#a98150":x<26?"#86603a":"#58391c";const n=hs(x,y);
+  for(let y=21;y<=36;y++)for(let x=22;x<=27;x++){let col=x<24?"#a98150":x<26?"#86603a":"#58391c";const n=hs(x,y);
     if(n<.08)col="#cfa874";else if(n>.9)col="#3a2410";px(c,x,y,col)}
   // Brett (grauer, abgenutzt)
   for(let r=0;r<22;r++){const x0=1+Math.round(10*Math.abs(r-10.5)/10.5);
@@ -210,7 +273,7 @@ function drawSign(){
   c.clearRect(8,1,2,1);c.clearRect(44,22,2,1);
   // Risse im Holz
   const crack=(x,y,n,dir)=>{for(let i=0;i<n;i++){px(c,x,y+i,"#3a220e");if(i%3===2)x+=dir}};
-  crack(12,4,8,1);crack(46,7,9,-1);crack(26,19,4,1);crack(38,19,4,-1);crack(24,30,10,1);
+  crack(12,4,8,1);crack(46,7,9,-1);crack(26,19,4,1);crack(38,19,4,-1);crack(24,25,8,1);
   
   // Moos auf dem Brett (hängt von der Oberkante, sammelt sich unten rechts)
   for(let x=12;x<=26;x++){const h=1+Math.floor(hs(x,2)*3);for(let k=0;k<h;k++)px(c,x,2+k,MOSS[(k+x)%3===0?2:k?1:0])}
@@ -219,13 +282,14 @@ function drawSign(){
   for(let y=24;y<=34;y++)for(let x=22;x<=27;x++)if(hs(x,y)<.28-(y-24)*.02)px(c,x,y,MOSS[(x+y)%3===0?2:1]);
   [[47,5],[47,18]].forEach(([x,y])=>{rect(c,x,y,2,2,"#4a4f58");px(c,x,y,"#a0a6ae")});
   // Moos & Steine am Fuß
-  disc(c,25,52,10,3,"#2f6a2f");disc(c,24,51,9,2,"#4c9a3c");
-  for(let i=0;i<8;i++)px(c,16+Math.floor(hs(i,9)*18),50+Math.floor(hs(i,4)*2),"#80c657");
-  [17,19,31,33].forEach((x,i)=>rect(c,x,48-(i%2),1,3+(i%2),i%2?"#4c9a3c":"#7fc455"));
-  [[14,52],[34,52]].forEach(([x,y])=>{rect(c,x,y,3,2,"#7b818c");px(c,x,y,"#a8adb6")});
-  outline(c,52,58,"#1a0f08")}
+  disc(c,25,38,10,3,"#2f6a2f");disc(c,24,37,9,2,"#4c9a3c");
+  for(let i=0;i<8;i++)px(c,16+Math.floor(hs(i,9)*18),36+Math.floor(hs(i,4)*2),"#80c657");
+  [17,19,31,33].forEach((x,i)=>rect(c,x,34-(i%2),1,3+(i%2),i%2?"#4c9a3c":"#7fc455"));
+  [[14,38],[34,38]].forEach(([x,y])=>{rect(c,x,y,3,2,"#7b818c");px(c,x,y,"#a8adb6")});
+  outline(c,52,44,"#1a0f08")}
 
 addEventListener("resize",drawForest);drawForest();drawSign();
+if(document.fonts){document.fonts.load("40px 'Jacquard 24'").then(drawTitle).catch(()=>{});document.fonts.ready.then(drawTitle)}
 </script>
 </body>
 </html>
