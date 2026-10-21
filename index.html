@@ -7,14 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Jacquard+24&family=MedievalSharp&display=swap" rel="stylesheet">
 <style>
 /* Ringbearer: Datei "ringbearer.medium.ttf" muss im selben Ordner wie diese HTML-Datei liegen */
-@font-face{font-family:"Ringbearer";src:local("Ringbearer"),local("Ringbearer Medium"),url("ringbearer.medium.TTF") format("truetype");font-display:swap}
+@font-face{font-family:"Ringbearer";src:local("Ringbearer"),local("Ringbearer Medium"),url("ringbearer.medium.ttf") format("truetype");font-display:swap}
 /* --u = Größe eines Pixels auf dem Bildschirm (wird per JS gesetzt), --us = Pixelgröße des Wegweisers */
 :root{color-scheme:dark;--u:4px;--us:4px;--ink:#f1e6cf;--font:"Pixelify Sans",ui-monospace,monospace;--font-rb:"Ringbearer","MedievalSharp",Georgia,serif;
  --fw:min(64vw,calc(80vh*16/9));--ar:16/9;
  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f1e6cf}}
 :root[data-theme="dark"]{--ink:#f1e6cf}
-@media (max-width:760px){:root{--fw:94vw;--ar:4/3}}
+@media (max-width:760px){:root{--fw:94vw;--ar:4/5}}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden}
 body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
@@ -56,6 +56,50 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 .signtxt{position:absolute;left:calc(var(--us)*13);top:calc(var(--us)*2);width:calc(var(--us)*32);height:calc(var(--us)*20);
  display:flex;align-items:center;justify-content:center;text-align:center;
  font-weight:700;font-size:calc(var(--us)*5.2);line-height:1.1;color:#2a1a0c;text-shadow:0 calc(var(--us)*.5) 0 rgba(255,225,170,.45)}
+/* ===== Menü (komplett in Ringbearer) ===== */
+.rbh{font-family:var(--font-rb);font-weight:400;font-size:calc(var(--u)*9);line-height:1.05;letter-spacing:.02em;margin:0;color:#f0c85a;
+ text-shadow:calc(var(--u)*.6) 0 0 #14100b,calc(var(--u)*-.6) 0 0 #14100b,0 calc(var(--u)*.6) 0 #14100b,0 calc(var(--u)*-.6) 0 #14100b,calc(var(--u)*1.2) calc(var(--u)*1.2) 0 rgba(0,0,0,.6)}
+.menu-wrap{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);width:100%}
+.menu-btns{display:flex;flex-direction:column;gap:calc(var(--u)*2.6);width:calc(var(--u)*72)}
+.mbtn{font-family:var(--font-rb);font-weight:400;font-size:max(18px,calc(var(--u)*5.8));padding:calc(var(--u)*1.6) calc(var(--u)*4);background:#e8b84a;color:#2a1a0c;border:0;border-radius:0;cursor:pointer;
+ width:100%;box-shadow:inset 0 calc(var(--u)*-1.2) 0 #b8841f,0 0 0 var(--u) #14100b}
+.mbtn:hover{background:#f4cc66}.mbtn:active{transform:translateY(var(--u))}
+.mbtn.back{width:auto;background:#3b352d;color:#e6d9bb;box-shadow:inset 0 calc(var(--u)*-1.2) 0 #26211b,0 0 0 var(--u) #14100b}
+.mbtn.back:hover{background:#4a4238}
+.menu-chars{display:flex;gap:calc(var(--u)*2);align-items:flex-end}
+.fig{display:flex;flex-direction:column;align-items:center}
+.fig span{font-family:var(--font-rb);font-size:max(16px,calc(var(--u)*4.6));color:#e6d9bb;text-shadow:var(--u) var(--u) 0 #000}
+.spr{display:block;width:calc(var(--su)*32);height:calc(var(--su)*38);image-rendering:pixelated}
+.cls-tabs{display:flex;gap:calc(var(--u)*3)}
+.tab{font-family:var(--font-rb);font-size:max(16px,calc(var(--u)*5));padding:calc(var(--u)*1.2) calc(var(--u)*3.5);background:#3b352d;color:#d9c9a6;border:0;border-radius:0;cursor:pointer;box-shadow:0 0 0 var(--u) #14100b}
+.tab.on{background:#e8b84a;color:#2a1a0c}
+.cls-panel{display:flex;gap:calc(var(--u)*7);align-items:center;text-align:left;max-width:100%}
+.cls-info{font-family:var(--font-rb);font-size:max(15px,calc(var(--u)*4.4));color:#e6d9bb;line-height:1.3;max-width:calc(var(--u)*105)}
+.cls-info h3{font-family:var(--font-rb);font-weight:400;font-size:calc(var(--u)*7);margin:0 0 calc(var(--u)*1);color:#f0c85a}
+.cls-info p{margin:0 0 calc(var(--u)*1.2)}.cls-info b{font-weight:400;color:#f0c85a}
+.stat{display:flex;align-items:center;gap:calc(var(--u)*2)}.stat em{font-style:normal;width:calc(var(--u)*26);color:#c4b394}
+.pips{display:inline-flex;gap:calc(var(--u)*1)}.pips i{width:calc(var(--u)*3);height:calc(var(--u)*3);background:#0f0c08;box-shadow:0 0 0 calc(var(--u)*.5) #5f5240}.pips i.f{background:#e8b84a}
+.set{display:flex;flex-direction:column;gap:calc(var(--u)*2);width:min(calc(var(--u)*135),100%);font-family:var(--font-rb);font-size:max(17px,calc(var(--u)*5));color:#e6d9bb}
+.set h3{font-family:var(--font-rb);font-weight:400;margin:calc(var(--u)*1) 0 0;font-size:calc(var(--u)*6);color:#f0c85a;text-align:left}
+.srow{display:flex;align-items:center;gap:calc(var(--u)*4)}.srow span{width:calc(var(--u)*44);text-align:left}.srow b{font-weight:400;width:calc(var(--u)*14);text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:calc(var(--u)*6);background:transparent;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:calc(var(--u)*2);background:#0f0c08;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.5) #5f5240}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:calc(var(--u)*3);height:calc(var(--u)*5);margin-top:calc(var(--u)*-1.5);background:#e8b84a;border:0;border-radius:0;box-shadow:0 0 0 var(--u) #14100b}
+input[type=range]::-moz-range-track{height:calc(var(--u)*2);background:#0f0c08;box-shadow:0 0 0 var(--u) #14100b}
+input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*5);background:#e8b84a;border:0;border-radius:0;box-shadow:0 0 0 var(--u) #14100b}
+.rowbtn{display:flex;gap:calc(var(--u)*4);flex-wrap:wrap;justify-content:center}
+.ranks{width:min(calc(var(--u)*120),100%);font-family:var(--font-rb);font-size:max(16px,calc(var(--u)*4.8));color:#e6d9bb;text-align:left}
+.ranks div{display:flex;gap:calc(var(--u)*4);padding:calc(var(--u)*.8) 0;border-bottom:calc(var(--u)*.5) solid #3b352d}.ranks div b{font-weight:400;color:#f0c85a;width:calc(var(--u)*8)}.ranks div span{flex:1}
+.dimtx{font-family:var(--font-rb);font-size:max(15px,calc(var(--u)*4));color:#a8997c;margin:0}
+@media (max-width:760px){
+ .view.menu{gap:calc(var(--u)*2)}#menu-title{display:none}
+ .menu-wrap{flex-direction:column-reverse;gap:calc(var(--u)*3)}
+ .menu-btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*2.4)}.menu-btns .mbtn:last-child{grid-column:1/-1}
+ .mbtn{font-size:max(16px,calc(var(--u)*5.4));padding:calc(var(--u)*1.2) calc(var(--u)*2)}
+ .cls-panel{gap:calc(var(--u)*3)}.cls-info{font-size:max(13px,calc(var(--u)*4))}.cls-info h3{font-size:calc(var(--u)*6)}
+ #v-classes{padding:calc(var(--u)*3) calc(var(--u)*3) calc(var(--u)*5);gap:calc(var(--u)*2)}#v-classes .rbh{display:none}
+ .rbh{font-size:calc(var(--u)*8)}.stat em{width:calc(var(--u)*30)}.srow span{width:calc(var(--u)*38)}
+}
 </style>
 </head>
 <body>
@@ -71,10 +115,47 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
       <button class="gbtn" id="btn-name">Zur Schlacht!</button>
     </div>
   </div>
-  <div class="view" id="v-greet">
-    <h2 class="gtitle sm" id="greet-title"></h2>
-    <p class="gsub">Euer Name steht nun in den Chroniken. Das Menü folgt in Kürze.</p>
-    <button class="glink" id="btn-rename">Anderen Namen wählen</button>
+  <div class="view menu" id="v-menu">
+    <h2 class="rbh" id="menu-title"></h2>
+    <div class="menu-wrap">
+      <div class="menu-btns">
+        <button class="mbtn" data-go="new">Neues Spiel</button>
+        <button class="mbtn" data-go="load">Spiel laden</button>
+        <button class="mbtn" data-go="classes">Klassen</button>
+        <button class="mbtn" data-go="settings">Einstellungen</button>
+        <button class="mbtn" data-go="ranks">Ranglisten</button>
+      </div>
+      <div class="menu-chars">
+        <div class="fig"><canvas class="spr" data-id="mage"></canvas><span>Magier</span></div>
+        <div class="fig"><canvas class="spr" data-id="warrior"></canvas><span>Krieger</span></div>
+        <div class="fig"><canvas class="spr" data-id="archer"></canvas><span>Bogenschütze</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="view" id="v-new"><h2 class="rbh">Neues Spiel</h2><p class="gsub">Hier entsteht die Wahl eurer Klasse und der Beginn der Reise.</p><button class="mbtn back" data-go="menu">Zurück</button></div>
+  <div class="view" id="v-load"><h2 class="rbh">Spiel laden</h2><p class="gsub" id="load-text"></p><button class="mbtn back" data-go="menu">Zurück</button></div>
+  <div class="view" id="v-classes">
+    <h2 class="rbh">Klassen</h2>
+    <div class="cls-tabs" id="cls-tabs"></div>
+    <div class="cls-panel"><canvas class="spr" id="cls-spr" data-id="mage"></canvas><div class="cls-info" id="cls-info"></div></div>
+    <button class="mbtn back" data-go="menu">Zurück</button>
+  </div>
+  <div class="view" id="v-settings">
+    <h2 class="rbh">Einstellungen</h2>
+    <div class="set">
+      <h3>Audio</h3>
+      <label class="srow"><span>Spiellautstärke</span><input type="range" id="r-sfx" min="0" max="100"><b id="t-sfx"></b></label>
+      <label class="srow"><span>Musiklautstärke</span><input type="range" id="r-mus" min="0" max="100"><b id="t-mus"></b></label>
+      <h3>Anzeige</h3>
+      <label class="srow"><span>Helligkeit</span><input type="range" id="r-bri" min="50" max="150"><b id="t-bri"></b></label>
+    </div>
+    <div class="rowbtn"><button class="mbtn back" id="btn-rename">Namen ändern</button><button class="mbtn back" data-go="menu">Zurück</button></div>
+  </div>
+  <div class="view" id="v-ranks">
+    <h2 class="rbh">Ranglisten</h2>
+    <div class="ranks" id="rank-list"></div>
+    <p class="dimtx">Die Rangliste gilt vorerst nur auf diesem Gerät.</p>
+    <button class="mbtn back" data-go="menu">Zurück</button>
   </div>
 </div>
 <canvas id="frame"></canvas>
@@ -133,9 +214,9 @@ let W=0,H=0,S=4;
 function layout(){const vw=innerWidth,vh=innerHeight;
   S=Math.max(2,Math.round(Math.min(vh/190,vw/150)));
   const rs=document.documentElement.style;rs.setProperty("--u",S+"px");
-  const mob=vw<=760,fw=mob?vw*.94:Math.min(vw*.64,vh*.8*16/9),fh=mob?fw*.75:fw*9/16;
+  const mob=vw<=760,fw=mob?vw*.94:Math.min(vw*.64,vh*.8*16/9),fh=mob?fw*1.25:fw*9/16;
   const below=vh/2-fh/2,us=Math.max(1,Math.min(S,mob?Math.floor(vw*.46/52):Math.floor((vw-fw)/2/40),Math.floor(below/35)));
-  rs.setProperty("--us",us+"px");
+  rs.setProperty("--us",us+"px");rs.setProperty("--su",(mob?2:S)+"px");
   // Wegweiser: schräg an die rechte untere Fensterecke gelehnt, das Brett ragt leicht ins Fenster
   const fwR=Math.max(S*40,Math.round(fw/S)*S),fhR=Math.round(fh/S)*S,gl=Math.round((vw-fwR)/2),gt=Math.round((vh-fhR)/2),ex=gl+fwR,ey=gt+fhR,bx=Math.min(ex+8*us,vw-6-26*us),by=ey+2*us,Px=bx+5.56*us,Py=by+31.5*us,sg=document.getElementById("sign");
   if(sg){sg.style.left=(Px-26*us)+"px";sg.style.top=(Py-44*us)+"px"}
@@ -327,21 +408,155 @@ function drawSign(){
 /* ===== Namenswahl ===== */
 const gid=id=>document.getElementById(id);
 let playerName=null;try{playerName=localStorage.getItem("mr_name")}catch(e){}
-function showView(v){["v-name","v-greet"].forEach(id=>gid(id).classList.toggle("on",id===v))}
-function openGreeting(){gid("greet-title").textContent="Seid gegrüßt, "+playerName+"!";showView("v-greet")}
 function openNameForm(){gid("name").value=playerName||"";gid("name-msg").textContent="";showView("v-name");if(innerWidth>760)gid("name").focus()}
 function confirmName(){
   const n=gid("name").value.trim().replace(/\s+/g," "),msg=gid("name-msg");
   if(!/^[\p{L}0-9 _'-]{3,16}$/u.test(n)){msg.textContent="Ein Name braucht 3 bis 16 Zeichen: Buchstaben, Zahlen, Leerzeichen, _ ' oder -";return}
   playerName=n;try{localStorage.setItem("mr_name",n)}catch(e){}
-  openGreeting()}
+  openMenu()}
 gid("btn-name").onclick=confirmName;
 gid("name").addEventListener("keydown",e=>{if(e.key==="Enter")confirmName()});
 gid("btn-rename").onclick=openNameForm;
-playerName?openGreeting():openNameForm();
+/* ===== Pixel-Charaktere: Feuermagier, Krieger, Bogenschütze (Licht oben links, dunkle Kontur) ===== */
+const SW=32,SH=38,OL="#1a1014",SPR={};
+const rrx=(c,x,y,w,h,s)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++){if(w>2&&h>2&&(i==0||i==w-1)&&(j==0||j==h-1))continue;
+  px(c,x+i,y+j,(j==h-1||i==w-1)?s[2]:(j==0||i==0)?s[1]:s[0])}};
+const rows=(c,list,y0,s)=>list.forEach(([a,b],i)=>{for(let x=a;x<=b;x++){const r=(x-a)/Math.max(1,b-a);px(c,x,y0+i,r<.25?s[1]:r<.72?s[0]:s[2])}});
+function seg(c,x0,y0,x1,y1,col){const dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;let e=dx+dy;
+  for(;;){px(c,x0,y0,col);if(x0==x1&&y0==y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx}if(e2<=dx){e+=dx;y0+=sy}}}
+// pose: d = Körper nach unten (Atmen), al/ar = Arme, t = Flammenflackern
+function drawChar(cv,id,pose){pose=pose||{};cv.width=SW;cv.height=SH;const c=cv.getContext("2d",{willReadFrequently:true});
+  c.translate(2,2);SPR[id](c,{d:pose.d|0,al:pose.al|0,ar:pose.ar|0,t:pose.t|0});c.setTransform(1,0,0,1,0,0);outline(c,SW,SH,OL)}
+
+SPR.mage=(c,p)=>{const d=p.d,RED=["#c42538","#df4152","#8a1424"],TAN=["#d9b676","#f4dca0","#9a7a45"];
+  // Stab mit Spiralmuster (links), Flamme flackert
+  for(let y=8;y<=33;y++){const a=(y>>1)&1;px(c,3,y,a?"#5a3a2a":"#8a6a4a");px(c,4,y,a?"#8a6a4a":"#5a3a2a")}
+  [14,21,28].forEach(y=>{px(c,2,y,"#d8c8a8");px(c,5,y,"#d8c8a8")});
+  disc(c,3,4,3,3,RED[2]);disc(c,3,4,2,2,"#ff7a1a");px(c,3,4,"#ffd84a");px(c,4,3,"#ffd84a");px(c,2,5,"#ffb02a");
+  px(c,3,0,"#ff7a1a");px(c,p.t?2:4,1,"#ff7a1a");px(c,3,1,"#ffb02a");
+  rect(c,2,7,4,1,TAN[0]);px(c,2,7,TAN[1]);
+  // Umhang mit heller Zierkante
+  const cl=[[8,23],[7,24]];for(let i=0;i<14;i++)cl.push([6,25]);
+  rows(c,cl,13+d,RED);
+  rect(c,12,17+d,8,11,"#1c0d12");rect(c,12,17+d,8,1,"#2b1219");
+  rect(c,11,15+d,1,13,TAN[0]);rect(c,20,15+d,1,13,TAN[2]);
+  [9,22].forEach(x=>rect(c,x,18+d,1,9,RED[2]));
+  rect(c,6,28+d,20,1,TAN[0]);rect(c,6,28+d,6,1,TAN[1]);
+  rect(c,11,29+d,4,2,"#2a1a16");rect(c,17,29+d,4,2,"#2a1a16");
+  // Kapuze mit dunklem Gesicht und glühenden Augen
+  rows(c,[[15,16],[14,17],[13,18],[12,19],[11,20],[10,21],[10,21],[10,21],[10,21],[10,21],[10,21],[10,21],[10,21]],1+d,RED);
+  rect(c,11,7+d,10,1,TAN[0]);rect(c,11,8+d,1,6,TAN[0]);rect(c,20,8+d,1,6,TAN[2]);rect(c,11,14+d,10,1,TAN[0]);
+  rect(c,12,8+d,8,6,"#17090f");
+  rect(c,13,10+d,2,1,"#ff6a1a");rect(c,17,10+d,2,1,"#ff6a1a");px(c,13,10+d,"#ffd04a");px(c,17,10+d,"#ffd04a");
+};
+
+SPR.warrior=(c,p)=>{const d=p.d,SK=["#e8b184","#f7cfa4","#b9805a"],LT=["#8a5a2f","#b07a43","#5e3b1c"],DK=["#5e3b1c","#7a4f28","#3b2310"],
+  ST=["#8f99a8","#d4dbe6","#5a6472"],PT=["#4a3a2e","#665244","#2e231b"],HR=["#6a3f22","#8a5a34","#45261a"],WD=["#7a4f28","#a67a48","#4e3018"];
+  // Axt (rechts): Stiel + Klinge
+  for(let y=7;y<=33;y++){px(c,22,y,WD[1]);px(c,23,y,WD[0])}
+  [[24,25],[24,26],[24,27],[24,27],[24,27],[24,27],[24,26],[24,25]].forEach(([a,b],i)=>{for(let x=a;x<=b;x++)px(c,x,5+i,x===a?ST[1]:x===b?ST[2]:ST[0])});
+  rect(c,21,6,3,5,ST[0]);rect(c,21,6,3,1,ST[1]);rect(c,23,6,1,5,ST[2]);rect(c,20,7,1,3,ST[2]);
+  // Beine + Stiefel
+  rrx(c,7,25,4,7,PT);rrx(c,12,25,4,7,PT);rrx(c,6,31,5,3,DK);rrx(c,12,31,5,3,DK);
+  // Arme (Lederschienen) – rechte Hand greift den Axtstiel
+  rrx(c,3,18+d+p.al,3,5,LT);rrx(c,3,22+d+p.al,3,3,SK);
+  rrx(c,18,18+d+p.ar,3,4,LT);rrx(c,20,21+d,4,3,SK);
+  // Lederrüstung mit Riemen, Gürtel, Schulterstücken
+  rrx(c,6,14+d,11,10,LT);seg(c,7,15+d,15,22+d,DK[0]);seg(c,8,15+d,16,22+d,DK[0]);
+  rect(c,6,23+d,11,2,DK[0]);rect(c,10,23+d,3,2,ST[1]);
+  rrx(c,3,13+d,5,5,LT);rrx(c,16,13+d,5,5,LT);px(c,4,14+d,ST[1]);px(c,18,14+d,ST[1]);
+  // Kopf mit Lederkappe und Bart
+  rrx(c,6,5+d,11,9,SK);rrx(c,5,2+d,13,5,LT);rect(c,5,6+d,13,1,DK[0]);px(c,11,4+d,ST[1]);
+  rect(c,8,8+d,3,1,HR[2]);rect(c,13,8+d,3,1,HR[2]);rect(c,8,9+d,2,1,"#241410");rect(c,13,9+d,2,1,"#241410");
+  rect(c,7,11+d,9,3,HR[0]);rect(c,9,10+d,5,1,HR[0]);rect(c,7,11+d,9,1,HR[1]);px(c,11,12+d,"#2a140f");
+};
+
+SPR.archer=(c,p)=>{const d=p.d,SK=["#f2c49b","#ffdcb8","#c48f68"],HR=["#e8c14a","#fbe27a","#b8902a"],GR=["#3f8f3a","#62b856","#27602a"],GD=["#2f6f2f","#448a3f","#1d4a20"],
+  LT=["#8a5a2f","#b07a43","#5e3b1c"],PT=["#6a4a2a","#8a6a40","#46301a"];
+  // Bogen (links) mit Sehne
+  for(let y=4;y<=33;y++){const x=Math.round(4-2.2*Math.sin(Math.PI*(y-4)/29));px(c,x,y,"#c08a4a");px(c,x+1,y,"#8a5a2f")}
+  for(let y=5;y<=33;y++)px(c,6,y,"#efe6cc");
+  // Köcher hinter der Schulter
+  rrx(c,21,11+d,3,9,LT);px(c,22,10+d,"#d63a2f");px(c,21,10+d,"#efe6cc");px(c,23,10+d,"#efe6cc");
+  // Beine + Stiefel
+  rrx(c,10,27,5,5,PT);rrx(c,17,27,5,5,PT);rrx(c,9,31,6,3,LT);rrx(c,16,31,6,3,LT);
+  // Tunika mit Gürtel und Schnürung
+  rrx(c,9,17+d,14,10,GR);for(let x=9;x<=22;x+=2)px(c,x,27+d,GR[2]);
+  rect(c,9,24+d,14,2,LT[0]);rect(c,15,24+d,2,2,"#e8c14a");for(let y=18;y<=22;y++)px(c,15+(y%2),y+d,"#efe6cc");
+  // Arme: links hält den Bogen, rechts hängt
+  rrx(c,6,17+d,3,5,GR);rrx(c,4,19,3,3,SK);
+  rrx(c,23,18+d+p.ar,3,6,GR);rrx(c,23,24+d+p.ar,3,2,SK);
+  // Kragen, Gesicht, blonde Haare
+  rrx(c,10,15+d,12,3,GD);
+  rrx(c,11,8+d,10,8,SK);rect(c,9,9+d,2,6,HR[0]);rect(c,21,9+d,2,6,HR[0]);rect(c,11,8+d,10,2,HR[0]);rect(c,11,8+d,10,1,HR[1]);px(c,13,10+d,HR[0]);px(c,18,10+d,HR[0]);
+  rect(c,13,11+d,1,2,"#241410");rect(c,18,11+d,1,2,"#241410");px(c,15,12+d,SK[2]);px(c,15,14+d,"#a8584a");px(c,16,14+d,"#a8584a");
+  // grüner Hut mit roter Feder
+  rows(c,[[15,16],[14,17],[13,18],[12,19],[11,20],[8,23]],2+d,GR);rect(c,11,6+d,10,1,LT[0]);
+  seg(c,20,5+d,25,1+d,"#d63a2f");seg(c,21,5+d,25,2+d,"#a82a22");
+};
+
+const CLS=[
+ {id:"mage",name:"Magier",title:"Feuermagier",desc:"Gebieter über Glut und Flamme. Verbrennt Feinde, bevor sie nahe kommen, doch ein Treffer streckt ihn schnell nieder.",weapon:"Flammenstab",skill:"Feuerball: sengt Gegner und lässt sie weiterbrennen",st:[2,5,1,3]},
+ {id:"warrior",name:"Krieger",title:"Krieger",desc:"Ein zäher Kämpfer in Lederrüstung. Hält viel aus und teilt mit seiner Axt kräftig aus.",weapon:"Kriegsaxt",skill:"Wirbelschlag: trifft alle Gegner ringsum",st:[5,4,4,2]},
+ {id:"archer",name:"Bogenschütze",title:"Bogenschütze",desc:"Flinker Schütze der Wälder mit grüner Kapuze. Bleibt auf Abstand und trifft zielsicher.",weapon:"Eibenbogen",skill:"Pfeilhagel: mehrere Pfeile auf einmal",st:[3,4,2,5]}
+];
+const STATS=["Leben","Angriff","Verteidigung","Tempo"];
+
+/* ===== Ansichten, Animation, Menü ===== */
+const VIEWS=["v-name","v-menu","v-new","v-load","v-classes","v-settings","v-ranks"];
+let animOn=false;
+function showView(v){VIEWS.forEach(id=>gid(id).classList.toggle("on",id===v));startAnim()}
+function startAnim(){if(!animOn){animOn=true;requestAnimationFrame(anim)}}
+function anim(ts){
+  if(!["v-menu","v-classes"].some(id=>gid(id).classList.contains("on"))){animOn=false;return}
+  const d=Math.floor(ts/520)%2,t=Math.floor(ts/170)%2;
+  document.querySelectorAll("canvas.spr").forEach(cv=>{if(!cv.offsetParent)return;const k=cv.dataset.id+d+t;if(cv._k===k)return;cv._k=k;
+    drawChar(cv,cv.dataset.id,{d:d,al:d,ar:1-d,t:t})});
+  requestAnimationFrame(anim)}
+function openMenu(){gid("menu-title").textContent="Seid gegrüßt, "+playerName+"!";showView("v-menu")}
+
+function renderClass(i){
+  const k=CLS[i],cv=gid("cls-spr"),info=gid("cls-info");cv.dataset.id=k.id;cv._k=null;
+  [...gid("cls-tabs").children].forEach((b,j)=>b.classList.toggle("on",j===i));
+  info.textContent="";
+  const h=document.createElement("h3");h.textContent=k.title;info.appendChild(h);
+  const add=(txt,lbl)=>{const p=document.createElement("p");if(lbl){const b=document.createElement("b");b.textContent=lbl+": ";p.appendChild(b)}p.appendChild(document.createTextNode(txt));info.appendChild(p)};
+  add(k.desc);add(k.weapon,"Waffe");add(k.skill,"Fähigkeit");
+  STATS.forEach((n,j)=>{const r=document.createElement("div");r.className="stat";const e=document.createElement("em");e.textContent=n;r.appendChild(e);
+    const pp=document.createElement("span");pp.className="pips";for(let q=0;q<5;q++){const u=document.createElement("i");if(q<k.st[j])u.className="f";pp.appendChild(u)}r.appendChild(pp);info.appendChild(r)});
+}
+function buildClassTabs(){const t=gid("cls-tabs");t.textContent="";
+  CLS.forEach((k,i)=>{const b=document.createElement("button");b.className="tab";b.textContent=k.name;b.onclick=()=>renderClass(i);t.appendChild(b)})}
+
+// Einstellungen (Werte werden im Browser gespeichert)
+const lsNum=(k,def)=>{try{const v=localStorage.getItem(k);return v===null?def:+v}catch(e){return def}};
+const vol={sfx:lsNum("mr_sfx",70),mus:lsNum("mr_mus",50),bri:lsNum("mr_bri",100)};
+function applyBright(){document.documentElement.style.filter=vol.bri===100?"":"brightness("+vol.bri/100+")"}
+function syncSettings(){[["sfx","r-sfx","t-sfx"],["mus","r-mus","t-mus"],["bri","r-bri","t-bri"]].forEach(([k,r,t])=>{gid(r).value=vol[k];gid(t).textContent=vol[k]+"%"})}
+[["sfx","r-sfx","t-sfx","mr_sfx"],["mus","r-mus","t-mus","mr_mus"],["bri","r-bri","t-bri","mr_bri"]].forEach(([k,r,t,ls])=>{
+  gid(r).oninput=e=>{vol[k]=+e.target.value;gid(t).textContent=vol[k]+"%";try{localStorage.setItem(ls,vol[k])}catch(_){}
+    if(k==="mus")bgm.volume=vol.mus/100;if(k==="bri")applyBright()}});
+applyBright();
+
+function renderRanks(){const box=gid("rank-list");box.textContent="";let list=[];try{list=JSON.parse(localStorage.getItem("mr_scores")||"[]")}catch(e){}
+  list.sort((a,b)=>b.s-a.s).slice(0,10).forEach((r,i)=>{const row=document.createElement("div");
+    [["b",i+1],["span",r.n],["b",r.s]].forEach(([tag,txt])=>{const e=document.createElement(tag);e.textContent=txt;row.appendChild(e)});box.appendChild(row)});
+  if(!list.length){const m=document.createElement("p");m.className="gsub";m.textContent="Noch kein Held ist in den Ranglisten verzeichnet.";box.appendChild(m)}}
+
+function go(v){
+  if(v==="menu")return openMenu();
+  if(v==="load")gid("load-text").textContent=localStorage.getItem("mr_save")?"Ein Spielstand wurde gefunden.":"Noch kein Spielstand vorhanden.";
+  if(v==="classes"){buildClassTabs();renderClass(0)}
+  if(v==="settings")syncSettings();
+  if(v==="ranks")renderRanks();
+  showView("v-"+v)}
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+buildClassTabs();
+
+playerName?openMenu():openNameForm();
 
 /* ===== Hintergrundmusik: läuft in Dauerschleife, sobald der Browser Ton erlaubt ===== */
-const bgm=document.getElementById("bgm");bgm.volume=.1;
+const bgm=document.getElementById("bgm");bgm.volume=vol.mus/100;
 let muted=false;try{muted=localStorage.getItem("mr_muted")==="1"}catch(e){}
 bgm.muted=muted;
 const EVT=["pointerdown","keydown","touchstart"];
