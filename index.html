@@ -341,7 +341,7 @@ gid("btn-rename").onclick=openNameForm;
 playerName?openGreeting():openNameForm();
 
 /* ===== Hintergrundmusik: läuft in Dauerschleife, sobald der Browser Ton erlaubt ===== */
-const bgm=document.getElementById("bgm");bgm.volume=.5;
+const bgm=document.getElementById("bgm");bgm.volume=.1;
 let muted=false;try{muted=localStorage.getItem("mr_muted")==="1"}catch(e){}
 bgm.muted=muted;
 const EVT=["pointerdown","keydown","touchstart"];
