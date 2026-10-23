@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Jacquard+24&family=MedievalSharp&display=swap" rel="stylesheet">
 <style>
 /* Ringbearer: Datei "ringbearer.medium.ttf" muss im selben Ordner wie diese HTML-Datei liegen */
-@font-face{font-family:"Ringbearer";src:local("Ringbearer"),local("Ringbearer Medium"),url("ringbearer.medium.TTF") format("truetype");font-display:swap}
+@font-face{font-family:"Ringbearer";src:local("Ringbearer"),local("Ringbearer Medium"),url("ringbearer.medium.ttf") format("truetype");font-display:swap}
 /* --u = Größe eines Pixels auf dem Bildschirm (wird per JS gesetzt), --us = Pixelgröße des Wegweisers */
 :root{color-scheme:dark;--u:4px;--us:4px;--ink:#f1e6cf;--font:"Pixelify Sans",ui-monospace,monospace;--font-rb:"Ringbearer","MedievalSharp",Georgia,serif;
  --fw:min(64vw,calc(80vh*16/9));--ar:16/9;
@@ -46,7 +46,7 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
  box-shadow:inset 0 calc(var(--u)*-1.2) 0 #b8841f,0 0 0 var(--u) #14100b}
 .gbtn:active{transform:translateY(var(--u))}
 .gmsg{min-height:1.4em;margin:0;font-size:max(13px,calc(var(--u)*3.6));color:#ff8a72;font-weight:500}
-@media (max-width:760px){.view{padding:calc(var(--u)*5) calc(var(--u)*4) calc(var(--u)*9);gap:calc(var(--u)*2.5)}.gtitle{font-size:calc(var(--u)*10)}.gtitle.sm{font-size:calc(var(--u)*8)}.gsub{font-size:calc(var(--u)*4.8)}}
+@media (max-width:760px){.view{padding:calc(var(--u)*5) calc(var(--u)*7) calc(var(--u)*9);gap:calc(var(--u)*2.5)}.gtitle{font-size:calc(var(--u)*10)}.gtitle.sm{font-size:calc(var(--u)*8)}.gsub{font-size:calc(var(--u)*4.8)}}
 .glink{background:none;border:0;color:#b9ab8d;font-family:var(--font);font-size:max(14px,calc(var(--u)*3.6));cursor:pointer;text-decoration:underline}
 
 /* ===== Wegweiser (neben dem Fenster, rechts unten) ===== */
@@ -74,7 +74,7 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 .tab{font-family:var(--font-rb);font-size:max(16px,calc(var(--u)*5));padding:calc(var(--u)*1.2) calc(var(--u)*3.5);background:#3b352d;color:#d9c9a6;border:0;border-radius:0;cursor:pointer;box-shadow:0 0 0 var(--u) #14100b}
 .tab.on{background:#e8b84a;color:#2a1a0c}
 .cls-panel{display:flex;gap:calc(var(--u)*7);align-items:center;text-align:left;max-width:100%}
-.cls-info{font-family:var(--font-rb);font-size:max(15px,calc(var(--u)*4.4));color:#e6d9bb;line-height:1.3;max-width:calc(var(--u)*105)}
+.cls-info{font-family:var(--font-rb);font-size:max(14px,calc(var(--u)*4));color:#e6d9bb;line-height:1.3;max-width:calc(var(--u)*135)}
 .cls-info h3{font-family:var(--font-rb);font-weight:400;font-size:calc(var(--u)*7);margin:0 0 calc(var(--u)*1);color:#f0c85a}
 .cls-info p{margin:0 0 calc(var(--u)*1.2)}.cls-info b{font-weight:400;color:#f0c85a}
 .stat{display:flex;align-items:center;gap:calc(var(--u)*2)}.stat em{font-style:normal;width:calc(var(--u)*26);color:#c4b394}
@@ -96,8 +96,8 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
  .menu-wrap{flex-direction:column-reverse;gap:calc(var(--u)*3)}
  .menu-btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*2.4)}.menu-btns .mbtn:last-child{grid-column:1/-1}
  .mbtn{font-size:max(16px,calc(var(--u)*5.4));padding:calc(var(--u)*1.2) calc(var(--u)*2)}
- .cls-panel{gap:calc(var(--u)*3)}.cls-info{font-size:max(13px,calc(var(--u)*4))}.cls-info h3{font-size:calc(var(--u)*6)}
- #v-classes{padding:calc(var(--u)*3) calc(var(--u)*3) calc(var(--u)*5);gap:calc(var(--u)*2)}#v-classes .rbh{display:none}
+ .cls-panel{gap:calc(var(--u)*3);width:100%}.cls-info{max-width:none;flex:1;min-width:0;font-size:max(13px,calc(var(--u)*4))}.cls-info h3{font-size:calc(var(--u)*6)}
+ #v-classes{padding:calc(var(--u)*3) calc(var(--u)*7) calc(var(--u)*5);gap:calc(var(--u)*2)}#v-classes .rbh{display:none}
  .rbh{font-size:calc(var(--u)*8)}.stat em{width:calc(var(--u)*30)}.srow span{width:calc(var(--u)*38)}
 }
 </style>
@@ -496,9 +496,9 @@ SPR.archer=(c,p)=>{const d=p.d,SK=["#f2c49b","#ffdcb8","#c48f68"],HR=["#e8c14a",
 };
 
 const CLS=[
- {id:"mage",name:"Magier",title:"Feuermagier",desc:"Gebieter über Glut und Flamme. Verbrennt Feinde, bevor sie nahe kommen, doch ein Treffer streckt ihn schnell nieder.",weapon:"Flammenstab",skill:"Feuerball: sengt Gegner und lässt sie weiterbrennen",st:[2,5,1,3]},
- {id:"warrior",name:"Krieger",title:"Krieger",desc:"Ein zäher Kämpfer in Lederrüstung. Hält viel aus und teilt mit seiner Axt kräftig aus.",weapon:"Kriegsaxt",skill:"Wirbelschlag: trifft alle Gegner ringsum",st:[5,4,4,2]},
- {id:"archer",name:"Bogenschütze",title:"Bogenschütze",desc:"Flinker Schütze der Wälder mit grüner Kapuze. Bleibt auf Abstand und trifft zielsicher.",weapon:"Eibenbogen",skill:"Pfeilhagel: mehrere Pfeile auf einmal",st:[3,4,2,5]}
+ {id:"mage",name:"Magier",title:"Feuermagier",desc:"Der Feuermagier ist ein mächtiger Magier, der die zerstörerische Kraft des Feuers beherrscht.",weapon:"Flammenstab",skill:"Feuerball: Schleudert eine brennende Kugel auf Gegner.",st:[2,5,1,3]},
+ {id:"warrior",name:"Krieger",title:"Krieger",desc:"Der Krieger ist ein unerbittlicher Kämpfer, der mit seiner gewaltigen Streitaxt in die Schlacht zieht.",weapon:"Streitaxt",skill:"Spaltender Hieb: Führt einen gewaltigen Axthieb aus, der Gegner schwer verletzt.",st:[5,4,4,2]},
+ {id:"archer",name:"Bogenschütze",title:"Bogenschütze",desc:"Der Bogenschütze ist ein Meister der Präzision, der seine Feinde aus der Ferne ausschaltet, bevor sie ihn überhaupt bemerken.",weapon:"Bogen",skill:"Präzisionsschuss: Verschießt einen gezielten Pfeil, der hohen Schaden verursacht.",st:[3,4,2,5]}
 ];
 const STATS=["Leben","Angriff","Verteidigung","Tempo"];
 
