@@ -61,7 +61,7 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
  text-shadow:calc(var(--u)*.6) 0 0 #14100b,calc(var(--u)*-.6) 0 0 #14100b,0 calc(var(--u)*.6) 0 #14100b,0 calc(var(--u)*-.6) 0 #14100b,calc(var(--u)*1.2) calc(var(--u)*1.2) 0 rgba(0,0,0,.6)}
 .menu-wrap{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);width:100%}
 .menu-btns{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*3);width:calc(var(--u)*135)}.menu-btns .mbtn:last-child{grid-column:1/-1;justify-self:center;width:calc((100% - var(--u)*3)/2)}
-.view.menu{justify-content:center;padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*36)}
+.view.menu{justify-content:center;padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*31)}
 #menubg{position:absolute;left:calc(var(--u)*5);top:calc(var(--u)*5);image-rendering:pixelated;display:none;z-index:0}
 .game.scene #menubg{display:block}
 .view{position:relative;z-index:1}
@@ -96,7 +96,7 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
 .ranks div{display:flex;gap:calc(var(--u)*4);padding:calc(var(--u)*.8) 0;border-bottom:calc(var(--u)*.5) solid #3b352d}.ranks div b{font-weight:400;color:#f0c85a;width:calc(var(--u)*8)}.ranks div span{flex:1}
 .dimtx{font-family:var(--font-rb);font-size:max(15px,calc(var(--u)*4));color:#a8997c;margin:0}
 @media (max-width:760px){
- .view.menu{gap:calc(var(--u)*2);padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*36)}#menu-title{display:none}
+ .view.menu{gap:calc(var(--u)*2);padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*31)}#menu-title{display:none}
  .menu-wrap{flex-direction:column-reverse;gap:calc(var(--u)*3)}
  .menu-btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*2.4)}.menu-btns .mbtn:last-child{grid-column:1/-1;width:calc((100% - var(--u)*2.4)/2)}
  .mbtn{font-size:max(16px,calc(var(--u)*5.4));padding:calc(var(--u)*1.2) calc(var(--u)*2)}
@@ -237,7 +237,7 @@ function drawTitle(){
   // Schriftgröße so wählen, dass der Titel ca. 60 % der Fensterbreite einnimmt (Handy: 80 %)
   const target=FRM.fwR*(innerWidth<=760?.8:.6),fs=Math.max(8*u,Math.min(32*u,20*u*target/L0,(FRM.gt+3*u-6)/(.75+.085*L0/(20*u)))),Lw=L0*fs/(20*u);   // passt auch bei niedrigen Bildschirmen ins Bild
   const sag=Lw*.085;let c=Lw;for(let i=0;i<4;i++)c=Lw/(1+8/3*Math.pow(sag/c,2));
-  const rad=(c*c/4+sag*sag)/(2*sag),mx=FRM.gl+FRM.fwR/2,ye=FRM.gt+3*u;
+  const rad=(c*c/4+sag*sag)/(2*sag),mx=FRM.gl+FRM.fwR/2,ye=FRM.gt+5*u;
   const path=document.createElementNS(NS,"path");path.setAttribute("id","tarc");path.setAttribute("fill","none");
   path.setAttribute("d","M"+(mx-c/2)+" "+ye+" A"+rad+" "+rad+" 0 0 1 "+(mx+c/2)+" "+ye);svg.appendChild(path);
   [[u,"rgba(0,0,0,.5)","rgba(0,0,0,.5)"],[0,"#f0c85a","#14100b"]].forEach(([off,fill,stroke])=>{
