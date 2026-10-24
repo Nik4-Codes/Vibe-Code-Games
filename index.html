@@ -60,7 +60,11 @@ body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
 .rbh{font-family:var(--font-rb);font-weight:400;font-size:calc(var(--u)*9);line-height:1.05;letter-spacing:.02em;margin:0;color:#f0c85a;
  text-shadow:calc(var(--u)*.6) 0 0 #14100b,calc(var(--u)*-.6) 0 0 #14100b,0 calc(var(--u)*.6) 0 #14100b,0 calc(var(--u)*-.6) 0 #14100b,calc(var(--u)*1.2) calc(var(--u)*1.2) 0 rgba(0,0,0,.6)}
 .menu-wrap{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);width:100%}
-.menu-btns{display:flex;flex-direction:column;gap:calc(var(--u)*2.6);width:calc(var(--u)*72)}
+.menu-btns{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*3);width:calc(var(--u)*135)}.menu-btns .mbtn:last-child{grid-column:1/-1;justify-self:center;width:calc((100% - var(--u)*3)/2)}
+.view.menu{justify-content:center;padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*36)}
+#menubg{position:absolute;left:calc(var(--u)*5);top:calc(var(--u)*5);image-rendering:pixelated;display:none;z-index:0}
+.game.scene #menubg{display:block}
+.view{position:relative;z-index:1}
 .mbtn{font-family:var(--font-rb);font-weight:400;font-size:max(18px,calc(var(--u)*5.8));padding:calc(var(--u)*1.6) calc(var(--u)*4);background:#e8b84a;color:#2a1a0c;border:0;border-radius:0;cursor:pointer;
  width:100%;box-shadow:inset 0 calc(var(--u)*-1.2) 0 #b8841f,0 0 0 var(--u) #14100b}
 .mbtn:hover{background:#f4cc66}.mbtn:active{transform:translateY(var(--u))}
@@ -92,9 +96,9 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
 .ranks div{display:flex;gap:calc(var(--u)*4);padding:calc(var(--u)*.8) 0;border-bottom:calc(var(--u)*.5) solid #3b352d}.ranks div b{font-weight:400;color:#f0c85a;width:calc(var(--u)*8)}.ranks div span{flex:1}
 .dimtx{font-family:var(--font-rb);font-size:max(15px,calc(var(--u)*4));color:#a8997c;margin:0}
 @media (max-width:760px){
- .view.menu{gap:calc(var(--u)*2)}#menu-title{display:none}
+ .view.menu{gap:calc(var(--u)*2);padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*36)}#menu-title{display:none}
  .menu-wrap{flex-direction:column-reverse;gap:calc(var(--u)*3)}
- .menu-btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*2.4)}.menu-btns .mbtn:last-child{grid-column:1/-1}
+ .menu-btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*2.4)}.menu-btns .mbtn:last-child{grid-column:1/-1;width:calc((100% - var(--u)*2.4)/2)}
  .mbtn{font-size:max(16px,calc(var(--u)*5.4));padding:calc(var(--u)*1.2) calc(var(--u)*2)}
  .cls-panel{gap:calc(var(--u)*3);width:100%}.cls-info{max-width:none;flex:1;min-width:0;font-size:max(13px,calc(var(--u)*4))}.cls-info h3{font-size:calc(var(--u)*6)}
  #v-classes{padding:calc(var(--u)*3) calc(var(--u)*7) calc(var(--u)*5);gap:calc(var(--u)*2)}#v-classes .rbh{display:none}
@@ -106,6 +110,7 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
 <canvas id="bg"></canvas>
 
 <div class="game" id="game">
+  <canvas id="menubg"></canvas>
   <div class="view" id="v-name">
     <h1 class="gtitle">Willkommen Sire!</h1>
     <p class="gsub">Nennt euren Namen, auf das er in die Chroniken eingehe!</p>
@@ -124,11 +129,6 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
         <button class="mbtn" data-go="classes">Klassen</button>
         <button class="mbtn" data-go="settings">Einstellungen</button>
         <button class="mbtn" data-go="ranks">Ranglisten</button>
-      </div>
-      <div class="menu-chars">
-        <div class="fig"><canvas class="spr" data-id="mage"></canvas><span>Magier</span></div>
-        <div class="fig"><canvas class="spr" data-id="warrior"></canvas><span>Krieger</span></div>
-        <div class="fig"><canvas class="spr" data-id="archer"></canvas><span>Bogenschütze</span></div>
       </div>
     </div>
   </div>
@@ -223,7 +223,8 @@ function layout(){const vw=innerWidth,vh=innerHeight;
   const g=document.getElementById("game"),fc=document.getElementById("frame");
   Object.assign(g.style,{left:gl+"px",top:gt+"px",width:fwR+"px",height:fhR+"px",transform:"none",aspectRatio:"auto"});
   Object.assign(fc.style,{left:(gl-S)+"px",top:(gt-S)+"px",width:(fwR+2*S)+"px",height:(fhR+2*S)+"px"});
-  FRM={gl,gt,fwR,fhR};drawFrame(fwR/S+2,fhR/S+2);drawTitle()}
+  FRM={gl,gt,fwR,fhR};drawFrame(fwR/S+2,fhR/S+2);drawTitle();
+  const mw=fwR/S-10,mh=fhR/S-10,mb=document.getElementById("menubg");mb.width=mw;mb.height=mh;mb.style.width=mw*S+"px";mb.style.height=mh*S+"px";MS&&(MS.ctx=null);buildMenuScene(mw,mh)}
 
 /* ===== Titel: kleiner Bogen über dem Fenster, Anfang und Ende ragen in den Steinrahmen ===== */
 let FRM=null;
@@ -234,7 +235,7 @@ function drawTitle(){
     e.setAttribute("font-family","'Jacquard 24','MedievalSharp',serif");return e};
   const probe=mk(20*u);probe.textContent=TXT;svg.appendChild(probe);const L0=probe.getComputedTextLength()||120*u;svg.removeChild(probe);
   // Schriftgröße so wählen, dass der Titel ca. 60 % der Fensterbreite einnimmt (Handy: 80 %)
-  const target=FRM.fwR*(innerWidth<=760?.8:.6),fs=Math.max(8*u,Math.min(32*u,20*u*target/L0)),Lw=L0*fs/(20*u);
+  const target=FRM.fwR*(innerWidth<=760?.8:.6),fs=Math.max(8*u,Math.min(32*u,20*u*target/L0,(FRM.gt+3*u-6)/(.75+.085*L0/(20*u)))),Lw=L0*fs/(20*u);   // passt auch bei niedrigen Bildschirmen ins Bild
   const sag=Lw*.085;let c=Lw;for(let i=0;i<4;i++)c=Lw/(1+8/3*Math.pow(sag/c,2));
   const rad=(c*c/4+sag*sag)/(2*sag),mx=FRM.gl+FRM.fwR/2,ye=FRM.gt+3*u;
   const path=document.createElementNS(NS,"path");path.setAttribute("id","tarc");path.setAttribute("fill","none");
@@ -502,16 +503,87 @@ const CLS=[
 ];
 const STATS=["Leben","Angriff","Verteidigung","Tempo"];
 
+/* ===== Menü-Hintergrund: eigener Waldweg im Spielfenster, die drei Helden marschieren darauf ===== */
+let MS=null;
+function spriteOn(tc,ox,oy,w,h,draw,oc){ox=Math.round(ox);oy=Math.round(oy);w=Math.max(3,Math.ceil(w));h=Math.max(3,Math.ceil(h));
+  const t=document.createElement("canvas");t.width=w;t.height=h;const c=t.getContext("2d",{willReadFrequently:true});
+  c.translate(-ox,-oy);draw(c);c.setTransform(1,0,0,1,0,0);outline(c,w,h,oc||OUT);tc.drawImage(t,ox,oy)}
+
+function buildMenuScene(w,h){
+  const bg=document.createElement("canvas");bg.width=w;bg.height=h;const c=bg.getContext("2d",{willReadFrequently:true}),R=rng(23),vy=Math.round(h*.4);
+  const Y=t=>vy+(h-vy)*t,HW=t=>w*(.012+.25*t),CXm=t=>w/2+Math.sin(t*2.6+.5)*w*.05*(1-t*.3);
+  const SKY=["#5aa5e6","#82bfee","#b4d9f1","#f3e3b6","#fbd39b"],GRD=["#c4d27a","#a6c261","#86ad50","#6a9743","#538238","#406c30"],
+    SAND=["#f0dcae","#e0c58a","#cfae6c","#bb9455","#a47c41"],HZ="#efdcae";
+  // Abendhimmel (warm am Horizont) und goldener Waldboden
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)px(c,x,y,y<vy?band(SKY,y/vy,x,y):band(GRD,(y-vy)/(h-vy),x,y));
+  [[.14,.14,5],[.46,.22,4],[.82,.12,6],[.66,.34,3]].forEach(([a,b,s])=>{const z=Math.max(2,s*w/215);
+    [[0,0,1],[1.1,.2,.8],[-1.1,.25,.75],[.5,-.5,.7]].forEach(([dx,dy,q])=>disc(c,w*a+dx*z,vy*b+3+dy*z*.6,q*z,q*z*.55,"#fff2d8"))});
+  [["#b4cf86",.7],["#97bb6c",1]].forEach(([col,s],j)=>{for(let x=-4;x<w+6;x+=3+Math.floor(R()*4))disc(c,x,vy-1-j*2+Math.round(R()*2),3+R()*6*s,2+R()*3*s,col)});
+  // Sandweg mit Steinen und Moos
+  const L=[],Rg=[];
+  for(let y=vy;y<h;y++){const t=(y-vy)/(h-vy),c0=Math.round(CXm(t)),hw=Math.max(1,Math.round(HW(t))+Math.round((hs(y,5)-.5)*1.8)),l=c0-hw,r=c0+hw;L[y]=l;Rg[y]=r;
+    for(let x=l;x<=r;x++){let col=band(SAND,t,x,y);const n=hs(x,y);if(n<.05)col="#f4e6bc";else if(n>.95)col="#a2773f";
+      if(x===l||x===r)col="#6e4a26";else if(x===r-1&&t>.15)col="#a97f45";px(c,x,y,col)}}
+  for(let i=0;i<60;i++){const t=Math.pow(R(),.8),y=Math.round(Y(t));if(y<vy+2||y>=h)continue;
+    const x=Math.round(CXm(t)+(R()*2-1)*HW(t)*.85),rx=1+Math.floor(t*2+R()*1.2);
+    const k=(1-t)*.5,gp=["#4b515b","#7b818c","#a8adb6","#d2d6dc"].map(q=>mixHex(q,HZ,k));
+    if(R()<.4){px(c,x,y,"#4c9a3c");px(c,x+1,y,"#80c657");continue}
+    px(c,x,y,gp[1]);px(c,x-1,y,gp[2]);if(rx>1)px(c,x+1,y,gp[0])}
+  const tuft=(x,y,hh,k)=>{const cs=["#2f7a35","#4aa83a","#7fcb52"].map(q=>mixHex(q,HZ,k));
+    for(let j=-1;j<=1;j++){const n=Math.max(1,hh-Math.abs(j));for(let q=0;q<n;q++)px(c,x+j,y-q,cs[q?1:0])}};
+  for(let i=0;i<110;i++){const t=Math.pow(R(),.8),x=Math.floor(R()*w),y=Math.round(Y(t));if(y<vy+2||y>=h)continue;
+    if(x>L[y]-2&&x<Rg[y]+2)continue;tuft(x,y,1+Math.floor(t*3),(1-t)*.5)}
+  for(let i=0;i<40;i++){const t=Math.pow(R(),.9),x=Math.floor(R()*w),y=Math.round(Y(t));if(y<vy+2||y>=h)continue;
+    px(c,x,y,["#f0983a","#ffd06a","#d9692a"][Math.floor(R()*3)])}   // Herbstlaub am Boden
+  // Bäume (grün, gelb, herbstlich orange), ferne Bäume im warmen Dunst
+  const AUT=["#8a3a18","#c9591f","#f0983a","#ffd06a"],YLW=["#5b7a28","#8fa83a","#c4cf50","#e8e888"],trees=[];
+  [-1,1].forEach(s=>{for(let k=0;k<9;k++){const t=.06+(k+R()*.7)/9*.9;
+    trees.push({t,x:CXm(t)+s*(HW(t)+w*(.03+R()*.12)*(.3+t)),u:R(),v:R()})}});
+  trees.sort((a,b)=>a.t-b.t);
+  trees.forEach(o=>{const t=o.t,by=Math.round(Y(t)),k=(1-t)*.5,f=q=>mixHex(q,HZ,k),oc=mixHex(OUT,HZ,k*.8),x=Math.round(o.x),sd=Math.floor(o.v*100),tp=TRUNK.map(f),r=w*.075*(.25+.75*t)+1.5;
+    if(o.u<.22){
+      const w0=r*2.4,th=Math.round(r*1.1)+2,tw=Math.max(2,Math.round(r*.3)),hh=r*1.1+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
+      spriteOn(c,x-w0/2-3,by-th-hh*2.5-3,w0+6,th+hh*2.5+8,cc=>{trunk(cc,x,by,th,tw,tp,sd,0);
+        for(let i=0;i<4;i++){const ty=by-th*.7-i*hh*.62,ww=w0*(1-i*.2);
+          for(let rr=0;rr<=hh;rr++){const half=Math.max(0,Math.round(ww/2*(rr/hh))),y=Math.round(ty-hh+rr);
+            for(let xx=x-half;xx<=x+half;xx++){const rel=half?(xx-x)/half:0;let col=rel<-.4?pal[2]:rel<.15?pal[1]:pal[0];
+              if(rr<2)col=pal[3];else if(((xx+y)&1)&&Math.abs(rel+.4)<.12)col=pal[1];px(cc,xx,y,col)}}}},oc);
+    }else{
+      const flat=o.v<.5,pal=(o.u<.5?GREEN[0]:o.u<.65?GREEN[1]:o.u<.85?AUT:YLW).map(f),ky=flat?.6:.88,th=Math.round(r*(flat?2.3:1.9)),tw=Math.max(2,Math.round(r*.38));
+      spriteOn(c,x-r*2.7,by-th-r*1.4,r*5.4,th+r*1.4+5,cc=>{
+        const top=trunk(cc,x,by,th,tw,tp,sd,tw*.12),cy=by-th,cxp=x+top;
+        const pf=flat?[[0,0,1],[-1.1,.25,.8],[1.1,.2,.85],[-.5,-.4,.7],[.55,-.35,.7],[-1.6,.5,.55],[1.6,.45,.55],[0,.5,.8]]
+                     :[[0,0,1],[-.75,.4,.8],[.75,.4,.8],[-.45,-.55,.75],[.5,-.5,.7],[0,.65,.65],[-1.2,.5,.6],[1.2,.5,.6],[-.2,-.9,.55]];
+        const ds=pf.map(([a,b,q])=>[cxp+a*r,cy+b*r*ky,q*r,q*r*ky]);if(flat)ds.unshift([cxp+r*1.9,cy+r*.95,r*.55,r*.4]);
+        blob(cc,ds,pal,sd)},oc);
+    }});
+  MS={bg,w,h,vy,cx:CXm,hw:HW,ctx:null}}
+
+const WALK=[{id:"mage",lane:-1},{id:"warrior",lane:0},{id:"archer",lane:1}],MSPR={};
+// Die Helden stehen auf dem Weg unter dem Menü und hüpfen leicht auf und ab (Atmen, Arme, Flamme)
+function drawMenuScene(ts){
+  if(!MS)return;const cv=gid("menubg");if(!MS.ctx)MS.ctx=cv.getContext("2d");
+  const c=MS.ctx,w=MS.w,h=MS.h;c.globalAlpha=1;c.clearRect(0,0,w,h);c.drawImage(MS.bg,0,0);c.imageSmoothingEnabled=false;
+  const d=Math.floor(ts/520)%2,fl=Math.floor(ts/170)%2,foot=h-3,tf=(foot-MS.vy)/(h-MS.vy),s=1;   // Maßstab 1: jedes Sprite-Pixel = genau ein Szenen-Pixel (kein Verzerren)
+  WALK.forEach(k=>{
+    const x=MS.cx(tf)+k.lane*SW*s,key=k.id+d+fl;
+    let sp=MSPR[k.id];if(!sp)sp=MSPR[k.id]=document.createElement("canvas");
+    if(sp._k!==key){sp._k=key;drawChar(sp,k.id,{d:d,al:d,ar:1-d,t:fl})}
+    const dw=SW*s,dh=SH*s;
+    c.fillStyle="rgba(0,0,0,.22)";c.fillRect(Math.round(x-10*s),Math.round(foot-1),Math.round(20*s),Math.max(1,Math.round(2*s)));
+    c.drawImage(sp,Math.round(x-dw/2),Math.round(foot-35*s-d),Math.round(dw),Math.round(dh))})}
+
 /* ===== Ansichten, Animation, Menü ===== */
 const VIEWS=["v-name","v-menu","v-new","v-load","v-classes","v-settings","v-ranks"];
 let animOn=false;
-function showView(v){VIEWS.forEach(id=>gid(id).classList.toggle("on",id===v));startAnim()}
+function showView(v){VIEWS.forEach(id=>gid(id).classList.toggle("on",id===v));gid("game").classList.toggle("scene",v==="v-menu");startAnim()}
 function startAnim(){if(!animOn){animOn=true;requestAnimationFrame(anim)}}
 function anim(ts){
   if(!["v-menu","v-classes"].some(id=>gid(id).classList.contains("on"))){animOn=false;return}
   const d=Math.floor(ts/520)%2,t=Math.floor(ts/170)%2;
   document.querySelectorAll("canvas.spr").forEach(cv=>{if(!cv.offsetParent)return;const k=cv.dataset.id+d+t;if(cv._k===k)return;cv._k=k;
     drawChar(cv,cv.dataset.id,{d:d,al:d,ar:1-d,t:t})});
+  if(gid("v-menu").classList.contains("on"))drawMenuScene(ts);
   requestAnimationFrame(anim)}
 function openMenu(){gid("menu-title").textContent="Seid gegrüßt, "+playerName+"!";showView("v-menu")}
 
