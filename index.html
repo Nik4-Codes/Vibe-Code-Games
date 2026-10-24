@@ -17,7 +17,7 @@
 @media (max-width:760px){:root{--fw:94vw;--ar:4/5}}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden}
-body{background:#4a8d3c;color:var(--ink);font-family:var(--font)}
+body{background:#0b1230;color:var(--ink);font-family:var(--font)}
 #bg{position:fixed;left:0;top:0;image-rendering:pixelated}
 #frame{position:fixed;z-index:3;pointer-events:none;image-rendering:pixelated}
 #title{position:fixed;left:0;top:0;z-index:4;pointer-events:none;overflow:visible}
@@ -175,6 +175,7 @@ const OUT="#1a1f16",HAZE="#dcefc8";
 const hexRGB=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16));
 const mixHex=(a,b,k)=>{const A=hexRGB(a),B=hexRGB(b);return"#"+A.map((v,i)=>Math.round(v+(B[i]-v)*k).toString(16).padStart(2,"0")).join("")};
 const rng=s=>()=>(s=(s*16807)%2147483647)/2147483647;
+const NIGHT_EX=new Set(),ex=c=>{const[r,g,b]=hexRGB(c);NIGHT_EX.add(r<<16|g<<8|b);return c};   // Farben, die beim Abdunkeln unverändert bleiben (Nachthimmel, Mond, Sterne)
 const hs=(x,y)=>{let h=Math.imul(x|0,73856093)^Math.imul(y|0,19349663);h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)%1000/1000};
 const px=(c,x,y,col)=>{c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),1,1)};
 const rect=(c,x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))};
@@ -279,18 +280,25 @@ function drawForest(){
   cv.width=W;cv.height=H;cv.style.width=W*S+"px";cv.style.height=H*S+"px";
   const R=rng(11),vy=Math.round(H*.26),vw=innerWidth,vh=innerHeight,fwPx=vw<=760?vw*.94:Math.min(vw*.64,vh*.8*16/9),FL=(vw-fwPx)/2/S,FR=W-FL,sideMode=FL>=28;
   const Y=t=>vy+(H-vy)*t,HW=t=>W*(.01+.2*t),CX=t=>W/2+Math.sin(t*3.2+.8)*W*.025*(1-t*.5);
-  const SKY=["#3d96e0","#5fb0ec","#8ac8f2","#b5dff6","#dff0fa"],GRD=["#c9e08a","#a6d06d","#82bb58","#62a447","#4a8d3c","#387632","#2b6029"];
+  const SKY=["#050816","#0a1030","#111c46","#1b2b5c","#283d78"].map(ex),GRD=["#c9e08a","#a6d06d","#82bb58","#62a447","#4a8d3c","#387632","#2b6029"];
   const SAND=["#ecdcae","#dcc58b","#cdae6f","#bd9559","#a97f45"];
 
   // Blätterdach/Himmel + Waldboden (gestuft, gerastert)
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)px(M,x,y,y<vy?band(SKY,y/vy,x,y):band(GRD,(y-vy)/(H-vy),x,y));
+  // Nachthimmel: Sterne und Mond mit Schein
+  {const R2=rng(99);
+   for(let i=0;i<110;i++){const x=Math.floor(R2()*W),y=Math.floor(R2()*vy*.95),big=R2()<.12;
+     px(M,x,y,ex(R2()<.5?"#fffffe":"#bfd2ff"));if(big)[[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>px(M,x+dx,y+dy,ex("#6f86c8")))}
+   const mx=Math.round(W*.1),my=Math.round(vy*.5),mr=Math.max(5,Math.round(W*.018));
+   disc(M,mx,my,mr*2.2,mr*2.2,ex("#1f3070"),true);disc(M,mx,my,mr*1.7,mr*1.7,ex("#2a4088"),true);disc(M,mx,my,mr,mr,ex("#efe9c0"));
+   [[-.3,-.3,.28],[.35,.1,.22],[-.1,.45,.18]].forEach(([a,b,q])=>disc(M,mx+a*mr,my+b*mr,q*mr,q*mr,ex("#cdc58f")))}
   // ferne Baumreihe am Horizont
   [["#a9d57a",.7],["#8cc866",1]].forEach(([col,s],j)=>{for(let x=-4;x<W+6;x+=2+Math.floor(R()*4)){
     disc(M,x,vy-1-j*2+Math.round(R()*2),3+R()*5*s,2+R()*3*s,col)}});
   // Pixel-Wolken
   const cloud=(x,y,s)=>{const P=[[0,0,1],[1.1,.2,.8],[-1.1,.25,.75],[.5,-.5,.7]];
-    P.forEach(([a,b,q])=>disc(M,x+a*s,y+b*s*.6+Math.max(1,s*.28),q*s,q*s*.55,"#bcd9f0"));
-    P.forEach(([a,b,q])=>disc(M,x+a*s,y+b*s*.6,q*s,q*s*.55,"#ffffff"))};
+    P.forEach(([a,b,q])=>disc(M,x+a*s,y+b*s*.6+Math.max(1,s*.28),q*s,q*s*.55,ex("#162250")));
+    P.forEach(([a,b,q])=>disc(M,x+a*s,y+b*s*.6,q*s,q*s*.55,ex("#25356e")))};
   [[.12,.1,7],[.34,.2,5],[.62,.08,8],[.86,.2,6],[.5,.3,4]].forEach(([a,b,sz])=>cloud(W*a,vy*b+3,Math.max(3,sz*W/360)));
 
   // ===== Sandweg =====
@@ -336,27 +344,27 @@ function drawForest(){
 
   // ===== Bäume von fern nach nah =====
   const trees=[];
-  [-1,1].forEach(s=>{const n=sideMode?8:20;for(let k=0;k<n;k++){
+  [-1,1].forEach(s=>{const n=sideMode?22:20;for(let k=0;k<n;k++){
     const t=Math.max(.06,Math.pow((k+.3+R()*.6)/n,sideMode?1:1.8)),u=R(),type=u<.25?"pine":u<.6?"acacia":"round";
     if(sideMode){ // locker verteilt links und rechts vom Spielfenster, auch nebeneinander
-      const cap=FL*.17,r=cap*(.4+.6*t)*(.85+R()*.3),e=r*2.3,cornerY=(vh/2+fwPx*9/32)/S,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9;
+      const cap=FL*.21,r=cap*(.4+.6*t)*(.85+R()*.3),e=r*2.3,cornerY=(vh/2+fwPx*9/32)/S,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9;
       let x=(lo+hi)/2;
       for(let i=0;i<20;i++){x=hi>lo?lo+R()*(hi-lo):(lo+hi)/2;
         const blocked=s>0&&Y(t)>cornerY-14&&x<FR+40;           // nicht hinter den Wegweiser stellen
-        if(!blocked&&!trees.some(o=>Math.abs(o.x-x)<(o.r+r)*.9&&Math.abs(o.t-t)<.14))break}
-      trees.push({t,x,r,type,v:R()});
+        if(!blocked&&!trees.some(o=>Math.abs(o.x-x)<(o.r+r)*.55&&Math.abs(o.t-t)<.06))break}
+      trees.push({t,x,r,type,v:R(),tall:t>.4?R()*1.2:0});
     }else trees.push({t,x:CX(t)+s*(HW(t)+W*(.03+R()*.12)*(.4+t)),type,v:R()});
   }});
   if(sideMode)[[-1,.55],[1,.42]].forEach(([s,t])=>{   // zwei zusätzliche Bäume
-    const cap=FL*.17,r=cap*(.4+.6*t)*(.85+R()*.3),e=r*2.3,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9,type=R()<.5?"acacia":"round";
+    const cap=FL*.21,r=cap*(.4+.6*t)*(.85+R()*.3),e=r*2.3,lo=s<0?e*.9:FR+e,hi=s<0?FL-e:W-e*.9,type=R()<.5?"acacia":"round";
     let x=(lo+hi)/2;for(let i=0;i<30;i++){x=hi>lo?lo+R()*(hi-lo):(lo+hi)/2;
-      if(!trees.some(o=>Math.abs(o.x-x)<(o.r+r)*.9&&Math.abs(o.t-t)<.14))break}
-    trees.push({t,x,r,type,v:R()})});
+      if(!trees.some(o=>Math.abs(o.x-x)<(o.r+r)*.55&&Math.abs(o.t-t)<.06))break}
+    trees.push({t,x,r,type,v:R(),tall:t>.4?R()*1.2:0})});
   trees.sort((a,b)=>a.t-b.t);
   trees.forEach(T=>{
     const t=T.t,sc=.04+t,by=Math.round(Y(t)),k=Math.max(0,(T.r?.4:.78)*(1-t)),f=c=>mixHex(c,HAZE,k),oc=mixHex(OUT,HAZE,k*.85),x=Math.round(T.x),seed=Math.floor(T.v*100),tp=TRUNK.map(f);
     if(T.type==="pine"){
-      const w0=T.r?T.r*2.4:W*.13*sc+4,th=T.r?Math.round(T.r*1.1)+2:Math.round(H*.22*sc)+2,tw=Math.max(2,T.r?Math.round(T.r*.3):Math.round(W*.018*sc+1)),tiers=4,h=T.r?T.r*1.1+3:H*.2*sc+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
+      const w0=T.r?T.r*2.4:W*.13*sc+4,th=T.r?Math.round(T.r*1.1*(1+(T.tall||0)))+2:Math.round(H*.22*sc)+2,tw=Math.max(2,T.r?Math.round(T.r*.3):Math.round(W*.018*sc+1)),tiers=4,h=T.r?T.r*1.1+3:H*.2*sc+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
       sprite(x-w0/2-3,by-th-h*tiers*.62-h-3,w0+6,th+h*tiers*.62+h+8,c=>{
         trunk(c,x,by,th,tw,tp,seed,0);
         for(let i=0;i<tiers;i++){const ty=by-th*.7-i*h*.62,w=w0*(1-i*.2);
@@ -364,7 +372,7 @@ function drawForest(){
             for(let xx=x-half;xx<=x+half;xx++){const rel=half?(xx-x)/half:0;let col=rel<-.4?pal[2]:rel<.15?pal[1]:pal[0];
               if(r<2)col=pal[3];else if(((xx+y)&1)&&Math.abs(rel+.4)<.12)col=pal[1];px(c,xx,y,col)}}}},oc);
     }else{
-      const r=T.r||W*.085*sc+2,th=T.r?Math.round(r*(T.type==="acacia"?2.4:2)):Math.round(H*(T.type==="acacia"?.5:.56)*sc),tw=T.r?Math.max(2,Math.round(r*.4)):Math.max(2,Math.round(W*.03*sc+2)),pal=GREEN[T.v<.5?0:1].map(f),flat=T.type==="acacia",ky=flat?.6:.88;
+      const r=T.r||W*.085*sc+2,th=T.r?Math.round(r*(T.type==="acacia"?2.4:2)*(1+(T.tall||0))):Math.round(H*(T.type==="acacia"?.5:.56)*sc),tw=T.r?Math.max(2,Math.round(r*.4)):Math.max(2,Math.round(W*.03*sc+2)),pal=GREEN[T.v<.5?0:1].map(f),flat=T.type==="acacia",ky=flat?.6:.88;
       sprite(x-r*2.7,by-th-r*1.4,r*5.4,th+r*1.4+5,c=>{
         const top=trunk(c,x,by,th,tw,tp,seed,tw*.12),cy=by-th,cxp=x+top;
         const pf=flat?[[0,0,1],[-1.1,.25,.8],[1.1,.2,.85],[-.5,-.4,.7],[.55,-.35,.7],[-1.6,.5,.55],[1.6,.45,.55],[0,.5,.8]]:[[0,0,1],[-.75,.4,.8],[.75,.4,.8],[-.45,-.55,.75],[.5,-.5,.7],[0,.65,.65],[-1.2,.5,.6],[1.2,.5,.6],[-.2,-.9,.55]];
@@ -372,8 +380,17 @@ function drawForest(){
         if(flat)ds.unshift([cxp+r*1.9,cy+r*.95,r*.55,r*.4]);   // kleiner Seitenbusch wie beim Vorbild
         blob(c,ds,pal,seed)},oc);
     }});
-
+  nightGrade(W,H);fireflies(W,H,vy);
 }
+
+// Nacht: alles dunkler und bläulich (Pixel bleiben scharf, nur die Farben ändern sich)
+function nightGrade(W,H){const d=M.getImageData(0,0,W,H),a=d.data;
+  for(let i=0;i<a.length;i+=4){if(NIGHT_EX.has(a[i]<<16|a[i+1]<<8|a[i+2]))continue;
+    a[i]=a[i]*.34;a[i+1]=a[i+1]*.45+4;a[i+2]=Math.min(255,a[i+2]*.62+26)}
+  M.putImageData(d,0,0)}
+// Glühwürmchen
+function fireflies(W,H,vy){const R2=rng(7);for(let i=0;i<26;i++){const x=Math.floor(R2()*W),y=Math.floor(vy+R2()*(H-vy)*.9);
+  M.fillStyle="rgba(190,255,90,.22)";M.fillRect(x-1,y-1,3,3);px(M,x,y,"#eaff8a")}}
 
 /* ===== Wegweiser als Pixel-Sprite ===== */
 function drawSign(){
