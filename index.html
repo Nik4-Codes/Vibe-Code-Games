@@ -60,7 +60,7 @@ body{background:#0b1230;color:var(--ink);font-family:var(--font)}
 .rbh{font-family:var(--font-rb);font-weight:400;font-size:calc(var(--u)*9);line-height:1.05;letter-spacing:.02em;margin:0;color:#f0c85a;
  text-shadow:calc(var(--u)*.6) 0 0 #14100b,calc(var(--u)*-.6) 0 0 #14100b,0 calc(var(--u)*.6) 0 #14100b,0 calc(var(--u)*-.6) 0 #14100b,calc(var(--u)*1.2) calc(var(--u)*1.2) 0 rgba(0,0,0,.6)}
 .menu-wrap{display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);width:100%}
-.menu-btns{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*3);width:calc(var(--u)*135)}.menu-btns .mbtn:last-child{grid-column:1/-1;justify-self:center;width:calc((100% - var(--u)*3)/2)}
+.menu-btns{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*3);width:calc(var(--u)*135)}
 .view.menu{justify-content:center;padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*31)}
 #menubg{position:absolute;left:calc(var(--u)*5);top:calc(var(--u)*5);image-rendering:pixelated;display:none;z-index:0}
 .game.scene #menubg{display:block}
@@ -98,11 +98,68 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
 @media (max-width:760px){
  .view.menu{gap:calc(var(--u)*2);padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*31)}#menu-title{display:none}
  .menu-wrap{flex-direction:column-reverse;gap:calc(var(--u)*3)}
- .menu-btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*2.4)}.menu-btns .mbtn:last-child{grid-column:1/-1;width:calc((100% - var(--u)*2.4)/2)}
+ .menu-btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*2.4)}
  .mbtn{font-size:max(16px,calc(var(--u)*5.4));padding:calc(var(--u)*1.2) calc(var(--u)*2)}
  .cls-panel{gap:calc(var(--u)*3);width:100%}.cls-info{max-width:none;flex:1;min-width:0;font-size:max(13px,calc(var(--u)*4))}.cls-info h3{font-size:calc(var(--u)*6)}
  #v-classes{padding:calc(var(--u)*3) calc(var(--u)*7) calc(var(--u)*5);gap:calc(var(--u)*2)}#v-classes .rbh{display:none}
  .rbh{font-size:calc(var(--u)*8)}.stat em{width:calc(var(--u)*30)}.srow span{width:calc(var(--u)*38)}
+}
+/* ===== Neues Spiel: Teambuilding im Pokédex-Stil ===== */
+.spr.sm{width:calc(var(--sm)*32);height:calc(var(--sm)*38)}
+.team-wrap{display:flex;gap:calc(var(--u)*8);align-items:flex-start;justify-content:center;width:100%}
+.dex{display:grid;grid-template-columns:repeat(4,auto);gap:calc(var(--u)*3)}
+.dexcell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*.4);padding:calc(var(--u)*1.5) calc(var(--u)*2);background:#14100b;border:0;border-radius:0;color:#e6d9bb;
+ font-family:var(--font-rb);cursor:pointer;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.6) #5f5240}
+.dexcell:hover{background:#1d1812}
+.dexcell.sel{background:#2a2410;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.9) #f0c85a}
+.dexcell.lock{cursor:default;opacity:.8}.dexcell.lock:hover{background:#14100b}
+.dexcell .no{font-size:max(12px,calc(var(--u)*3));color:#a8997c;align-self:flex-start}
+.dexcell .nm{font-size:max(14px,calc(var(--u)*4))}
+.q{width:calc(var(--sm)*32);height:calc(var(--sm)*38);display:flex;align-items:center;justify-content:center;font-family:var(--font-rb);font-size:calc(var(--sm)*22);color:#4a4132;text-shadow:calc(var(--sm)*1) calc(var(--sm)*1) 0 #000}
+.teampanel{display:flex;flex-direction:column;gap:calc(var(--u)*3);width:calc(var(--u)*85);font-family:var(--font-rb);color:#e6d9bb;text-align:left}
+.slots{display:flex;gap:calc(var(--u)*3);justify-content:center}
+.slot{display:flex;flex-direction:column;align-items:center;justify-content:center;width:calc(var(--sm)*32 + var(--u)*3);min-height:calc(var(--sm)*38 + var(--u)*3);background:#0f0c08;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.6) #5f5240}
+.slot .q{font-size:calc(var(--sm)*14)}
+.tnames{font-size:max(16px,calc(var(--u)*4.6));color:#f0c85a;text-align:center;min-height:1.3em}
+.tstats{display:flex;flex-direction:column;gap:calc(var(--u)*1)}
+.trow{display:flex;align-items:center;justify-content:space-between;font-size:max(14px,calc(var(--u)*4))}
+.trow>span:first-child{margin-right:calc(var(--u)*2)}
+.pips10 i{width:calc(var(--u)*2.2)!important;height:calc(var(--u)*2.2)!important}
+.ttype{font-size:max(14px,calc(var(--u)*4));line-height:1.25;min-height:calc(var(--u)*14)}
+.ttype b{display:block;font-weight:400;font-size:max(18px,calc(var(--u)*5.6));color:#f0c85a}
+.mbtn:disabled{background:#4a4238;color:#8a7d66;box-shadow:inset 0 calc(var(--u)*-1.2) 0 #34302a,0 0 0 var(--u) #14100b;cursor:not-allowed}
+.rowbtn .mbtn{width:auto;padding-left:calc(var(--u)*6);padding-right:calc(var(--u)*6)}
+.view.team{gap:calc(var(--u)*3)}
+@media (max-width:760px){
+ .team-wrap{flex-direction:column;align-items:center;gap:calc(var(--u)*3)}
+ .dex{grid-template-columns:repeat(4,1fr);gap:calc(var(--u)*2.4);width:100%}
+ .dexcell{padding:calc(var(--u)*1) 0}.dexcell .nm{font-size:max(12px,calc(var(--u)*3.6))}.dexcell .no{display:none}
+ .slots{display:none}.teampanel{width:100%;gap:calc(var(--u)*2)}
+ .tstats{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*.6) calc(var(--u)*4)}
+ .ttype{min-height:calc(var(--u)*12)}.view.team{gap:calc(var(--u)*2);padding-top:calc(var(--u)*3);padding-bottom:calc(var(--u)*6)}
+ .view.team .rbh{font-size:calc(var(--u)*7)}
+}
+/* ===== Gebiete ===== */
+.areagrid{display:grid;grid-template-columns:repeat(4,auto);gap:calc(var(--u)*3);justify-content:center}
+.areacard{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*.8);padding:calc(var(--u)*1.5);background:#14100b;border:0;border-radius:0;color:#e6d9bb;font-family:var(--font-rb);cursor:pointer;
+ box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.6) #5f5240}
+.areacard:hover{background:#1d1812}.areacard.sel{background:#2a2410;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.9) #f0c85a}
+.areacard.lock{cursor:default;opacity:.85}.areacard.lock:hover{background:#14100b}
+.areacard .nm{font-size:max(15px,calc(var(--u)*4.4))}.areacard .tg{font-size:max(12px,calc(var(--u)*3.2));color:#a8997c}
+.thumb{display:block;width:calc(var(--sm)*80);height:calc(var(--sm)*45);image-rendering:pixelated}
+.q2{display:flex;align-items:center;justify-content:center;background:#0b0906;font-size:calc(var(--sm)*20);color:#4a4132;font-family:var(--font-rb);text-shadow:calc(var(--sm)*1) calc(var(--sm)*1) 0 #000}
+.areainfo{font-family:var(--font-rb);font-size:max(15px,calc(var(--u)*4.2));color:#e6d9bb;max-width:calc(var(--u)*170);min-height:calc(var(--u)*12);background:rgba(12,9,6,.82);padding:calc(var(--u)*2) calc(var(--u)*4);
+ box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.6) #5f5240;line-height:1.3}
+.areainfo b{display:block;font-weight:400;color:#f0c85a;font-size:max(18px,calc(var(--u)*5.6))}
+.view.areas{gap:calc(var(--u)*4)}
+.team-wrap{background:rgba(12,9,6,.82);padding:calc(var(--u)*3) calc(var(--u)*4);box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.6) #5f5240}
+.dimtx#team-area{margin-top:calc(var(--u)*-2);color:#f3e7c6;text-shadow:calc(var(--u)*.5) calc(var(--u)*.5) 0 #000,0 calc(var(--u)*.5) 0 #14100b}
+#run-text{background:rgba(12,9,6,.82);padding:calc(var(--u)*2.5) calc(var(--u)*4);box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.6) #5f5240;color:#e6d9bb}
+@media (max-width:760px){
+ .areagrid{grid-template-columns:1fr 1fr;width:100%;gap:calc(var(--u)*3)}.thumb{width:100%;height:auto}.areacard .tg{display:none}.areacard{padding:calc(var(--u)*1)}
+ .view.areas{gap:calc(var(--u)*2.5);padding-top:calc(var(--u)*3);padding-bottom:calc(var(--u)*6)}.view.areas .rbh{font-size:calc(var(--u)*7)}
+ .areainfo{padding:calc(var(--u)*1.5) calc(var(--u)*3);min-height:calc(var(--u)*10);width:100%}
+ .team-wrap{padding:calc(var(--u)*1.5) calc(var(--u)*2)}.dimtx#team-area{display:none}
 }
 </style>
 </head>
@@ -127,12 +184,33 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
         <button class="mbtn" data-go="new">Neues Spiel</button>
         <button class="mbtn" data-go="load">Spiel laden</button>
         <button class="mbtn" data-go="classes">Klassen</button>
+        <button class="mbtn" data-go="areas">Gebiete</button>
         <button class="mbtn" data-go="settings">Einstellungen</button>
         <button class="mbtn" data-go="ranks">Ranglisten</button>
       </div>
     </div>
   </div>
-  <div class="view" id="v-new"><h2 class="rbh">Neues Spiel</h2><p class="gsub">Hier entsteht die Wahl eurer Klasse und der Beginn der Reise.</p><button class="mbtn back" data-go="menu">Zurück</button></div>
+  <div class="view areas" id="v-areas">
+    <h2 class="rbh" id="areas-title">Gebiet wählen</h2>
+    <div class="areagrid" id="areagrid"></div>
+    <div class="areainfo" id="areainfo"></div>
+    <div class="rowbtn"><button class="mbtn back" data-go="menu">Zurück</button><button class="mbtn" id="btn-area-go" disabled>Weiter</button><button class="mbtn" id="btn-area-endless" style="display:none" disabled>Endlos-Run</button></div>
+  </div>
+  <div class="view team" id="v-new">
+    <h2 class="rbh">Team zusammenstellen</h2>
+    <p class="dimtx" id="team-area"></p>
+    <div class="team-wrap">
+      <div class="dex" id="dex"></div>
+      <div class="teampanel">
+        <div class="slots" id="slots"></div>
+        <div class="tnames" id="tnames"></div>
+        <div class="tstats" id="tstats"></div>
+        <div class="ttype" id="ttype"></div>
+      </div>
+    </div>
+    <div class="rowbtn"><button class="mbtn back" id="btn-team-back">Zurück</button><button class="mbtn" id="btn-team" disabled>Aufbrechen</button></div>
+  </div>
+  <div class="view" id="v-run"><h2 class="rbh">Das Abenteuer ruft!</h2><p class="gsub" id="run-text"></p><button class="mbtn back" data-go="team">Team ändern</button></div>
   <div class="view" id="v-load"><h2 class="rbh">Spiel laden</h2><p class="gsub" id="load-text"></p><button class="mbtn back" data-go="menu">Zurück</button></div>
   <div class="view" id="v-classes">
     <h2 class="rbh">Klassen</h2>
@@ -217,7 +295,7 @@ function layout(){const vw=innerWidth,vh=innerHeight;
   const rs=document.documentElement.style;rs.setProperty("--u",S+"px");
   const mob=vw<=760,fw=mob?vw*.94:Math.min(vw*.64,vh*.8*16/9),fh=mob?fw*1.25:fw*9/16;
   const below=vh/2-fh/2,us=Math.max(1,Math.min(S,mob?Math.floor(vw*.46/52):Math.floor((vw-fw)/2/40),Math.floor(below/35)));
-  rs.setProperty("--us",us+"px");rs.setProperty("--su",(mob?2:S)+"px");
+  rs.setProperty("--us",us+"px");rs.setProperty("--su",(mob?2:S)+"px");rs.setProperty("--sm",Math.max(2,Math.floor(S/2))+"px");
   // Wegweiser: schräg an die rechte untere Fensterecke gelehnt, das Brett ragt leicht ins Fenster
   const fwR=Math.max(S*40,Math.round(fw/S)*S),fhR=Math.round(fh/S)*S,gl=Math.round((vw-fwR)/2),gt=Math.round((vh-fhR)/2),ex=gl+fwR,ey=gt+fhR,bx=Math.min(ex+8*us,vw-6-26*us),by=ey+2*us,Px=bx+5.56*us,Py=by+31.5*us,sg=document.getElementById("sign");
   if(sg){sg.style.left=(Px-26*us)+"px";sg.style.top=(Py-44*us)+"px"}
@@ -225,7 +303,7 @@ function layout(){const vw=innerWidth,vh=innerHeight;
   Object.assign(g.style,{left:gl+"px",top:gt+"px",width:fwR+"px",height:fhR+"px",transform:"none",aspectRatio:"auto"});
   Object.assign(fc.style,{left:(gl-S)+"px",top:(gt-S)+"px",width:(fwR+2*S)+"px",height:(fhR+2*S)+"px"});
   FRM={gl,gt,fwR,fhR};drawFrame(fwR/S+2,fhR/S+2);drawTitle();
-  const mw=fwR/S-10,mh=fhR/S-10,mb=document.getElementById("menubg");mb.width=mw;mb.height=mh;mb.style.width=mw*S+"px";mb.style.height=mh*S+"px";MS&&(MS.ctx=null);buildMenuScene(mw,mh)}
+  const mw=fwR/S-10,mh=fhR/S-10,mb=document.getElementById("menubg");mb.width=mw;mb.height=mh;mb.style.width=mw*S+"px";mb.style.height=mh*S+"px";MS&&(MS.ctx=null);buildMenuScene(mw,mh);AS.anfang=buildAreaScene("anfang",mw,mh);paintScene(performance.now())}
 
 /* ===== Titel: kleiner Bogen über dem Fenster, Anfang und Ende ragen in den Steinrahmen ===== */
 let FRM=null;
@@ -576,6 +654,15 @@ function buildMenuScene(w,h){
     }});
   MS={bg,w,h,vy,cx:CXm,hw:HW,ctx:null}}
 
+let sceneMode=null;
+function setScene(m){sceneMode=m;gid("game").classList.toggle("scene",!!m);paintScene(performance.now())}
+// menu+heroes: Menühintergrund mit Helden | menu: derselbe Hintergrund ohne Helden | area: Gebietshintergrund (Weg von links nach rechts)
+function paintScene(ts){
+  if(!MS||!sceneMode)return;const cv=gid("menubg");if(!MS.ctx)MS.ctx=cv.getContext("2d");
+  if(sceneMode==="menu+heroes")return drawMenuScene(ts);
+  const c=MS.ctx;c.globalAlpha=1;c.clearRect(0,0,MS.w,MS.h);
+  c.drawImage(sceneMode==="area"?(AS[curArea?curArea.id:"anfang"]||MS.bg):MS.bg,0,0);
+  c.fillStyle="rgba(10,8,20,.3)";c.fillRect(0,0,MS.w,MS.h)}
 const WALK=[{id:"mage",lane:-1},{id:"warrior",lane:0},{id:"archer",lane:1}],MSPR={};
 // Die Helden stehen auf dem Weg unter dem Menü und hüpfen leicht auf und ab (Atmen, Arme, Flamme)
 function drawMenuScene(ts){
@@ -591,16 +678,16 @@ function drawMenuScene(ts){
     c.drawImage(sp,Math.round(x-dw/2),Math.round(foot-35*s-d),Math.round(dw),Math.round(dh))})}
 
 /* ===== Ansichten, Animation, Menü ===== */
-const VIEWS=["v-name","v-menu","v-new","v-load","v-classes","v-settings","v-ranks"];
+const VIEWS=["v-name","v-menu","v-areas","v-new","v-run","v-load","v-classes","v-settings","v-ranks"];
 let animOn=false;
-function showView(v){VIEWS.forEach(id=>gid(id).classList.toggle("on",id===v));gid("game").classList.toggle("scene",v==="v-menu");startAnim()}
+function showView(v){VIEWS.forEach(id=>gid(id).classList.toggle("on",id===v));setScene(v==="v-menu"?"menu+heroes":v==="v-areas"?"menu":(v==="v-new"||v==="v-run")?"area":null);startAnim()}
 function startAnim(){if(!animOn){animOn=true;requestAnimationFrame(anim)}}
 function anim(ts){
-  if(!["v-menu","v-classes"].some(id=>gid(id).classList.contains("on"))){animOn=false;return}
+  if(!["v-menu","v-classes","v-new"].some(id=>gid(id).classList.contains("on"))){animOn=false;return}
   const d=Math.floor(ts/520)%2,t=Math.floor(ts/170)%2;
   document.querySelectorAll("canvas.spr").forEach(cv=>{if(!cv.offsetParent)return;const k=cv.dataset.id+d+t;if(cv._k===k)return;cv._k=k;
     drawChar(cv,cv.dataset.id,{d:d,al:d,ar:1-d,t:t})});
-  if(gid("v-menu").classList.contains("on"))drawMenuScene(ts);
+  if(sceneMode==="menu+heroes")paintScene(ts);
   requestAnimationFrame(anim)}
 function openMenu(){gid("menu-title").textContent="Seid gegrüßt, "+playerName+"!";showView("v-menu")}
 
@@ -636,11 +723,127 @@ function go(v){
   if(v==="menu")return openMenu();
   if(v==="load")gid("load-text").textContent=localStorage.getItem("mr_save")?"Ein Spielstand wurde gefunden.":"Noch kein Spielstand vorhanden.";
   if(v==="classes"){buildClassTabs();renderClass(0)}
+  if(v==="new")return openAreas("new");
+  if(v==="areas")return openAreas("gebiete");
+  if(v==="team")return showView("v-new");
   if(v==="settings")syncSettings();
   if(v==="ranks")renderRanks();
   showView("v-"+v)}
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
 buildClassTabs();
+
+/* ===== Neues Spiel: Teambuilding im Pokédex-Stil (2 verschiedene Helden) ===== */
+const DEX=["mage","warrior","archer",null,null,null,null,null];   // null = noch nicht gefunden (Fragezeichen)
+let pick=[];
+const clsById=id=>CLS.find(k=>k.id===id);
+function mkEl(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function buildDex(){
+  const d=gid("dex");d.textContent="";
+  DEX.forEach((id,i)=>{
+    const b=mkEl("button","dexcell"),no=mkEl("span","no","Nr. "+String(i+1).padStart(3,"0"));b.appendChild(no);
+    if(id){const cv=mkEl("canvas","spr sm");cv.dataset.id=id;b.appendChild(cv);b.appendChild(mkEl("span","nm",clsById(id).name));b.dataset.id=id;b.onclick=()=>togglePick(id)}
+    else{b.classList.add("lock");b.appendChild(mkEl("div","q","?"));b.appendChild(mkEl("span","nm","???"))}
+    d.appendChild(b)})}
+function togglePick(id){
+  if(pick.includes(id))pick=pick.filter(x=>x!==id);
+  else{if(pick.length>=2)pick.shift();pick.push(id)}
+  renderTeam()}
+function teamStats(){const t=[0,0,0,0];pick.forEach(id=>clsById(id).st.forEach((v,i)=>t[i]+=v));return t}
+function teamType(t){const share=(t[0]+t[2])/(t[0]+t[1]+t[2]+t[3]);
+  if(share<.3)return["Glaskanone","Extrem hoher Schaden und Tempo, aber kaum Schutz."];
+  if(share<.4)return["DPS-Team","Viel Schaden und Tempo, dafür wenig Schutz."];
+  if(share<.55)return["Ausgeglichen","Solide Mischung aus Schutz und Schaden."];
+  if(share<.65)return["Tanky","Hält viel aus, teilt dafür etwas weniger aus."];
+  return["Sehr tanky","Fast unzerstörbar, aber der Schaden ist gering."]}
+function renderTeam(){
+  document.querySelectorAll(".dexcell[data-id]").forEach(b=>b.classList.toggle("sel",pick.includes(b.dataset.id)));
+  const sl=gid("slots");sl.textContent="";
+  for(let i=0;i<2;i++){const s=mkEl("div","slot");
+    if(pick[i]){const cv=mkEl("canvas","spr sm");cv.dataset.id=pick[i];s.appendChild(cv)}else s.appendChild(mkEl("div","q","?"));sl.appendChild(s)}
+  gid("tnames").textContent=pick.length?pick.map(id=>clsById(id).name).join(" + "):"Noch kein Held gewählt";
+  const t=teamStats(),st=gid("tstats");st.textContent="";
+  STATS.forEach((n,j)=>{const r=mkEl("div","trow"),p=mkEl("span","pips pips10");r.appendChild(mkEl("span","",n));
+    for(let q=0;q<10;q++){const u=document.createElement("i");if(q<t[j])u.className="f";p.appendChild(u)}r.appendChild(p);st.appendChild(r)});
+  const tt=gid("ttype");tt.textContent="";
+  if(pick.length===2){const [lbl,txt]=teamType(t);tt.appendChild(mkEl("b","","Teamtyp: "+lbl));tt.appendChild(document.createTextNode(txt))}
+  else tt.textContent="Wählt zwei verschiedene Helden für euer Team.";
+  gid("btn-team").disabled=pick.length<2}
+gid("btn-team").onclick=()=>{try{localStorage.setItem("mr_team",JSON.stringify(pick))}catch(e){}
+  gid("run-text").textContent="Gebiet: "+curArea.name+(runMode==="endless"?" (Endlos)":"")+". Euer Team: "+pick.map(id=>clsById(id).name).join(" und ")+" ("+teamType(teamStats())[0]+"). Der erste Kampf folgt bald!";showView("v-run")};
+
+/* ===== Gebiete: Szenen und Auswahl ===== */
+const AUT2=["#8a3a18","#c9591f","#f0983a","#ffd06a"],YLW2=["#5b7a28","#8fa83a","#c4cf50","#e8e888"],AS={};
+// Baum in beliebiger Größe auf eine Leinwand setzen (u: Art/Farbe, v: Form, k: Dunst 0..1)
+function plantTree(c,x,by,r,u,v,k,HZ){
+  const f=q=>mixHex(q,HZ,k),oc=mixHex(OUT,HZ,k*.8),sd=Math.floor(v*100),tp=TRUNK.map(f);x=Math.round(x);by=Math.round(by);r=Math.max(2,r);
+  if(u<.22){
+    const w0=r*2.4,th=Math.round(r*1.1)+2,tw=Math.max(2,Math.round(r*.3)),hh=r*1.1+3,pal=["#1c4f35","#2b7442","#4a9f58","#7ccc72"].map(f);
+    spriteOn(c,x-w0/2-3,by-th-hh*2.5-3,w0+6,th+hh*2.5+8,cc=>{trunk(cc,x,by,th,tw,tp,sd,0);
+      for(let i=0;i<4;i++){const ty=by-th*.7-i*hh*.62,ww=w0*(1-i*.2);
+        for(let rr=0;rr<=hh;rr++){const half=Math.max(0,Math.round(ww/2*(rr/hh))),y=Math.round(ty-hh+rr);
+          for(let xx=x-half;xx<=x+half;xx++){const rel=half?(xx-x)/half:0;let col=rel<-.4?pal[2]:rel<.15?pal[1]:pal[0];
+            if(rr<2)col=pal[3];else if(((xx+y)&1)&&Math.abs(rel+.4)<.12)col=pal[1];px(cc,xx,y,col)}}}},oc);
+  }else{
+    const flat=v<.5,pal=(u<.5?GREEN[0]:u<.65?GREEN[1]:u<.85?AUT2:YLW2).map(f),ky=flat?.6:.88,th=Math.round(r*(flat?2.3:1.9)),tw=Math.max(2,Math.round(r*.38));
+    spriteOn(c,x-r*2.7,by-th-r*1.4,r*5.4,th+r*1.4+5,cc=>{
+      const top=trunk(cc,x,by,th,tw,tp,sd,tw*.12),cy=by-th,cxp=x+top;
+      const pf=flat?[[0,0,1],[-1.1,.25,.8],[1.1,.2,.85],[-.5,-.4,.7],[.55,-.35,.7],[-1.6,.5,.55],[1.6,.45,.55],[0,.5,.8]]
+                   :[[0,0,1],[-.75,.4,.8],[.75,.4,.8],[-.45,-.55,.75],[.5,-.5,.7],[0,.65,.65],[-1.2,.5,.6],[1.2,.5,.6],[-.2,-.9,.55]];
+      const ds=pf.map(([a,b,q])=>[cxp+a*r,cy+b*r*ky,q*r,q*r*ky]);if(flat)ds.unshift([cxp+r*1.9,cy+r*.95,r*.55,r*.4]);
+      blob(cc,ds,pal,sd)},oc)}}
+
+// Seitenansicht: der Waldweg verläuft von links nach rechts (Gebiet „Der Anfang“, gut für Kämpfe)
+function buildAreaScene(id,w,h){
+  const bg=document.createElement("canvas");bg.width=w;bg.height=h;const c=bg.getContext("2d",{willReadFrequently:true}),R=rng(41);
+  const hz=Math.round(h*.5),py0=Math.round(h*.7),py1=Math.round(h*.9),sc=w/215,HZ="#efdcae";
+  const SKY=["#5aa5e6","#82bfee","#b4d9f1","#f3e3b6","#fbd39b"],GRD=["#c4d27a","#a6c261","#86ad50","#6a9743","#538238","#406c30"],SAND=["#f0dcae","#e0c58a","#cfae6c","#bb9455","#a47c41"];
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)px(c,x,y,y<hz?band(SKY,y/hz,x,y):band(GRD,(y-hz)/(h-hz),x,y));
+  [[.15,.2,5],[.5,.12,4],[.82,.24,6]].forEach(([a,b,s])=>{const z=Math.max(2,s*sc);
+    [[0,0,1],[1.1,.2,.8],[-1.1,.25,.75],[.5,-.5,.7]].forEach(([dx,dy,q])=>disc(c,w*a+dx*z,hz*b+3+dy*z*.6,q*z,q*z*.55,"#fff2d8"))});
+  [["#b4cf86",.7],["#97bb6c",1]].forEach(([col,s],j)=>{for(let x=-4;x<w+6;x+=Math.max(2,Math.round((3+R()*4)*sc)))disc(c,x,hz-1-j*2+Math.round(R()*2),(3+R()*6*s)*sc+1,(2+R()*3*s)*sc+1,col)});
+  // zwei Baumreihen hinter dem Weg (hinten im Dunst)
+  for(let x=-3;x<w+6;x+=Math.max(4,Math.round((9+R()*8)*sc)))plantTree(c,x,hz+h*.06,(4+R()*2)*sc+1.5,R(),R(),.55,HZ);
+  for(let x=Math.round(w*.03);x<w;x+=Math.max(6,Math.round((18+R()*14)*sc)))plantTree(c,x,hz+h*.17,(8+R()*3)*sc+1.5,R(),R(),.3,HZ);
+  // Sandweg von links nach rechts
+  const top=x=>py0+Math.round(Math.sin(x*.08)*1.2+(hs(x,9)-.5)*1.4),bot=x=>py1+Math.round(Math.sin(x*.06+2)*1.2+(hs(x,11)-.5)*1.4);
+  for(let x=0;x<w;x++){const t0=top(x),t1=bot(x);
+    for(let y=t0;y<=t1;y++){const f=(y-t0)/Math.max(1,t1-t0);let col=band(SAND,f*.85,x,y);const n=hs(x,y);
+      if(n<.05)col="#f4e6bc";else if(n>.95)col="#a2773f";if(y===t0||y===t1)col="#6e4a26";else if(y===t1-1)col="#a97f45";px(c,x,y,col)}}
+  for(let i=0;i<Math.round(w*.3);i++){const x=Math.floor(R()*w),t0=top(x),t1=bot(x);if(t1-t0<4)continue;const y=t0+2+Math.floor(R()*(t1-t0-3)),f=(y-t0)/(t1-t0),rx=1+Math.floor(f*2*sc*1.4+R()*1.2);
+    if(R()<.35){px(c,x,y,"#4c9a3c");px(c,x+1,y,"#80c657");continue}
+    if(rx>1){disc(c,x,y,rx+1,Math.max(1,Math.round(rx*.6))+1,"#4b515b");disc(c,x,y,rx,Math.max(1,Math.round(rx*.6)),"#8f949d");px(c,x-1,y-1,"#d2d6dc")}
+    else{px(c,x,y,"#7b818c");px(c,x-1,y,"#a8adb6")}}
+  const tuft=(x,y,hh)=>{const cs=["#2f7a35","#4aa83a","#7fcb52"];for(let j=-1;j<=1;j++){const n=Math.max(1,hh-Math.abs(j));for(let q=0;q<n;q++)px(c,x+j,y-q,cs[q?1:0])}};
+  for(let i=0;i<Math.round(w*.5);i++){const x=Math.floor(R()*w),side=R()<.5?top(x)-1:bot(x)+2;tuft(x,side,1+Math.floor(R()*2.4))}
+  for(let i=0;i<Math.round(w*.35);i++){const x=Math.floor(R()*w),y=py1+4+Math.floor(R()*Math.max(1,h-py1-5));tuft(x,y,1+Math.floor(R()*2))}
+  for(let i=0;i<Math.round(w*.25);i++)px(c,Math.floor(R()*w),py1+3+Math.floor(R()*Math.max(1,h-py1-3)),["#f0983a","#ffd06a","#d9692a","#ffffff","#ffe66d"][Math.floor(R()*5)]);
+  // zwei größere Bäume am Rand (vor dem Weg)
+  plantTree(c,w*.045,py1+3,w*.05+2,.4,.3,0,HZ);plantTree(c,w*.955,py1+3,w*.05+2,.7,.3,0,HZ);
+  return bg}
+
+const AREAS=[
+ {id:"anfang",name:"Der Anfang",tag:"Tutorial",desc:"Ein friedlicher Waldweg. Hier lernt ihr die Grundlagen des Spiels kennen.",endless:false},
+ {id:null},{id:null},{id:null}];
+let curArea=null,areaMode="new",runMode="normal";
+function openAreas(mode){areaMode=mode;curArea=null;gid("areas-title").textContent=mode==="new"?"Gebiet wählen":"Gebiete";renderAreas();showView("v-areas")}
+function renderAreas(){
+  const g=gid("areagrid");g.textContent="";
+  AREAS.forEach(a=>{const b=mkEl("button","areacard");
+    if(a.id){const t=buildAreaScene(a.id,80,45);t.className="thumb";b.appendChild(t);b.appendChild(mkEl("span","nm",a.name));b.appendChild(mkEl("span","tg",a.tag));b.dataset.id=a.id;b.onclick=()=>{curArea=a;renderAreaInfo()}}
+    else{b.classList.add("lock");b.appendChild(mkEl("div","thumb q2","?"));b.appendChild(mkEl("span","nm","???"));b.appendChild(mkEl("span","tg","Noch nicht entdeckt"))}
+    g.appendChild(b)});
+  renderAreaInfo()}
+function renderAreaInfo(){
+  document.querySelectorAll(".areacard[data-id]").forEach(b=>b.classList.toggle("sel",!!curArea&&b.dataset.id===curArea.id));
+  const i=gid("areainfo");i.textContent="";
+  if(!curArea)i.textContent="Wählt ein Gebiet, in das ihr aufbrechen wollt.";
+  else{i.appendChild(mkEl("b","",curArea.name));i.appendChild(document.createTextNode(curArea.desc+(curArea.endless?"":" Hier gibt es keinen Endlos-Modus.")))}
+  gid("btn-area-go").disabled=!curArea;
+  const e=gid("btn-area-endless");e.style.display=areaMode==="gebiete"?"":"none";e.disabled=!(curArea&&curArea.endless)}
+function enterTeam(){pick=[];buildDex();renderTeam();gid("team-area").textContent="Gebiet: "+curArea.name+(runMode==="endless"?" (Endlos)":"");showView("v-new")}
+gid("btn-area-go").onclick=()=>{runMode="normal";enterTeam()};
+gid("btn-area-endless").onclick=()=>{runMode="endless";enterTeam()};
+gid("btn-team-back").onclick=()=>showView("v-areas");
 
 playerName?openMenu():openNameForm();
 
