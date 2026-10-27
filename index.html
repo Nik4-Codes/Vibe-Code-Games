@@ -823,7 +823,7 @@ gid("btn-team").onclick=()=>{try{localStorage.setItem("mr_team",JSON.stringify(p
   gid("run-text").textContent="Gebiet: "+curArea.name+(runMode==="endless"?" (Endlos)":"")+". Euer Team: "+pick.map(id=>clsById(id).name).join(" und ")+" ("+teamType(teamStats())[0]+"). Der erste Kampf folgt bald!";showView("v-run")};
 
 /* ===== Steinplatte für die Menü-Reiter (Pixelart: Rand, Risse, Moos in den Ecken) ===== */
-function stoneBtn(w,h,seed){
+function stoneBtn(w,h,seed,simple){   // simple: kleine Schaltflächen (grobe Steinfläche, nur Eckrisse, kaum Moos)
   const cv=document.createElement("canvas");cv.width=w;cv.height=h;const c=cv.getContext("2d"),R=rng(seed*97+5),B=3;
   const cut=(x,y)=>x+y<3||(w-1-x)+y<3||x+(h-1-y)<3||(w-1-x)+(h-1-y)<3;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
@@ -839,20 +839,23 @@ function stoneBtn(w,h,seed){
   const crack=(x,y,dx,dy,n,depth)=>{for(let i=0;i<n;i++){if(inside(x,y)){px(c,x,y,"#5b4d3d");if(R()<.35)px(c,x+(dx?0:1),y+(dx?1:0),"#7a6a56")}
     if(R()<.5){if(dx)y+=R()<.5?-1:1;else x+=R()<.5?-1:1}x+=dx;y+=dy;
     if(depth<2&&i===Math.floor(n/2)&&R()<.8)crack(x,y,dx?dx:(R()<.5?1:-1),dx?(R()<.5?1:-1):dy,Math.floor(n/2),depth+1)}};
-  for(let k=0;k<4+Math.floor(w/45);k++){const side=Math.floor(R()*4),L=6+Math.floor(R()*Math.max(5,w/7));
+  for(let k=0;k<(simple?0:4+Math.floor(w/45));k++){const side=Math.floor(R()*4),L=6+Math.floor(R()*Math.max(5,w/7));
     if(side<2)crack(side?w-B-2:B+1,B+2+Math.floor(R()*(h-2*B-4)),side?-1:1,0,L,0);
     else crack(B+2+Math.floor(R()*(w-2*B-4)),side===2?B+1:h-B-2,0,side===2?1:-1,Math.floor(L/2)+3,0)}
+  // kleine Buttons: nur kurze Risse direkt an den Ecken (stören die Schrift nicht)
+  if(simple)[[B+1,B+1,1,1],[w-B-2,B+1,-1,1],[B+1,h-B-2,1,-1],[w-B-2,h-B-2,-1,-1]].forEach(([x0,y0,sx,sy])=>{let x=x0,y=y0;
+    for(let i=0;i<4;i++){if(inside(x,y))px(c,x,y,"#5b4d3d");if(R()<.7)x+=sx;if(R()<.6||i%2)y+=sy}});
   // Moos in den Ecken (kräftig, mit hellen Blättern)
   const MO=["#2c6a2c","#3f9a35","#6cc24a","#a4e266"],sz=Math.max(6,Math.round(h*.3)),moss=(x0,y0,sx,sy,k)=>{
     for(let i=0;i<k*sz*14;i++){const dx=Math.floor(R()*sz*2*k),dy=Math.floor(R()*sz*1.2*k);if(dx*.8+dy*1.5>sz*1.7*k)continue;
       const x=x0+sx*dx,y=y0+sy*dy;if(cut(x,y)||x<0||y<0||x>=w||y>=h||R()<.06)continue;px(c,x,y,MO[Math.min(3,Math.floor(R()*4))])}};
-  moss(1,1,1,1,.9);moss(w-2,1,-1,1,.8);moss(1,h-2,1,-1,1.15);moss(w-2,h-2,-1,-1,1);
-  for(let i=0;i<Math.round(w/9);i++){const x=B+2+Math.floor(R()*(w-2*B-4)),y=R()<.5?1+Math.floor(R()*2):h-2-Math.floor(R()*2);px(c,x,y,MO[1+Math.floor(R()*2)]);if(R()<.5)px(c,x+1,y,MO[1])}
+  if(simple){moss(1,1,1,1,.3);moss(w-2,h-2,-1,-1,.3)}else{moss(1,1,1,1,.9);moss(w-2,1,-1,1,.8);moss(1,h-2,1,-1,1.15);moss(w-2,h-2,-1,-1,1)}
+  for(let i=0;i<(simple?0:Math.round(w/9));i++){const x=B+2+Math.floor(R()*(w-2*B-4)),y=R()<.5?1+Math.floor(R()*2):h-2-Math.floor(R()*2);px(c,x,y,MO[1+Math.floor(R()*2)]);if(R()<.5)px(c,x+1,y,MO[1])}
   return cv}
 function paintStoneButtons(){
   const ps=Math.max(2,Math.round(S/2));
   document.querySelectorAll(".mbtn,.tab").forEach((b,i)=>{const w=Math.round(b.offsetWidth/ps),h=Math.round(b.offsetHeight/ps);if(w<12||h<8)return;
-    b.style.backgroundImage="url("+stoneBtn(w,h,i+3).toDataURL()+")";b.style.backgroundSize="100% 100%";b.style.backgroundRepeat="no-repeat"});placeMenu()}
+    b.style.backgroundImage="url("+stoneBtn(w,h,i+3,!b.closest(".menu-btns")).toDataURL()+")";b.style.backgroundSize="100% 100%";b.style.backgroundRepeat="no-repeat"});placeMenu()}
 // Menü (mit Begrüßung) mittig im Fenster; nur wenn die Helden darunter sonst verdeckt würden, rückt der Block so weit hoch wie nötig
 function placeMenu(){
   const v=gid("v-menu");if(!v.classList.contains("on")||!MS)return;
