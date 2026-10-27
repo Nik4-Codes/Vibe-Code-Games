@@ -64,6 +64,8 @@ body{background:#0b1230;color:var(--ink);font-family:var(--font)}
 .view.menu{justify-content:center;padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*12)}
 #menubg{position:absolute;left:calc(var(--u)*5);top:calc(var(--u)*5);image-rendering:pixelated;display:none;z-index:0}
 .game.scene #menubg{display:block}
+#heroes{position:absolute;left:calc(var(--u)*5);top:calc(var(--u)*5);display:none;z-index:0;pointer-events:none}
+.game.scene #heroes{display:block}
 .view{position:relative;z-index:1}
 .mbtn{font-family:var(--font-rb);font-weight:400;font-size:max(18px,calc(var(--u)*5.8));padding:calc(var(--u)*1.6) calc(var(--u)*4);background:#e8b84a;color:#2a1a0c;border:0;border-radius:0;cursor:pointer;
  width:100%;box-shadow:inset 0 calc(var(--u)*-1.2) 0 #b8841f,0 0 0 var(--u) #14100b}
@@ -198,6 +200,7 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
 
 <div class="game" id="game">
   <canvas id="menubg"></canvas>
+  <canvas id="heroes"></canvas>
   <div class="view" id="v-name">
     <h1 class="gtitle">Willkommen Sire!</h1>
     <p class="gsub">Nennt euren Namen, auf das er in die Chroniken eingehe!</p>
@@ -335,7 +338,7 @@ function layout(){const vw=innerWidth,vh=innerHeight;
   Object.assign(g.style,{left:gl+"px",top:gt+"px",width:fwR+"px",height:fhR+"px",transform:"none",aspectRatio:"auto"});
   Object.assign(fc.style,{left:(gl-S)+"px",top:(gt-S)+"px",width:(fwR+2*S)+"px",height:(fhR+2*S)+"px"});
   FRM={gl,gt,fwR,fhR};drawFrame(fwR/S+2,fhR/S+2);drawTitle();
-  const mw=fwR/S-10,mh=fhR/S-10,mb=document.getElementById("menubg");mb.width=mw;mb.height=mh;mb.style.width=mw*S+"px";mb.style.height=mh*S+"px";MS&&(MS.ctx=null);buildMenuScene(mw,mh);AS.anfang=buildAreaScene("anfang",mw,mh);paintScene(performance.now());paintStoneButtons()}
+  const mw=fwR/S-10,mh=fhR/S-10,mb=document.getElementById("menubg");mb.width=mw;mb.height=mh;mb.style.width=mw*S+"px";mb.style.height=mh*S+"px";const hcv=document.getElementById("heroes");hcv.width=mw*S;hcv.height=mh*S;MS&&(MS.ctx=null);buildMenuScene(mw,mh);AS.anfang=buildAreaScene("anfang",mw,mh);paintScene(performance.now());paintStoneButtons()}
 
 /* ===== Titel: kleiner Bogen über dem Fenster, Anfang und Ende ragen in den Steinrahmen ===== */
 let FRM=null;
@@ -690,24 +693,24 @@ let sceneMode=null;
 function setScene(m){sceneMode=m;gid("game").classList.toggle("scene",!!m);paintScene(performance.now())}
 // menu+heroes: Menühintergrund mit Helden | menu: derselbe Hintergrund ohne Helden | area: Gebietshintergrund (Weg von links nach rechts)
 function paintScene(ts){
-  if(!MS||!sceneMode)return;const cv=gid("menubg");if(!MS.ctx)MS.ctx=cv.getContext("2d");
-  if(sceneMode==="menu+heroes")return drawMenuScene(ts);
-  const c=MS.ctx;c.globalAlpha=1;c.clearRect(0,0,MS.w,MS.h);
-  c.drawImage(sceneMode==="area"?(AS[curArea?curArea.id:"anfang"]||MS.bg):MS.bg,0,0);
-}
+  if(!MS||!sceneMode)return;const cv=gid("menubg"),hc=gid("heroes");if(!MS.ctx)MS.ctx=cv.getContext("2d");
+  const key=sceneMode==="area"?"area"+(curArea?curArea.id:"anfang"):"menu";
+  if(MS.drawn!==key){MS.drawn=key;const c=MS.ctx;c.globalAlpha=1;c.clearRect(0,0,MS.w,MS.h);
+    c.drawImage(sceneMode==="area"?(AS[curArea?curArea.id:"anfang"]||MS.bg):MS.bg,0,0)}
+  if(sceneMode==="menu+heroes")drawHeroes(ts);else hc.getContext("2d").clearRect(0,0,hc.width,hc.height)}
 const WALK=[{id:"mage",lane:-1},{id:"warrior",lane:0},{id:"archer",lane:1}],MSPR={};
+// Maßstab der Helden im Menü: ganzzahlig, damit jedes Sprite-Pixel gleich groß bleibt
+const heroScale=()=>Math.max(2,Math.min(S,innerWidth<=760?3:Math.floor(S*.75)));
 // Die Helden stehen auf dem Weg unter dem Menü und hüpfen leicht auf und ab (Atmen, Arme, Flamme)
-function drawMenuScene(ts){
-  if(!MS)return;const cv=gid("menubg");if(!MS.ctx)MS.ctx=cv.getContext("2d");
-  const c=MS.ctx,w=MS.w,h=MS.h;c.globalAlpha=1;c.clearRect(0,0,w,h);c.drawImage(MS.bg,0,0);c.imageSmoothingEnabled=false;
-  const d=Math.floor(ts/520)%2,fl=Math.floor(ts/170)%2,foot=h-1,tf=(foot-MS.vy)/(h-MS.vy),s=1;   // Maßstab 1: jedes Sprite-Pixel = genau ein Szenen-Pixel (kein Verzerren)
+function drawHeroes(ts){
+  const hc=gid("heroes"),c=hc.getContext("2d"),n=heroScale();c.clearRect(0,0,hc.width,hc.height);c.imageSmoothingEnabled=false;
+  const d=Math.floor(ts/520)%2,fl=Math.floor(ts/170)%2,foot=hc.height-S,tf=((MS.h-1)-MS.vy)/(MS.h-MS.vy);
   WALK.forEach(k=>{
-    const x=MS.cx(tf)+k.lane*SW*s,key=k.id+d+fl;
+    const x=MS.cx(tf)*S+k.lane*SW*n,key=k.id+d+fl;
     let sp=MSPR[k.id];if(!sp)sp=MSPR[k.id]=document.createElement("canvas");
     if(sp._k!==key){sp._k=key;drawChar(sp,k.id,{d:d,al:d,ar:1-d,t:fl})}
-    const dw=SW*s,dh=SH*s;
-    c.fillStyle="rgba(0,0,0,.22)";c.fillRect(Math.round(x-10*s),Math.round(foot-1),Math.round(20*s),Math.max(1,Math.round(2*s)));
-    c.drawImage(sp,Math.round(x-dw/2),Math.round(foot-35*s-d),Math.round(dw),Math.round(dh))})}
+    c.fillStyle="rgba(0,0,0,.22)";c.fillRect(Math.round(x-10*n),Math.round(foot-n),20*n,2*n);
+    c.drawImage(sp,Math.round(x-SW*n/2),Math.round(foot-35*n-(d?n:0)),SW*n,SH*n)})}
 
 /* ===== Ansichten, Animation, Menü ===== */
 const VIEWS=["v-name","v-menu","v-areas","v-new","v-run","v-load","v-classes","v-settings","v-ranks"];
@@ -849,7 +852,15 @@ function stoneBtn(w,h,seed){
 function paintStoneButtons(){
   const ps=Math.max(2,Math.round(S/2));
   document.querySelectorAll(".mbtn,.tab").forEach((b,i)=>{const w=Math.round(b.offsetWidth/ps),h=Math.round(b.offsetHeight/ps);if(w<12||h<8)return;
-    b.style.backgroundImage="url("+stoneBtn(w,h,i+3).toDataURL()+")";b.style.backgroundSize="100% 100%";b.style.backgroundRepeat="no-repeat"})}
+    b.style.backgroundImage="url("+stoneBtn(w,h,i+3).toDataURL()+")";b.style.backgroundSize="100% 100%";b.style.backgroundRepeat="no-repeat"});placeMenu()}
+// Menü (mit Begrüßung) mittig im Fenster; nur wenn die Helden darunter sonst verdeckt würden, rückt der Block so weit hoch wie nötig
+function placeMenu(){
+  const v=gid("v-menu");if(!v.classList.contains("on")||!MS)return;
+  v.style.justifyContent="flex-start";v.style.paddingTop="0px";v.style.paddingBottom="0px";
+  const kids=[...v.children].filter(k=>k.offsetParent!==null);if(!kids.length)return;
+  const a=kids[0].getBoundingClientRect(),z=kids[kids.length-1].getBoundingClientRect(),Bh=z.bottom-a.top,vr=v.getBoundingClientRect();
+  const heroTop=5*S+(MS.h*S-S)-34*heroScale(),center=(vr.height-Bh)/2,limit=heroTop-3*S-Bh;
+  v.style.paddingTop=Math.round(Math.max(6*S,Math.min(center,limit))-(a.top-vr.top))+"px"}
 
 /* ===== Gebiete: Szenen und Auswahl ===== */
 const AUT2=["#8a3a18","#c9591f","#f0983a","#ffd06a"],YLW2=["#5b7a28","#8fa83a","#c4cf50","#e8e888"],AS={};
