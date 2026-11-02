@@ -216,6 +216,22 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
  .lootrow{flex-direction:column;gap:calc(var(--u)*3);width:100%}.lootcard{width:100%;min-height:0;gap:calc(var(--u)*.6);padding:calc(var(--u)*2)}
  .btop{font-size:max(14px,calc(var(--u)*4.4))}.bhint{font-size:max(12px,calc(var(--u)*3.6))}
 }
+/* ===== Kampf-Oberfläche ohne Rahmen, Sprechblase, Tempo-Knopf unten rechts ===== */
+.bwave{position:absolute;left:calc(var(--u)*8);top:calc(var(--u)*8);z-index:2;display:flex;flex-direction:column;gap:calc(var(--u)*.4);font-family:var(--font-rb);color:#f0c85a;text-align:left;
+ font-size:max(18px,calc(var(--u)*6));line-height:1.05;text-shadow:calc(var(--u)*.6) 0 0 #14100b,calc(var(--u)*-.6) 0 0 #14100b,0 calc(var(--u)*.6) 0 #14100b,0 calc(var(--u)*-.6) 0 #14100b,calc(var(--u)*1.1) calc(var(--u)*1.1) 0 rgba(0,0,0,.6)}
+.bwave #b-items{color:#f3e7c6;font-size:max(14px,calc(var(--u)*4.2))}
+.mbtn.back.bspeed{position:absolute;right:calc(var(--u)*8);bottom:calc(var(--u)*8);z-index:2;min-height:calc(var(--u)*10);font-size:max(14px,calc(var(--u)*4));padding:0 calc(var(--u)*4);width:auto}
+.bubble{position:absolute;z-index:6;left:50%;top:calc(var(--u)*17);transform:translateX(-50%);width:min(calc(var(--u)*150),calc(100% - var(--u)*20));display:none;background:#f4ead0;color:#2a1a10;
+ font-family:var(--font);font-weight:700;font-size:max(15px,calc(var(--u)*4.4));line-height:1.35;text-align:left;padding:calc(var(--u)*3) calc(var(--u)*5) calc(var(--u)*3.5) calc(var(--u)*4);min-height:calc(var(--u)*17);cursor:pointer;
+ box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.7) #c9b48a}
+.bubble::before{content:"";position:absolute;left:calc(var(--u)*16);bottom:calc(var(--u)*-5.6);width:calc(var(--u)*7);height:calc(var(--u)*5.6);background:#14100b;clip-path:polygon(0 0,100% 0,0 100%)}
+.bubble::after{content:"";position:absolute;left:calc(var(--u)*17);bottom:calc(var(--u)*-4.2);width:calc(var(--u)*5);height:calc(var(--u)*4.2);background:#f4ead0;clip-path:polygon(0 0,100% 0,0 100%)}
+.bubble .bnext{position:absolute;right:calc(var(--u)*3);bottom:calc(var(--u)*1.5);font-style:normal;display:none;animation:bl .8s steps(1) infinite}
+.bubble.done .bnext{display:block}
+@keyframes bl{50%{opacity:0}}
+.lootcard:hover,.lootcard.kb{background:#2a2410;box-shadow:0 0 0 var(--u) #14100b,inset 0 0 0 calc(var(--u)*.9) #f0c85a}
+.mbtn.kb{filter:drop-shadow(var(--u) 0 0 #f0c85a) drop-shadow(calc(var(--u)*-1) 0 0 #f0c85a) drop-shadow(0 var(--u) 0 #f0c85a) drop-shadow(0 calc(var(--u)*-1) 0 #f0c85a)}
+@media (max-width:760px){.bwave{left:calc(var(--u)*7);top:calc(var(--u)*7);font-size:max(15px,calc(var(--u)*5))}.bubble{top:calc(var(--u)*17);width:calc(100% - var(--u)*14);font-size:max(13px,calc(var(--u)*4.2))}.mbtn.back.bspeed{right:calc(var(--u)*7);bottom:calc(var(--u)*7)}}
 </style>
 </head>
 <body>
@@ -267,10 +283,11 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
     <div class="rowbtn"><button class="mbtn back" id="btn-team-back">Zurück</button><button class="mbtn" id="btn-team" disabled>Aufbrechen</button></div>
   </div>
   <div class="view battle" id="v-battle">
-    <div class="btop"><span id="b-wave"></span><span id="b-items"></span><button class="mbtn back" id="b-speed">Tempo x1</button></div>
-    <div class="bhint" id="b-hint"></div>
+    <div class="bwave"><span id="b-wave"></span><span id="b-items"></span></div>
+    <div class="bubble" id="b-bubble"><span id="b-text"></span><i class="bnext">▼</i></div>
     <div class="bover" id="b-loot"></div>
     <div class="bover" id="b-end"></div>
+    <button class="mbtn back bspeed" id="b-speed" title="Pfeiltasten hoch/runter">Tempo x1</button>
   </div>
   <div class="view" id="v-run"><h2 class="rbh">Das Abenteuer ruft!</h2><p class="gsub" id="run-text"></p><button class="mbtn back" data-go="team">Team ändern</button></div>
   <div class="view" id="v-load"><h2 class="rbh">Spiel laden</h2><p class="gsub" id="load-text"></p><button class="mbtn back" data-go="menu">Zurück</button></div>
@@ -286,6 +303,8 @@ input[type=range]::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*
       <h3>Audio</h3>
       <label class="srow"><span>Spiellautstärke</span><input type="range" id="r-sfx" min="0" max="100"><b id="t-sfx"></b></label>
       <label class="srow"><span>Musiklautstärke</span><input type="range" id="r-mus" min="0" max="100"><b id="t-mus"></b></label>
+      <h3>Text</h3>
+      <label class="srow"><span>Textgeschwindigkeit</span><input type="range" id="r-txt" min="1" max="5" step="1"><b id="t-txt"></b></label>
       <h3>Anzeige</h3>
       <label class="srow"><span>Helligkeit</span><input type="range" id="r-bri" min="50" max="150"><b id="t-bri"></b></label>
     </div>
@@ -830,11 +849,11 @@ function buildClassTabs(){const t=gid("cls-tabs");t.textContent="";
 
 // Einstellungen (Werte werden im Browser gespeichert)
 const lsNum=(k,def)=>{try{const v=localStorage.getItem(k);return v===null?def:+v}catch(e){return def}};
-const vol={sfx:lsNum("mr_sfx",70),mus:lsNum("mr_mus",50),bri:lsNum("mr_bri",100)};
+const vol={sfx:lsNum("mr_sfx",70),mus:lsNum("mr_mus",50),bri:lsNum("mr_bri",100),txt:lsNum("mr_txt",3)};
 function applyBright(){document.documentElement.style.filter=vol.bri===100?"":"brightness("+vol.bri/100+")"}
-function syncSettings(){[["sfx","r-sfx","t-sfx"],["mus","r-mus","t-mus"],["bri","r-bri","t-bri"]].forEach(([k,r,t])=>{gid(r).value=vol[k];gid(t).textContent=vol[k]+"%"})}
-[["sfx","r-sfx","t-sfx","mr_sfx"],["mus","r-mus","t-mus","mr_mus"],["bri","r-bri","t-bri","mr_bri"]].forEach(([k,r,t,ls])=>{
-  gid(r).oninput=e=>{vol[k]=+e.target.value;gid(t).textContent=vol[k]+"%";try{localStorage.setItem(ls,vol[k])}catch(_){}
+function syncSettings(){[["sfx","r-sfx","t-sfx"],["mus","r-mus","t-mus"],["bri","r-bri","t-bri"],["txt","r-txt","t-txt"]].forEach(([k,r,t])=>{gid(r).value=vol[k];gid(t).textContent=vol[k]+(k==="txt"?"":"%")})}
+[["sfx","r-sfx","t-sfx","mr_sfx"],["mus","r-mus","t-mus","mr_mus"],["bri","r-bri","t-bri","mr_bri"],["txt","r-txt","t-txt","mr_txt"]].forEach(([k,r,t,ls])=>{
+  gid(r).oninput=e=>{vol[k]=+e.target.value;gid(t).textContent=vol[k]+(k==="txt"?"":"%");try{localStorage.setItem(ls,vol[k])}catch(_){}
     if(k==="mus")bgm.volume=vol.mus/100;if(k==="bri")applyBright()}});
 applyBright();
 
@@ -1097,34 +1116,62 @@ function simRun(team,pickFn,avail){const bo={g:zeroB(),c:{}},B={heroes:team.map(
 
 /* ===== Kampf-Oberfläche ===== */
 let RUN=null;
-const HINTS={0:"Willkommen im Tutorial! Eure Helden kämpfen von selbst. Krieger stehen vorn und halten Schläge aus, Magier und Bogenschützen greifen aus der zweiten Reihe an.",
- 1:"Über den Köpfen seht ihr die Lebensbalken. Gegner greifen immer den vordersten Helden an.",
- 2:"Nach jeder Welle wählt ihr ein Item. Manche wirken nur bei einer bestimmten Klasse, ohne sie im Team bleiben sie wirkungslos.",
- 3:"Zwischen den Wellen erholt sich euer Team. Gefallene Helden stehen mit wenig Leben wieder auf.",
- 4:"Achtung, Mini-Boss! Der Goblin-Wächter trägt Rüstung, Helm und Schild und hält viel aus.",
- 5:"Mit dem Tempo-Knopf oben rechts lassen sich die Kämpfe beschleunigen.",
- 9:"Der Goblin-Stammesführer! Besiegt ihn, um das Tutorial abzuschließen."};
 const bScale=()=>innerWidth<=760?2:heroScale();
+// Tutorial-Texte als Sprechblasen (Buchstabe für Buchstabe, Leertaste = sofort anzeigen / weiter)
+const TUTO={start:{0:["Willkommen auf dem Waldweg, Sire! Hier lernt ihr die Grundlagen des Kampfes.","Eure Helden kämpfen von selbst. Krieger stehen vorn und halten Schläge aus, Magier und Bogenschützen greifen aus der zweiten Reihe an."],
+  1:["Über den Köpfen seht ihr die Lebensbalken. Gegner greifen immer den vordersten Helden an."],
+  2:["Manche Items wirken nur bei einer bestimmten Klasse. Ist sie nicht im Team, bleibt das Item wirkungslos."],
+  3:["Zwischen den Wellen erholt sich euer Team. Gefallene Helden stehen mit wenig Leben wieder auf."],
+  4:["Achtung, Mini-Boss! Der Goblin-Wächter trägt Helm, Rüstung und Schild und hält viel aus."],
+  5:["Mit den Pfeiltasten hoch und runter lässt sich das Kampftempo ändern."],
+  9:["Der Goblin-Stammesführer! Besiegt ihn, um das Tutorial abzuschließen."]},
+ loot:{0:["Gut gekämpft! Nach jeder Welle dürft ihr eine von drei Belohnungen wählen.","Wählt mit der Maus oder mit den Pfeiltasten links und rechts und bestätigt mit der Leertaste."]}};
+const CPS=[10,18,30,52,90];   // Zeichen pro Sekunde für Textgeschwindigkeit 1–5
+function say(texts,cb){RUN.dlg={texts,i:0,shown:0,cb};const b=gid("b-bubble");b.classList.remove("done");b.style.display="block";gid("b-text").textContent=""}
+function updateDlg(dt){const d=RUN.dlg,txt=d.texts[d.i];if(d.shown<txt.length)d.shown=Math.min(txt.length,d.shown+dt*CPS[Math.max(0,Math.min(4,vol.txt-1))]);
+  const n=Math.floor(d.shown);if(gid("b-text")._n!==n+"/"+d.i){gid("b-text")._n=n+"/"+d.i;gid("b-text").textContent=txt.slice(0,n)}
+  gid("b-bubble").classList.toggle("done",d.shown>=txt.length)}
+function advanceDlg(){const d=RUN&&RUN.dlg;if(!d)return;const txt=d.texts[d.i];
+  if(d.shown<txt.length){d.shown=txt.length;return}
+  if(d.i<d.texts.length-1){d.i++;d.shown=0;gid("b-bubble").classList.remove("done");return}
+  gid("b-bubble").style.display="none";RUN.dlg=null;gid("b-text")._n=null;if(d.cb)d.cb()}
 function startRun(){
   const bo={g:zeroB(),c:{}},team=[...pick];
-  RUN={team,bonus:bo,wave:0,phase:"intro",t:0,speed:1,last:0,items:[],B:{heroes:team.map(id=>mkHero(id,bo)),foes:[],proj:[],fx:[]}};
-  assignPos(RUN.B);showView("v-battle");gid("b-loot").style.display="none";gid("b-end").style.display="none";beginWave(0)}
+  RUN={team,bonus:bo,wave:0,phase:"intro",t:0,speed:1,last:0,items:[],dlg:null,kb:0,cards:[],opts:[],endBtns:[],B:{heroes:team.map(id=>mkHero(id,bo)),foes:[],proj:[],fx:[]}};
+  assignPos(RUN.B);showView("v-battle");gid("b-loot").style.display="none";gid("b-end").style.display="none";gid("b-bubble").style.display="none";setSpeed(1);beginWave(0)}
+function setSpeed(v){if(!RUN)return;RUN.speed=Math.max(1,Math.min(3,v));gid("b-speed").textContent="Tempo x"+RUN.speed;paintStoneButtons()}
 function beginWave(w){RUN.wave=w;RUN.B.foes=mkWave(w);RUN.B.proj=[];RUN.phase="intro";RUN.t=0;
   gid("b-wave").textContent="Welle "+(w+1)+" / 10"+(WAVES[w].some(t=>FOE[t].boss)?(w===9?"  ·  Endboss":"  ·  Mini-Boss"):"");
   gid("b-items").textContent="Items: "+RUN.items.length;
-  const h=gid("b-hint");h.textContent=HINTS[w]||"";h.style.display=HINTS[w]?"block":"none"}
+  const t=TUTO.start[w];if(t)say(t)}
 function endWave(){
   if(RUN.wave>=9){RUN.phase="done";finishRun(true);return}
-  RUN.phase="loot";const opts=rollItems(FOUND),box=gid("b-loot");box.textContent="";
+  RUN.phase="loot";const t=TUTO.loot[RUN.wave];if(t)say(t,showLoot);else showLoot()}
+function showLoot(){
+  const opts=rollItems(FOUND),box=gid("b-loot");box.textContent="";RUN.opts=opts;RUN.cards=[];
   box.appendChild(mkEl("h3","","Welle "+(RUN.wave+1)+" geschafft! Wählt eine Belohnung"));
   const row=mkEl("div","lootrow");
-  opts.forEach(it=>{const c=mkEl("button","lootcard"+(it.cls&&!RUN.team.includes(it.cls)?" off":""));
+  opts.forEach((it,i)=>{const c=mkEl("button","lootcard"+(it.cls&&!RUN.team.includes(it.cls)?" off":""));
     c.appendChild(mkEl("span","ltag",it.tag));c.appendChild(mkEl("b","",it.name));c.appendChild(mkEl("span","ld",it.desc));
     if(it.cls&&!RUN.team.includes(it.cls))c.appendChild(mkEl("span","lw","Diese Klasse ist nicht in eurem Team."));
-    c.onclick=()=>pickItem(it);row.appendChild(c)});
-  box.appendChild(row);box.style.display="flex"}
+    c.onclick=()=>pickItem(it);c.onmouseenter=()=>setKb(i);row.appendChild(c);RUN.cards.push(c)});
+  box.appendChild(row);box.style.display="flex";setKb(0)}
+function setKb(i){RUN.kb=i;const l=gid("b-loot").style.display!=="none"?RUN.cards:RUN.endBtns;(RUN.cards||[]).forEach((c,j)=>c.classList.toggle("kb",l===RUN.cards&&j===i));(RUN.endBtns||[]).forEach((c,j)=>c.classList.toggle("kb",l===RUN.endBtns&&j===i))}
 function pickItem(it){RUN.bonus.lv=RUN.wave+1;it.ap(RUN.bonus);RUN.items.push(it.id);RUN.B.heroes.forEach(h=>refreshHero(h,RUN.bonus));restHeal(RUN.B);
-  gid("b-loot").style.display="none";beginWave(RUN.wave+1)}
+  gid("b-loot").style.display="none";RUN.cards=[];beginWave(RUN.wave+1)}
+// Tastatur: Leertaste/Enter = Text beschleunigen bzw. bestätigen, Pfeil hoch/runter = Tempo, Pfeil links/rechts = Auswahl
+addEventListener("keydown",e=>{
+  if(!RUN||!gid("v-battle").classList.contains("on"))return;const k=e.key;
+  if(k===" "||k==="Enter"){e.preventDefault();if(e.repeat)return;
+    if(RUN.dlg)advanceDlg();
+    else if(gid("b-loot").style.display!=="none"&&RUN.opts[RUN.kb])pickItem(RUN.opts[RUN.kb]);
+    else if(gid("b-end").style.display!=="none"&&RUN.endBtns[RUN.kb])RUN.endBtns[RUN.kb].click();return}
+  if(k==="ArrowUp"||k==="ArrowDown"){e.preventDefault();setSpeed(RUN.speed+(k==="ArrowUp"?1:-1));return}
+  if(k==="ArrowLeft"||k==="ArrowRight"){e.preventDefault();if(RUN.dlg)return;
+    const l=gid("b-loot").style.display!=="none"?RUN.cards:gid("b-end").style.display!=="none"?RUN.endBtns:null;
+    if(l&&l.length)setKb((RUN.kb+(k==="ArrowRight"?1:-1)+l.length)%l.length)}});
+addEventListener("keyup",e=>{if(e.key===" "&&RUN&&gid("v-battle").classList.contains("on"))e.preventDefault()});
+gid("b-bubble").onclick=()=>advanceDlg();
 function finishRun(win){
   RUN.phase="done";const box=gid("b-end");box.textContent="";
   box.appendChild(mkEl("h3","",win?"Sieg! Das Tutorial ist geschafft":"Besiegt!"));
@@ -1135,14 +1182,16 @@ function finishRun(win){
       const t=mkEl("div","");t.appendChild(mkEl("b","","Neue Klasse freigeschaltet!"));t.appendChild(mkEl("span","","Goblin-Assassine: klein, blitzschnell und mit hoher Krit-Chance."));r.appendChild(t);box.appendChild(r)}}
   else box.appendChild(mkEl("p","","Eure Helden sind gefallen. Versucht es noch einmal, vielleicht mit einer anderen Teamzusammenstellung."));
   const row=mkEl("div","rowbtn"),a=mkEl("button","mbtn",win?"Zum Menü":"Erneut versuchen"),b2=mkEl("button","mbtn back",win?"Neue Runde":"Zum Menü");
-  a.onclick=()=>win?go("menu"):startRun();b2.onclick=()=>win?go("new"):go("menu");row.appendChild(a);row.appendChild(b2);box.appendChild(row);box.style.display="flex";paintStoneButtons()}
-gid("b-speed").onclick=()=>{RUN.speed=RUN.speed%3+1;gid("b-speed").textContent="Tempo x"+RUN.speed;paintStoneButtons()};
+  a.onclick=()=>win?go("menu"):startRun();b2.onclick=()=>win?go("new"):go("menu");row.appendChild(a);row.appendChild(b2);box.appendChild(row);RUN.endBtns=[a,b2];box.style.display="flex";RUN.cards=[];paintStoneButtons();setKb(0)}
+gid("b-speed").onclick=()=>{setSpeed(RUN.speed%3+1);gid("b-speed").blur()};
 const BSPR={};
 function bSprite(u,d,fl){const key=u.id+d+fl+(u.flash>0?"f":"");let s=BSPR[key];
   if(!s){s=document.createElement("canvas");drawChar(s,u.id,{d:d,al:d,ar:1-d,t:fl});
     if(u.flash>0){const x=s.getContext("2d");x.globalCompositeOperation="source-atop";x.fillStyle="rgba(255,255,255,.65)";x.fillRect(0,0,s.width,s.height)}BSPR[key]=s}return s}
 function battleFrame(ts){
-  if(!RUN)return;const dt=Math.min(.05,RUN.last?(ts-RUN.last)/1000:0);RUN.last=ts;const B=RUN.B;RUN.t+=dt;
+  if(!RUN)return;const dt=Math.min(.05,RUN.last?(ts-RUN.last)/1000:0);RUN.last=ts;const B=RUN.B;
+  if(RUN.dlg){updateDlg(dt);if(RUN.phase==="intro")B.foes.forEach(f=>f.enter=Math.max(0,f.enter-dt/.7));tickAnim(B,dt);drawBattle(ts);return}
+  RUN.t+=dt;
   if(RUN.phase==="intro"){B.foes.forEach(f=>f.enter=Math.max(0,f.enter-dt/.7));tickAnim(B,dt);if(RUN.t>1.1)RUN.phase="fight"}
   else if(RUN.phase==="fight"){stepBattle(B,dt*RUN.speed);
     if(!alive(B.foes).length&&B.foes.every(f=>f.dead>.6))endWave();
@@ -1150,7 +1199,7 @@ function battleFrame(ts){
   else tickAnim(B,dt);
   drawBattle(ts)}
 function drawBattle(ts){
-  const hc=gid("heroes"),c=hc.getContext("2d"),n=bScale(),W2=hc.width,H2=hc.height,B=RUN.B,foot=H2*.86;
+  const hc=gid("heroes"),c=hc.getContext("2d"),n=bScale(),W2=hc.width,H2=hc.height,B=RUN.B,foot=H2*.82;
   c.clearRect(0,0,W2,H2);c.imageSmoothingEnabled=false;
   const mob=innerWidth<=760,fxp=u=>u.side==="e"&&mob?.5+(u.x-.6)*.62:u.x,px0=u=>fxp(u)*W2+(u.enter||0)*.3*W2,py0=u=>foot+u.yo*n*3;
   [...B.heroes,...B.foes].sort((a,b)=>a.yo-b.yo).forEach(u=>{
